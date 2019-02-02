@@ -8,7 +8,7 @@ let potion_types = ["hpot0", "mpot0"];//The types of potions to keep supplied.
 
 //Movement And Attacking
 setInterval(function () {
-    loot();
+    loot(true);
     if (state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
@@ -23,6 +23,8 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function state_controller() {
+    //If dead respawn
+    if (character.rip) return respawn();
     //Default to farming
     let new_state = "farm";
     //Do we need potions?
@@ -43,7 +45,7 @@ function state_controller() {
 let currentTarget = {};
 function farm() {
     let target = currentTarget[character.id] || find_viable_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
-    if (target && target.id) {
+    if (can_attack(target)) {
         currentTarget[character.id] = target;
         let range = distance_to_point(target.real_x, target.real_y);
         if (range < character.range) {
