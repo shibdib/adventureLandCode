@@ -26,7 +26,6 @@ function find_viable_targets(maxAttack, minXp) {
             return 0;
         }
     });
-    game_log(monsters)
     return monsters;
 }
 
