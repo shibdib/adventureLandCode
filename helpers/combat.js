@@ -9,7 +9,11 @@
 ////Monsters are then ordered by distance.
 function find_farming_targets(maxAttack, minXp) {
     let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === character.name);
+    game_log(1)
+    game_log(monsters.length)
     if (!monsters.length) monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && can_attack(mob) && mob.attack > 0 && mob.attack < maxAttack);
+    game_log(2)
+    game_log(monsters.length)
     let partyTargets = monsters.filter((m) => parent.party_list.includes(m.target));
     if (partyTargets.length) monsters = partyTargets;
     //Order monsters by whether they're attacking us, then by distance.

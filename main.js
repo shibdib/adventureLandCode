@@ -4,9 +4,9 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
 urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
 urls.forEach((u) => loadURLs(u));
 
-function loadURLs( url ) {
-    var ajax = new XMLHttpRequest();
-    ajax.open( 'GET', url, false ); // <-- the 'false' makes it synchronous
+function loadURLs(url) {
+    let ajax = new XMLHttpRequest();
+    ajax.open('GET', url + "?nocache=" + (Math.floor(Math.random() * 6) + 1));
     ajax.onreadystatechange = function () {
         var script = ajax.response || ajax.responseText;
         if (ajax.readyState === 4) {
@@ -19,4 +19,8 @@ function loadURLs( url ) {
         }
     };
     ajax.send(null);
+}
+
+function NoCache(url) {
+    return url + (new Date().getTime());
 }
