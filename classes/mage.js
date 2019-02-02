@@ -12,7 +12,7 @@ setInterval(function () {
 
 function party_manager() {
     game_log("---Mage Party Request---");
-    on_party_request('Shibtank');
+    on_party_request(character.name);
 }
 
 //Movement And Attacking

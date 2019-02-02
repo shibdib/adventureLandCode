@@ -16,9 +16,10 @@ for (let char of pve_characters) {
 setInterval(function () {
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
-        (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
+        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
     }
-}, 10000);
+}, 12500);
+
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
     ajax.open('GET', url + "?nocache=" + (Math.floor(Math.random() * 6) + 1));
