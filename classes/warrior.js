@@ -43,7 +43,7 @@ function state_controller() {
 }
 
 function farm() {
-    let target = find_leader_target();
+    let target = find_farming_targets(50);
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
