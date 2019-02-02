@@ -12,6 +12,14 @@ for (let char of pve_characters) {
     let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
     start_character(char.name, loadURLs(u));
 }
+//Party Management
+setInterval(function () {
+    for (let char of pve_characters) {
+        if (char.name === character.name) continue;
+        send_party_invite(char.name);
+        break;
+    }
+}, 12400);
 
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();

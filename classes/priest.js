@@ -19,7 +19,6 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function state_controller() {
-    send_party_invite('Shibtank')
     //If dead respawn
     if (character.rip) return respawn();
     //Default to farming
