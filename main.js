@@ -17,7 +17,8 @@ setInterval(function () {
     if (character.party && character.party.length >= 3) return;
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
-        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name, false);
+        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
+        break;
     }
 }, 12400);
 
