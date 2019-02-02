@@ -15,8 +15,9 @@ for (let char of pve_characters) {
 //Party Management
 setInterval(function () {
     for (let char of pve_characters) {
+        if (char.name === character.name) continue;
         if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
-        if (char.name === character.name) on_party_invite(character.name);
+        command_character(char.name, on_party_invite(character.name))
     }
 }, 12400);
 

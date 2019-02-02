@@ -3,18 +3,6 @@ game_log("---Mage Script Start---");
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 
-//Party Management
-setInterval(function () {
-    if (!character.party) {
-        party_manager();
-    }
-}, 12500);
-
-function party_manager() {
-    game_log("---Mage Party Request---");
-    on_party_invite('Shibtank');
-}
-
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
