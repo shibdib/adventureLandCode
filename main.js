@@ -18,7 +18,7 @@ setInterval(function () {
         if (char.name === character.name) continue;
         if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
     }
-}, 12500);
+}, 12400);
 
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
