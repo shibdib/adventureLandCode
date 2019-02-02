@@ -158,6 +158,6 @@ function find_viable_targets(maxAttack, minXp) {
             return 0;
         }
     });
-    game_log(monsters[0].xp)
+    game_log(monsters)
     return monsters;
 }
