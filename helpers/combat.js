@@ -30,7 +30,7 @@ function find_farming_targets(maxAttack, minXp) {
     return monsters;
 }
 function find_leader_target() {
-    let target = get_target_of(player.id);
+    let target = get_target_of(get_player('Shibdib'));
     if (target) return target;
     move_to_target(player);
 }
