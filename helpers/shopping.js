@@ -1,4 +1,6 @@
 
+let purchase_amount = 50;//How many potions to buy at once.
+let potion_types = ["hpot0", "mpot0"];//The types of potions to keep supplied.
 
 //This function contains our logic during resupply runs
 function resupply_potions() {

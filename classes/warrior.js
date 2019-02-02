@@ -3,8 +3,6 @@ game_log("---Script Start---");
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 let min_potions = 50; //The number of potions at which to do a resupply run.
-let purchase_amount = 50;//How many potions to buy at once.
-let potion_types = ["hpot0", "mpot0"];//The types of potions to keep supplied.
 
 //Movement And Attacking
 setInterval(function () {
