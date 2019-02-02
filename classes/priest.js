@@ -8,7 +8,12 @@ setInterval(function () {
     if (!character.party) {
         party_manager();
     }
-}, 10000);
+}, 100000);
+
+function party_manager() {
+    game_log("---Priest Party Request---");
+    send_party_request('Shibtank');
+}
 
 //Movement And Attacking
 setInterval(function () {
@@ -25,11 +30,6 @@ setInterval(function () {
         use_hp_or_mp();
     }
 }, 500);//Execute 2 times per second
-
-function party_manager() {
-    game_log("---Priest Party Start---");
-    send_party_request('Shibtank');
-}
 
 function state_controller() {
     //If dead respawn
