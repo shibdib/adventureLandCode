@@ -1,14 +1,11 @@
-game_log("---Script Start---");
+game_log("---Warrior Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
-let min_potions = 50; //The number of potions at which to do a resupply run.
-let purchase_amount = 50;//How many potions to buy at once.
-let potion_types = ["hpot0", "mpot0"];//The types of potions to keep supplied.
 //Movement And Attacking
 setInterval(function () {
     loot(true);
-    if (state === 'farm') farm();
+    //if (state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
@@ -22,20 +19,13 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function state_controller() {
-    send_party_request('Shibdib');
     //If dead respawn
     if (character.rip) return respawn();
     //Default to farming
     let new_state = "farm";
     //Do we need potions?
-    for (type_id in potion_types) {
-        let type = potion_types[type_id];
-        let num_potions = num_items(type);
-        if (num_potions < min_potions) {
-            new_state = "resupply_potions";
-            break;
-        }
-    }
+    new_state = potion_check(new_state)
+    //If state changed set it and announce
     if (state != new_state) {
         game_log("---NEW STATE " + new_state + "---");
         state = new_state;
@@ -53,42 +43,6 @@ function farm() {
                 character.real_x + (target.real_x - character.real_x),
                 character.real_y + (target.real_y - character.real_y)
             );
-        }
-    }
-}
-
-//This function will ether move straight towards the target entity,
-//or utilize smart_move to find their way there.
-function move_to_target(target) {
-    if (can_move_to(target.real_x, target.real_y)) {
-        smart.moving = false;
-        smart.searching = false;
-        move(
-            character.real_x + (target.real_x - character.real_x) / 2,
-            character.real_y + (target.real_y - character.real_y) / 2
-        );
-    }
-    else {
-        if (!smart.moving) {
-            smart_move({x: target.real_x, y: target.real_y});
-        }
-    }
-}
-
-//This function will ether move straight towards the target entity,
-//or utilize smart_move to find their way there.
-function move_to_position(position) {
-    if (can_move_to(position.x, position.y)) {
-        smart.moving = false;
-        smart.searching = false;
-        move(
-            character.real_x + (position.x - character.real_x) / 2,
-            character.real_y + (position.y - character.real_y) / 2
-        );
-    }
-    else {
-        if (!smart.moving) {
-            smart_move({x: position.x, y: position.y});
         }
     }
 }

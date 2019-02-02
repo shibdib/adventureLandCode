@@ -1,10 +1,9 @@
-game_log("---Mage Script Start---");
+game_log("---Priest Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 //Join Party
 send_party_request('Shibtank')
-
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
@@ -35,18 +34,16 @@ function state_controller() {
 }
 
 function farm() {
-    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
-    if (!target) target = get_nearest_monster({max_att: character.attack * 0.8, path_check: true});
+    let target = find_farming_targets(50);
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range < character.range) {
-            if (can_attack(target))  attack(target);
-            if (range <= character.range * 0.7) {
-                let kiteLocation = getKitePosition(target);
-                if (kiteLocation) move_to_position(kiteLocation)
-            }
+        if (range <= character.range) {
+            if (can_attack(target)) attack(target);
         } else {
-            move_to_target(target);
+            move(
+                character.real_x + (target.real_x - character.real_x),
+                character.real_y + (target.real_y - character.real_y)
+            );
         }
     }
 }

@@ -1,9 +1,16 @@
 let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/constants.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js"];
-urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js"];
+//urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
 urls.forEach((u) => loadURLs(u));
-start_character('Shibtank',loadURLs("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/warrior.js"))
+let pve_characters = ['Shibtank', 'Shibdib', 'Shibheal', 'Shibtard'];
+for (let char of pve_characters) {
+    if (char === character.name) continue;
+    let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js";
+    start_character(char, loadURLs(u))
+}
+let allCharacters = get_active_characters();
 
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
