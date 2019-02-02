@@ -5,7 +5,7 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
 //Load helpers
 urls.forEach((u) => loadURLs(u));
 //Load party
-let pve_characters = [{'name': 'Shibtank', 'class': 'warrior'}, {'name': 'Shibdib', 'class': 'mage'}, {'name': 'Shibheal', 'class': 'priest'}, {'name': 'Shibtard', 'class': 'ranger'}];
+let pve_characters = [{'name': 'Shibtank', 'class': 'warrior'}, {'name': 'Shibdib', 'class': 'mage'}, {'name': 'Shibheal', 'class': 'priest'}];
 for (let char of pve_characters) {
     if (char.name === character.name) continue;
     let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
