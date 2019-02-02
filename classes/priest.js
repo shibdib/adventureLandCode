@@ -2,6 +2,14 @@ game_log("---Priest Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
+
+//Party Management
+setInterval(function () {
+    if (!character.party) {
+        party_manager();
+    }
+}, 10000);
+
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
@@ -19,6 +27,7 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function party_manager() {
+    game_log("---Priest Party Start---");
     send_party_request('Shibtank');
 }
 
