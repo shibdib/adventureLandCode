@@ -140,14 +140,7 @@ function move_to_position(position) {
 ////Monsters are then ordered by distance.
 function find_viable_targets(maxAttack, minXp) {
     let monsters = Object.values(G.monsters).filter(mob => !ignore_targets.includes(mob.name) && can_attack(mob) && !mob.stationary && mob.attack > 0 && mob.attack < maxAttack && mob.xp >= minXp);
-    /**for (monster of monsters) {
-        if (parent.party_list.includes(monster.target)
-            || monster.target == character.name) {
-            monster.targeting_party = 1;
-        } else {
-            monster.targeting_party = 0;
-        }
-    }**/
+    game_log(minXp)
     let partyTargets = monsters.filter((m) => parent.party_list.includes(m.target));
     if (partyTargets.length) monsters = partyTargets;
     //Order monsters by whether they're attacking us, then by distance.
@@ -165,5 +158,6 @@ function find_viable_targets(maxAttack, minXp) {
             return 0;
         }
     });
+    game_log(monsters[0].xp)
     return monsters;
 }
