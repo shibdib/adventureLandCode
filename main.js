@@ -3,6 +3,7 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js"];
 urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
 urls.forEach((u) => loadURLs(u));
+start_character('Shibtank',loadURLs("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/warrior.js"))
 
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
