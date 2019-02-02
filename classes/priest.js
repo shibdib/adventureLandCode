@@ -10,13 +10,17 @@ setInterval(function () {
 
 //Potions and state
 setInterval(function () {
-    on_party_invite('Shibtank')
     state_controller();
+    party_manager();
     //Heal With Potions if we're below 75% hp.
     if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
         use_hp_or_mp();
     }
 }, 500);//Execute 2 times per second
+
+function party_manager() {
+    send_party_request('Shibtank');
+}
 
 function state_controller() {
     //If dead respawn
