@@ -8,7 +8,7 @@ setInterval(function () {
     if (!character.party) {
         party_manager();
     }
-}, 100000);
+}, 10000);
 
 function party_manager() {
     game_log("---Mage Party Request---");
