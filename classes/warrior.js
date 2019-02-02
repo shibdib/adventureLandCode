@@ -22,6 +22,7 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function state_controller() {
+    send_party_request('Shibdib');
     //If dead respawn
     if (character.rip) return respawn();
     //Default to farming
@@ -42,13 +43,16 @@ function state_controller() {
 }
 
 function farm() {
-    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    let target = find_leader_target();
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
-            if (can_attack(target))  attack(target);
+            if (can_attack(target)) attack(target);
         } else {
-            move_to_target(target);
+            move(
+                character.real_x + (target.real_x - character.real_x),
+                character.real_y + (target.real_y - character.real_y)
+            );
         }
     }
 }
