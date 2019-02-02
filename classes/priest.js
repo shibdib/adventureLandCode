@@ -8,7 +8,7 @@ setInterval(function () {
     if (!character.party) {
         party_manager();
     }
-}, 100000);
+}, 10000);
 
 function party_manager() {
     game_log("---Priest Party Request---");
@@ -24,7 +24,6 @@ setInterval(function () {
 //Potions and state
 setInterval(function () {
     state_controller();
-    if (!character.party) party_manager();
     //Heal With Potions if we're below 75% hp.
     if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
         use_hp_or_mp();
