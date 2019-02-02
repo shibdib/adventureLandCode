@@ -2,8 +2,6 @@ game_log("---Priest Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
-//Join party
-accept_party_invite('Shibtank');
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
@@ -12,6 +10,7 @@ setInterval(function () {
 
 //Potions and state
 setInterval(function () {
+    on_party_invite('Shibtank')
     state_controller();
     //Heal With Potions if we're below 75% hp.
     if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
