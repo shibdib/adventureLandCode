@@ -10,6 +10,7 @@ for (let char of pve_characters) {
     if (char.name === character.name) continue;
     let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
     start_character(char.name, loadURLs(u))
+    send_party_invite(char.name)
 }
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();

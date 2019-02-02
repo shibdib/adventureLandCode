@@ -13,7 +13,7 @@ setInterval(function () {
     //Join party
     if (!parent.party_list.length) {
         game_log("---Priest Invite---");
-        send_party_invite('Shibtank',true);
+        accept_party_invite('Shibtank');
     }
     state_controller();
     //Heal With Potions if we're below 75% hp.
