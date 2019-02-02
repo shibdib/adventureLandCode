@@ -11,7 +11,7 @@ setInterval(function () {
 //Potions and state
 setInterval(function () {
     state_controller();
-    party_manager();
+    if (!character.party) party_manager();
     //Heal With Potions if we're below 75% hp.
     if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
         use_hp_or_mp();
