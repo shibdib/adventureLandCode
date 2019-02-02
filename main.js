@@ -2,16 +2,15 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js"];
-//urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
+//Load helpers
 urls.forEach((u) => loadURLs(u));
-let pve_characters = ['Shibtank', 'Shibdib', 'Shibheal', 'Shibtard'];
+//Load party
+let pve_characters = [{'name': 'Shibtank', 'class': 'warrior'}, {'name': 'Shibdib', 'class': 'mage'}, {'name': 'Shibheal', 'class': 'priest'}, {'name': 'Shibtard', 'class': 'ranger'}];
 for (let char of pve_characters) {
-    if (char === character.name) continue;
-    let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js";
-    start_character(char, loadURLs(u))
+    if (char.name === character.name) continue;
+    let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
+    start_character(char.name, loadURLs(u))
 }
-let allCharacters = get_active_characters();
-
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
     ajax.open('GET', url + "?nocache=" + (Math.floor(Math.random() * 6) + 1));
@@ -27,8 +26,4 @@ function loadURLs(url) {
         }
     };
     ajax.send(null);
-}
-
-function NoCache(url) {
-    return url + (new Date().getTime());
 }
