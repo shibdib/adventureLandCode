@@ -12,7 +12,7 @@ setInterval(function () {
 
 function party_manager() {
     game_log("---Priest Party Request---");
-    send_party_request('Shibtank');
+    on_party_request('Shibtank');
 }
 
 //Movement And Attacking

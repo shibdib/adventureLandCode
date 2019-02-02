@@ -1,7 +1,8 @@
 let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/constants.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js"];
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js",
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/party.js"];
 //Load helpers
 urls.forEach((u) => loadURLs(u));
 //Load party
@@ -9,9 +10,15 @@ let pve_characters = [{'name': 'Shibtank', 'class': 'warrior'}, {'name': 'Shibdi
 for (let char of pve_characters) {
     if (char.name === character.name) continue;
     let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
-    send_party_invite(char.name);
     start_character(char.name, loadURLs(u));
 }
+//Party Management
+setInterval(function () {
+    for (let char of pve_characters) {
+        if (char.name === character.name) continue;
+        (!character.party || !!character.party.includes(char.name)) send_party_invite(char.name);
+    }
+}, 10000);
 function loadURLs(url) {
     let ajax = new XMLHttpRequest();
     ajax.open('GET', url + "?nocache=" + (Math.floor(Math.random() * 6) + 1));
