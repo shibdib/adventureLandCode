@@ -14,10 +14,10 @@ for (let char of pve_characters) {
 }
 //Party Management
 setInterval(function () {
+    if (character.party && character.party.length >= 3) return;
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
-        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
-        command_character(char.name, on_party_invite(character.name))
+        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name, false);
     }
 }, 12400);
 
