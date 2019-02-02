@@ -44,6 +44,7 @@ function state_controller() {
 
 function farm() {
     let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    if (!target) target = get_nearest_monster({max_att: character.attack * 0.8, path_check: true});
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range < character.range) {
