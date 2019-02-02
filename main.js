@@ -3,7 +3,6 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/party.js"];
-load_code(99)
 //Load helpers
 urls.forEach((u) => loadURLs(u));
 //Load party
@@ -15,10 +14,9 @@ for (let char of pve_characters) {
 }
 //Party Management
 setInterval(function () {
-    if (character.party && character.party.length >= 3) return;
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
-        if (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
+        send_party_invite(char.name);
         break;
     }
 }, 12400);

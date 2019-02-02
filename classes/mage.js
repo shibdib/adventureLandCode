@@ -1,5 +1,4 @@
 game_log("---Mage Script Start---");
-load_code(99)
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";

@@ -2,8 +2,6 @@ game_log("---Ranger Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
-//Join party
-accept_party_invite('Shibtank');
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
