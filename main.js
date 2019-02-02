@@ -3,6 +3,7 @@ let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js",
     "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/party.js"];
+load_code(99)
 //Load helpers
 urls.forEach((u) => loadURLs(u));
 //Load party
