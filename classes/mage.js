@@ -1,5 +1,4 @@
 game_log("---Mage Script Start---");
-send_party_request('Shibtank')
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
@@ -20,6 +19,7 @@ setInterval(function () {
 }, 500);//Execute 2 times per second
 
 function state_controller() {
+    send_party_request('Shibtank')
     //If dead respawn
     if (character.rip) return respawn();
     //Default to farming
