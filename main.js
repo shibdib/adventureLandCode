@@ -16,7 +16,7 @@ for (let char of pve_characters) {
 setInterval(function () {
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
-        (!character.party || !!character.party.includes(char.name)) send_party_invite(char.name);
+        (!character.party || !character.party.includes(char.name)) send_party_invite(char.name);
     }
 }, 10000);
 function loadURLs(url) {
