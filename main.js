@@ -1,7 +1,8 @@
-let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js"];
+let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/constants.js",
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js",
+    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js"];
 urls.push("https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + character.ctype + ".js");
 urls.forEach((u) => loadURLs(u));
-load_code(helpers/constants.js)
 
 function loadURLs( url ) {
     var ajax = new XMLHttpRequest();

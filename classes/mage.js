@@ -1,7 +1,6 @@
 game_log("---Script Start---");
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
-let ignore_targets = ["Target Automatron"];
 let state = "farm";
 let min_potions = 50; //The number of potions at which to do a resupply run.
 let purchase_amount = 50;//How many potions to buy at once.
@@ -14,7 +13,7 @@ setInterval(function () {
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
-//Potions And Looting
+//Potions and state
 setInterval(function () {
     state_controller();
     //Heal With Potions if we're below 75% hp.
@@ -43,7 +42,7 @@ function state_controller() {
 
 let currentTarget = {};
 function farm() {
-    let target = find_viable_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    let target = currentTarget[character.id] || find_viable_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
     if (target && target.id) {
         currentTarget[character.id] = target;
         let range = distance_to_point(target.real_x, target.real_y);
