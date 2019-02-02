@@ -45,6 +45,7 @@ function state_controller() {
 let currentTarget = {};
 function farm() {
     let target = currentTarget[character.id] || find_viable_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    game_log(target.id)
     if (can_attack(target)) {
         currentTarget[character.id] = target;
         let range = distance_to_point(target.real_x, target.real_y);
