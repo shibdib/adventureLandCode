@@ -72,6 +72,10 @@ function farm()
             } else {
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
                     attack(curseTarget);
+                    if (distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {
+                        let kiteLocation = getKitePosition(target);
+                        if (kiteLocation) move_to_position(kiteLocation)
+                    }
                 } else {
                     move_to_target(curseTarget);
                 }
