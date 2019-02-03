@@ -7,7 +7,6 @@ if (update) {
 load_code(80);
 //Update
 if (update) {
-    updateCode();
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
         stop_character(char.name);
