@@ -42,7 +42,8 @@ function farm() {
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
-            if (can_attack(party_aggro))  attack(party_aggro);
+            if (can_use('taunt')) use('taunt');
+            if (can_attack(party_aggro)) attack(party_aggro);
         } else {
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(party_aggro);
