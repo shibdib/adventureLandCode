@@ -38,7 +38,10 @@ function state_controller() {
 
 function farm() {
     let target = find_leader_target();
-    if (target) {
+    let teleport_target = get_teleport_target();
+    if (teleport_target && can_use('magiport')) {
+        use('magiport', teleport_target)
+    } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             if (can_attack(target))  attack(target);
