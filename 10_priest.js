@@ -46,6 +46,12 @@ let lastHurt;
 function farm()
 {
     let lowest_health = lowest_health_partymember();
+    let curseTarget = find_leader_target();
+    // Handle kiting
+    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.7) {
+        let kiteLocation = getKitePosition(curseTarget);
+        if (kiteLocation) move_to_position(kiteLocation)
+    }
     if (party_hurt_count(0.75) > 1 && can_use('partyheal')) {//MASS HEAL WHEN NEEDED
         use('partyheal');
     } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
@@ -66,17 +72,12 @@ function farm()
         }
     } else { //SHADOW PRIEST OP
         alerted = undefined;
-        let curseTarget = find_leader_target();
         if (curseTarget) {
             if (can_use('curse')) {
                 use('curse', curseTarget, character.range * 0.5, character.range * 0.99);
             } else {
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
                     attack(curseTarget);
-                    if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.7) {
-                        let kiteLocation = getKitePosition(curseTarget);
-                        if (kiteLocation) move_to_position(kiteLocation)
-                    }
                 } else {
                     move_to_target(curseTarget, character.range * 0.5, character.range * 0.99);
                 }

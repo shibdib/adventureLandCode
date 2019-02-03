@@ -39,16 +39,17 @@ function state_controller() {
 function farm() {
     let target = find_leader_target();
     let teleport_target = get_teleport_target();
+    // Handle kiting
+    if (target && distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {
+        let kiteLocation = getKitePosition(target);
+        if (kiteLocation) move_to_position(kiteLocation)
+    }
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             if (can_attack(target))  attack(target);
-            if (range <= character.range * 0.7) {
-                let kiteLocation = getKitePosition(target);
-                if (kiteLocation) move_to_position(kiteLocation)
-            }
         } else {
             move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
