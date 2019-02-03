@@ -6,7 +6,6 @@ let state = "farm";
 //Movement And Attacking
 setInterval(function () {
     //if (state === 'farm') farm();
-    say('TEST')
     if (state === 'resupply_potions') resupply_potions();
 }, 15100);//Execute 10 times per second
 

@@ -1,20 +1,13 @@
-let urls = ["https://raw.githubusercontent.com/shibdib/adventureLandCode/master/constants.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/shopping.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/combat.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/movement.js",
-    "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/helpers/party.js"];
-//Load helpers
-urls.forEach((u) => loadURLs(u));
+updateCode();
+load_code(1);
+load_code(80);
 //Load party
-let pve_characters = [{'name': 'Shibtank', 'class': 'warrior'}, {'name': 'Shibdib', 'class': 'mage'}, {'name': 'Shibheal', 'class': 'priest'}];
 for (let char of pve_characters) {
     if (char.name === character.name) continue;
-    let u = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/classes/" + char.class + ".js";
-    start_character(char.name, loadURLs(u));
+    start_character(char.name, char.slot);
 }
 //Party Management
 setInterval(function () {
-    say('WOOF')
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
         send_party_invite(char.name);
@@ -22,19 +15,58 @@ setInterval(function () {
     }
 }, 12400);
 
-function loadURLs(url) {
-    let ajax = new XMLHttpRequest();
-    ajax.open('GET', url + "?nocache=" + (Math.floor(Math.random() * 6) + 1));
-    ajax.onreadystatechange = function () {
-        var script = ajax.response || ajax.responseText;
-        if (ajax.readyState === 4) {
-            switch( ajax.status) {
-                case 200:
-                    eval.apply( window, [script] );
-                    break;
-                default:
+/*
+ * @author	D4ddy-LiLd4rk
+ * @source	https://github.com/D4ddy-LiLd4rk/AdventureLand
+ */
+
+const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/";
+
+const allFiles = ["01_master.js",
+    "80_constants.js",
+    "21_movement.js",
+    "22_party.js",
+    "23_shopping.js",
+    "10_priest.js",
+    "11_ranger.js",
+    "12_warrior.js",
+    "13_mage.js"];
+
+
+function updateCode() {
+    parent.api_call("list_codes", {
+        callback: function () {
+            game_log("Updating from GitHub...");
+            for (let file of allFiles) {
+                let request = new XMLHttpRequest();
+                request.open("GET", baseURL + file);
+                request.onreadystatechange = function () {
+                    if (request.readyState === 4 && request.status === 200) {
+                        let codeObject = getCodeObject(file);
+                        let data = {
+                            name: codeObject.name,
+                            slot: codeObject.slot,
+                            code: request.responseText
+                        };
+                        parent.api_call("save_code", data);
+                        game_log("Saved to slot [" + codeObject.name + "] as " + codeObject.slot);
+                    }
+                };
+                request.send();
             }
         }
+    });
+}
+
+function getCodeObject(file) {
+    let codeObject;
+
+    let arr = file.substring(0, file.length - 3).split("_");
+
+    codeObject = {
+        slot: arr[0],
+        name: arr[1]
     };
-    ajax.send(null);
+
+    return codeObject;
 }
