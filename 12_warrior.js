@@ -46,6 +46,7 @@ function farm() {
             if (can_use('taunt')) use('taunt');
             if (can_attack(party_aggro)) attack(party_aggro);
         } else {
+            if (can_use('taunt')) use('taunt');
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(party_aggro);
         }
@@ -54,6 +55,7 @@ function farm() {
         if (range <= character.range) {
             if (can_attack(target)) attack(target);
         } else {
+            if (can_use('taunt')) use('taunt');
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(target);
         }
