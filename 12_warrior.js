@@ -5,6 +5,7 @@ load_code(2);
 let state = "farm";
 //Movement And Attacking
 setInterval(function () {
+    say('test')
     loot(true);
     //if (state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();

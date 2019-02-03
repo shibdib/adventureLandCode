@@ -8,15 +8,17 @@ setInterval(function () {
 
 //Load party
 for (let char of pve_characters) {
-    if (char.name === character.name) continue;
+    if (char.name === character.name) {
+        load_code(char.slot);
+        continue;
+    }
     start_character(char.name, char.slot);
 }
 //Party Management
 setInterval(function () {
     for (let char of pve_characters) {
-        if (char.name === character.name) continue;
+        if (char.name === character.name || character.party) continue;
         send_party_invite(char.name);
-        break;
     }
 }, 12400);
 
@@ -27,7 +29,7 @@ setInterval(function () {
 
 const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/";
 
-const allFiles = ["01_master.js",
+const allFiles = ["2_requires.js",
     "80_constants.js",
     "21_movement.js",
     "22_party.js",
