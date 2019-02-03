@@ -49,5 +49,7 @@ function farm() {
         } else {
             move_to_target(target);
         }
+    } else {
+        move_to_leader(character.range * 0.5, character.range * 0.99);
     }
 }
