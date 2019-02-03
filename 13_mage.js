@@ -40,7 +40,7 @@ function farm() {
     let target = find_leader_target();
     let teleport_target = get_teleport_target();
     if (teleport_target && can_use('magiport')) {
-        use('magiport', teleport_target)
+        if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {

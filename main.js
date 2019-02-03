@@ -1,10 +1,5 @@
-
-//Update
-updateCode();
+let update = true;
 load_code(80);
-setInterval(function () {
-    updateCode();
-}, 900000);
 
 //Load party
 let pve_characters = [
@@ -12,6 +7,17 @@ let pve_characters = [
     {'name': 'Shibdib', 'class': 'mage', 'slot': 13},
     {'name': 'Shibheal', 'class': 'priest', 'slot': 10}
 ];
+//Update
+if (update) {
+    updateCode();
+    for (let char of pve_characters) {
+        if (char.name === character.name) continue;
+        stop_character(char.name);
+    }
+    setInterval(function () {
+        updateCode();
+    }, 900000);
+}
 for (let char of pve_characters) {
     if (char.name === character.name) {
         load_code(char.slot);
@@ -22,7 +28,7 @@ for (let char of pve_characters) {
 //Party Management
 setInterval(function () {
     for (let char of pve_characters) {
-        if (char.name === character.name || character.party) continue;
+        if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
         send_party_invite(char.name);
     }
 }, 12400);
