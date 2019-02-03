@@ -13,9 +13,12 @@ setInterval(function () {
 //Potions and state
 setInterval(function () {
     state_controller();
-    //Heal With Potions if we're below 75% hp.
-    if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
-        use_hp_or_mp();
+    if (character.hp / character.max_hp < 0.25) {
+        use('use_hp');
+    } else if (character.mp / character.max_mp < 0.75) {
+        use('use_mp');
+    } else if (character.hp / character.max_hp < 0.45) {
+        use('use_hp');
     }
 }, 500);//Execute 2 times per second
 
@@ -35,6 +38,7 @@ function state_controller() {
 
 function farm() {
     let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    if (!target) target = get_nearest_monster({max_att: character.attack * 0.8, path_check: true});
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range < character.range) {

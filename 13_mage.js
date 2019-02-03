@@ -12,11 +12,13 @@ setInterval(function () {
 
 //Potions and state
 setInterval(function () {
-    move_to_leader();
     state_controller();
-    //Heal With Potions if we're below 75% hp.
-    if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
-        use_hp_or_mp();
+    if (character.hp / character.max_hp < 0.25) {
+        use('use_hp');
+    } else if (character.mp / character.max_mp < 0.75) {
+        use('use_mp');
+    } else if (character.hp / character.max_hp < 0.45) {
+        use('use_hp');
     }
 }, 500);//Execute 2 times per second
 

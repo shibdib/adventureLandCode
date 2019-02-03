@@ -6,7 +6,7 @@ function on_party_invite(name){
     if (name === 'Shibtank') accept_party_invite(name);
 }
 
-function move_to_leader (){
+function move_to_leader (min = 4, max = 6) {
     let leader = get_player(character.party);
-    move_to_target(leader, 4, 6)
+    move_to_target(leader, min, max)
 }
