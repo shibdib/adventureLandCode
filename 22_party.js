@@ -6,7 +6,8 @@ function on_party_invite(name){
     if (name === 'Shibtank') accept_party_invite(name);
 }
 
-function move_to_leader (min = 4, max = 6) {
+function move_to_leader (min = 5, max = 10) {
     let leader = get_player(character.party);
-    move_to_target(leader, min, max)
+    let range = distance_to_point(leader.real_x, leader.real_y);
+    if (range > max || range < min) move_to_target(leader, min, max);
 }
