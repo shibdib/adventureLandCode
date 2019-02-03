@@ -38,7 +38,8 @@ function state_controller() {
 
 function farm() {
     let party_aggro = check_for_party_aggro()[0];
-    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
+    let target = find_farming_targets(character.attack * 1.25, character.max_xp * 0.05)[0];
+    if (!target) target = find_farming_targets(character.attack, 1)[0];
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {

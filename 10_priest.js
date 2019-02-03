@@ -70,9 +70,7 @@ function farm()
         } else {
             move_to_target(dead_party);
         }
-    } else { //SHADOW PRIEST OP
-        alerted = undefined;
-        if (curseTarget) {
+    } else if (curseTarget) {
             if (can_use('curse')) {
                 use('curse', curseTarget, character.range * 0.5, character.range * 0.99);
             } else {
@@ -82,6 +80,8 @@ function farm()
                     move_to_target(curseTarget, character.range * 0.5, character.range * 0.99);
                 }
             }
-        } else if (lastHurt) move_to_target(lastHurt, character.range * 0.5, character.range * 0.99); else move_to_leader(character.range * 0.5, character.range * 0.99);
+    } else {
+        alerted = undefined;
+        move_to_leader(character.range * 0.5, character.range * 0.99);
     }
 }
