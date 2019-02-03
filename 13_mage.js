@@ -1,13 +1,12 @@
 game_log("---Mage Script Start---");
 load_code(2);
-load_code(22);
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 
 //Movement And Attacking
 setInterval(function () {
-    //if (state === 'farm') farm();
+    if (character.party && state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
@@ -36,8 +35,7 @@ function state_controller() {
 }
 
 function farm() {
-    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
-    if (!target) target = get_nearest_monster({max_att: character.attack * 0.8, path_check: true});
+    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05, character.party)[0];
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range < character.range) {

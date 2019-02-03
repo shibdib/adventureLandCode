@@ -5,9 +5,8 @@ load_code(2);
 let state = "farm";
 //Movement And Attacking
 setInterval(function () {
-    say('test')
     loot(true);
-    //if (state === 'farm') farm();
+    if (character.party && state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
@@ -35,16 +34,17 @@ function state_controller() {
 }
 
 function farm() {
-    let target = find_farming_targets(50);
+    let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range) {
-            if (can_attack(target)) attack(target);
+        if (range < character.range) {
+            if (can_attack(target))  attack(target);
+            if (range <= character.range * 0.7) {
+                let kiteLocation = getKitePosition(target);
+                if (kiteLocation) move_to_position(kiteLocation)
+            }
         } else {
-            move(
-                character.real_x + (target.real_x - character.real_x),
-                character.real_y + (target.real_y - character.real_y)
-            );
+            move_to_target(target);
         }
     }
 }

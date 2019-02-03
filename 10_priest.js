@@ -1,25 +1,21 @@
 game_log("---Priest Script Start---");
 load_code(2);
-load_code(22);
 //Put monsters you want to kill in here
 //If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 
 //Movement And Attacking
 setInterval(function () {
-    //if (state === 'farm') farm();
-    say('TEST TEST')
+    if (character.party && state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
-}, 15100);//Execute 10 times per second
+}, 100);//Execute 10 times per second
 
 //Potions and state
 setInterval(function () {
-    move_to_leader();
     state_controller();
     //Heal With Potions if we're below 75% hp.
-    if (character.hp / character.max_hp < 0.75 || character.mp / character.max_mp < 0.75) {
-        use_hp_or_mp();
-    }
+    if (character.mp / character.max_mp < 0.75) use_hp_or_mp();
+    if (character.hp / character.max_hp < 0.75) heal(character);
 }, 500);//Execute 2 times per second
 
 function state_controller() {
@@ -36,17 +32,16 @@ function state_controller() {
     }
 }
 
-function farm() {
-    let target = find_farming_targets(50);
-    if (target) {
-        let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range) {
-            if (can_attack(target)) attack(target);
+function farm()
+{
+    let lowest_health = lowest_health_partymember();
+    if (lowest_health != null && lowest_health.health_ratio < 0.9) {
+        if (distance_to_point(lowest_health.real_x, lowest_health.real_y) < character.range) {
+            heal(lowest_health);
         } else {
-            move(
-                character.real_x + (target.real_x - character.real_x),
-                character.real_y + (target.real_y - character.real_y)
-            );
+            move_to_target(lowest_health);
         }
+    } else {
+        move_to_leader();
     }
 }
