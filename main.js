@@ -14,6 +14,7 @@ for (let char of pve_characters) {
 }
 //Party Management
 setInterval(function () {
+    say('WOOF')
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
         send_party_invite(char.name);
