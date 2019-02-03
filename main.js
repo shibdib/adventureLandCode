@@ -1,6 +1,11 @@
-updateCode();
-load_code(1);
-load_code(80);
+
+//Update
+setInterval(function () {
+    updateCode();
+    load_code(1);
+    load_code(80);
+}, 900000);
+
 //Load party
 for (let char of pve_characters) {
     if (char.name === character.name) continue;
