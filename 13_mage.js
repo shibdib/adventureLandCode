@@ -38,9 +38,9 @@ function state_controller() {
 
 function farm() {
     let target = find_leader_target();
-    if (target && target.id) {
+    if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range < character.range) {
+        if (range <= character.range) {
             if (can_attack(target))  attack(target);
             if (range <= character.range * 0.7) {
                 let kiteLocation = getKitePosition(target);
@@ -50,6 +50,6 @@ function farm() {
             move_to_target(target);
         }
     } else {
-        move_to_leader(character.range * 0.5, character.range * 0.99);
+        move_to_leader(character.range * 0.5, character.range * 0.7);
     }
 }

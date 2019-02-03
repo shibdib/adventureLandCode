@@ -42,20 +42,40 @@ function state_controller() {
 }
 
 let alerted;
+let lastHurt;
 function farm()
 {
     let lowest_health = lowest_health_partymember();
-    if (lowest_health != null && lowest_health.health_ratio < 0.9) {
+    if (party_hurt_count(0.75) > 1 && can_use('partyheal')) {//MASS HEAL WHEN NEEDED
+        use('partyheal');
+    } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
+        lastHurt = lowest_health;
         if (!alerted) pm (lowest_health.name, 'Healing You!!');
-        if (distance_to_point(lowest_health.real_x, lowest_health.real_y) < character.range) {
+        if (distance_to_point(lowest_health.real_x, lowest_health.real_y) <= character.range) {
             heal(lowest_health);
         } else {
             move_to_target(lowest_health);
         }
-    } else {
+    } else if (dead_partymember()) { //REVIVE DEAD
+        let dead_party = dead_partymember();
+        if (can_use('revive') && distance_to_point(dead_party.real_x, dead_party.real_y) <= character.range) {
+            use('revive', dead_party);
+        } else {
+            move_to_target(dead_party);
+        }
+    } else { //SHADOW PRIEST OP
         alerted = undefined;
-        move_to_leader(character.range * 0.5, character.range * 0.99);
         let curseTarget = find_leader_target();
-        if (can_use('curse')) use('curse', curseTarget);
+        if (curseTarget) {
+            if (can_use('curse')) {
+                use('curse', curseTarget);
+            } else {
+                if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
+                    attack(curseTarget);
+                } else {
+                    move_to_target(curseTarget);
+                }
+            }
+        } else if (lastHurt) move_to_target(lastHurt); else move_to_leader(character.range * 0.5, character.range * 0.99);
     }
 }

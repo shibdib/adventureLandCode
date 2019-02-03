@@ -10,8 +10,7 @@ function move_to_target(target) {
             character.real_x + (target.real_x - character.real_x) / 2,
             character.real_y + (target.real_y - character.real_y) / 2
         );
-    }
-    else {
+    } else {
         if (!smart.moving) {
             smart_move({x: target.real_x, y: target.real_y});
         }
@@ -28,8 +27,7 @@ function move_to_position(position) {
             character.real_x + (position.x - character.real_x) / 2,
             character.real_y + (position.y - character.real_y) / 2
         );
-    }
-    else {
+    } else {
         if (!smart.moving) {
             smart_move({x: position.x, y: position.y});
         }

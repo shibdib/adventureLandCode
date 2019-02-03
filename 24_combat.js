@@ -36,6 +36,14 @@ function find_leader_target() {
     if (target) return target;
 }
 
+function check_for_party_aggro() {
+    if (parent.party_list.length) {
+        let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster");
+        let bad_aggro = monsters.filter((m) => parent.party_list.includes(m.target));
+        if (bad_aggro) return bad_aggro;
+    }
+}
+
 function getKitePosition(target) {
     let range = distance_to_point(target.real_x, target.real_y);
     for (let x = 0; x < 20; x++) {
@@ -89,4 +97,28 @@ function lowest_health_partymember() {
     });
     //Return the lowest health
     return party[0].entity;
+}
+
+function party_hurt_count(amount = 0.75) {
+    let count = 0;
+    if (parent.party_list.length > 0) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (entity.hp < entity.max_hp * amount) count += 1;
+        }
+    }
+    return count;
+}
+
+function dead_partymember() {
+    if (parent.party_list.length > 0) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (member === character.name) continue;
+            if (!entity.rip) continue;
+            if (entity) return entity;
+        }
+    }
 }

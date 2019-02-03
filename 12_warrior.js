@@ -37,14 +37,22 @@ function state_controller() {
 }
 
 function farm() {
+    let party_aggro = check_for_party_aggro();
     let target = find_farming_targets(character.attack * 0.8, character.max_xp * 0.05)[0];
-    if (!target) target = get_nearest_monster({max_att: character.attack * 0.8, path_check: true});
-    if (target) {
+    if (party_aggro) {
+        let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
+        if (range <= character.range) {
+            if (can_attack(party_aggro))  attack(party_aggro);
+        } else {
+            if (can_use('charge') && range > 110 && range < 500) use('charge');
+            move_to_target(party_aggro);
+        }
+    } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range < character.range) {
+        if (range <= character.range) {
             if (can_attack(target))  attack(target);
         } else {
-            if (can_use('charge') && range > 110) use('charge');
+            if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(target);
         }
     }

@@ -17,7 +17,7 @@ for (let char of pve_characters) {
         load_code(char.slot);
         continue;
     }
-    if (!get_active_characters().includes('char.name')) start_character(char.name, char.slot);
+    if (!Object.keys(get_active_characters()).includes(char.name)) start_character(char.name, char.slot);
 }
 //Party Management
 setInterval(function () {
