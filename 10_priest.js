@@ -55,5 +55,7 @@ function farm()
     } else {
         alerted = undefined;
         move_to_leader(character.range * 0.5, character.range * 0.99);
+        let curseTarget = find_leader_target();
+        if (can_use('curse')) use('curse', curseTarget);
     }
 }

@@ -8,10 +8,9 @@
 ////Monsters attacking you or party members are ordered first.
 ////Monsters are then ordered by distance.
 function find_farming_targets(maxAttack, minXp, leader) {
-    let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack);
+    let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack && mob.xp >= minXp);
     if (leader) {
-        let partyTargets = monsters.filter((m) => parent.party_list.includes(m.target));
-        if (partyTargets.length) monsters = partyTargets; else return;
+        return find_leader_target();
     }
     //Order monsters by whether they're attacking us, then by distance.
     monsters.sort(function (current, next) {
@@ -32,9 +31,8 @@ function find_farming_targets(maxAttack, minXp, leader) {
 }
 
 function find_leader_target() {
-    let target = get_target_of(get_player('Shibdib'));
+    let target = get_target_of(get_player(character.party));
     if (target) return target;
-    move_to_target(player);
 }
 
 function getKitePosition(target) {

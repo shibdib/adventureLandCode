@@ -44,6 +44,7 @@ function farm() {
         if (range < character.range) {
             if (can_attack(target))  attack(target);
         } else {
+            if (can_use('charge') && range > 110) use('charge');
             move_to_target(target);
         }
     }

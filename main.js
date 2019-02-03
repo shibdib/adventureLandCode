@@ -7,6 +7,11 @@ setInterval(function () {
 }, 900000);
 
 //Load party
+let pve_characters = [
+    {'name': 'Shibtank', 'class': 'warrior', 'slot': 12},
+    {'name': 'Shibdib', 'class': 'mage', 'slot': 13},
+    {'name': 'Shibheal', 'class': 'priest', 'slot': 10}
+];
 for (let char of pve_characters) {
     if (char.name === character.name) {
         load_code(char.slot);
@@ -58,7 +63,6 @@ function updateCode() {
                             code: request.responseText
                         };
                         parent.api_call("save_code", data);
-                        game_log("Saved to slot [" + codeObject.name + "] as " + codeObject.slot);
                     }
                 };
                 request.send();
