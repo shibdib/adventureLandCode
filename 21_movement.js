@@ -3,7 +3,7 @@
 //This function will ether move straight towards the target entity,
 //or utilize smart_move to find their way there.
 function move_to_target(target) {
-    if (can_move_to(target.real_x, target.real_y)) {
+    if (can_move_to(target.real_x, target.real_y) && distance_to_point(target.real_x, target.real_y)) {
         smart.moving = false;
         smart.searching = false;
         move(
@@ -20,7 +20,7 @@ function move_to_target(target) {
 //This function will ether move straight towards the target entity,
 //or utilize smart_move to find their way there.
 function move_to_position(position) {
-    if (can_move_to(position.x, position.y)) {
+    if (can_move_to(position.x, position.y) && distance_to_point(position.real_x, position.real_y)) {
         smart.moving = false;
         smart.searching = false;
         move(
