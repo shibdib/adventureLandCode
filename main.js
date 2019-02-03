@@ -1,9 +1,9 @@
 
 //Update
+updateCode();
+load_code(80);
 setInterval(function () {
     updateCode();
-    load_code(1);
-    load_code(80);
 }, 900000);
 
 //Load party
