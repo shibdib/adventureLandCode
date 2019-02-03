@@ -8,7 +8,8 @@
 ////Monsters attacking you or party members are ordered first.
 ////Monsters are then ordered by distance.
 function find_farming_targets(maxAttack, minXp, leader) {
-    let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack && mob.xp >= minXp);
+    let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack
+        && mob.xp >= minXp && !monsters_ref[mob.mtype].dreturn);
     if (leader) {
         return find_leader_target();
     }

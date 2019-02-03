@@ -17,7 +17,7 @@ for (let char of pve_characters) {
         load_code(char.slot);
         continue;
     }
-    start_character(char.name, char.slot);
+    if (!get_active_characters().includes('char.name')) start_character(char.name, char.slot);
 }
 //Party Management
 setInterval(function () {
@@ -34,8 +34,10 @@ setInterval(function () {
 
 const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/";
 
-const allFiles = ["2_requires.js",
+const allFiles = [
+    "2_requires.js",
     "80_constants.js",
+    "98_references.js",
     "99_helpers.js",
     "21_movement.js",
     "22_party.js",
@@ -44,7 +46,8 @@ const allFiles = ["2_requires.js",
     "10_priest.js",
     "11_ranger.js",
     "12_warrior.js",
-    "13_mage.js"];
+    "13_mage.js"
+];
 
 
 function updateCode() {
