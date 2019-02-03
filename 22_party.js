@@ -18,8 +18,8 @@ function get_teleport_target() {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (member === character.name) continue;
-            if (entity.rip || member.rip) continue;
-            if (distance_to_point(entity.real_x, entity.real_y) >= 1000 || !entity) return member;
+            if ((entity && entity.rip) || member.rip) continue;
+            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 1000) return member;
         }
     }
 }
