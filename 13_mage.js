@@ -50,7 +50,7 @@ function farm() {
                 if (kiteLocation) move_to_position(kiteLocation)
             }
         } else {
-            move_to_target(target);
+            move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         move_to_leader(character.range * 0.5, character.range * 0.7);

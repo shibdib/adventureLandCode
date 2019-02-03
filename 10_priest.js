@@ -51,6 +51,7 @@ function farm()
     } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
         lastHurt = lowest_health;
         if (!alerted) pm (lowest_health.name, 'Healing You!!');
+        alerted = true;
         if (distance_to_point(lowest_health.real_x, lowest_health.real_y) <= character.range) {
             heal(lowest_health);
         } else {
@@ -68,7 +69,7 @@ function farm()
         let curseTarget = find_leader_target();
         if (curseTarget) {
             if (can_use('curse')) {
-                use('curse', curseTarget);
+                use('curse', curseTarget, character.range * 0.5, character.range * 0.99);
             } else {
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
                     attack(curseTarget);
@@ -77,9 +78,9 @@ function farm()
                         if (kiteLocation) move_to_position(kiteLocation)
                     }
                 } else {
-                    move_to_target(curseTarget);
+                    move_to_target(curseTarget, character.range * 0.5, character.range * 0.99);
                 }
             }
-        } else if (lastHurt) move_to_target(lastHurt); else move_to_leader(character.range * 0.5, character.range * 0.99);
+        } else if (lastHurt) move_to_target(lastHurt, character.range * 0.5, character.range * 0.99); else move_to_leader(character.range * 0.5, character.range * 0.99);
     }
 }
