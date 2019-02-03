@@ -105,7 +105,7 @@ function party_hurt_count(amount = 0.75) {
         for (id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (entity.hp < entity.max_hp * amount) count += 1;
+            if (entity && entity.hp < entity.max_hp * amount) count += 1;
         }
     }
     return count;
