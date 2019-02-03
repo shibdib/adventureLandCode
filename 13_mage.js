@@ -37,6 +37,8 @@ function state_controller() {
 }
 
 function farm() {
+    // If you need to blink to leader do it
+    if (blink_to_leader()) return;
     let target = find_leader_target();
     let teleport_target = get_teleport_target();
     // Handle kiting
@@ -55,5 +57,14 @@ function farm() {
         }
     } else {
         move_to_leader(character.range * 0.5, character.range * 0.7);
+    }
+}
+
+function blink_to_leader() {
+    if (parent.party_list.length > 0 && character.max_mp > 1600) {
+        let leader = get_player(character.party);
+        if (!leader || !distance_to_point(target.real_x, target.real_y) || distance_to_point(target.real_x, target.real_y) > 1000) {
+            if (character.mp < 1600) use('use_mp'); else use('blink', character.party);
+        }
     }
 }
