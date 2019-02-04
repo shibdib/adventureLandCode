@@ -1,5 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
+
+let currentTarget, target;
 let state = "farm";
 //Movement And Attacking
 setInterval(function () {
@@ -35,15 +37,21 @@ function state_controller() {
     }
 }
 
+// Farm target refreshes every 10 minutes
+setInterval(function () {
+    currentTarget = undefined;
+}, 600000);//Execute 10 times per second
+
 function farm() {
     let party_aggro;
     let attack_threshold = character.attack * 0.8;
     if (character.party) {
         party_aggro = check_for_party_aggro()[0];
-        attack_threshold = character.attack * 1.1;
+        attack_threshold = character.attack * 1.6;
     }
-    let target = find_best_monster(attack_threshold, character.max_xp * 0.25);
-    let in_range_target = find_local_targets(target);
+    if (!currentTarget) target = find_best_monster(attack_threshold, 10000);
+    currentTarget = target;
+    let in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
@@ -64,7 +72,7 @@ function farm() {
             move_to_target(in_range_target);
         }
     } else {
-        if (wait_for_party()) return;
+        if (wait_for_party()) return stop();
         shib_move(target);
     }
 }

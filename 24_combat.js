@@ -8,23 +8,6 @@ function find_local_targets(type) {
     return monsters[0];
 }
 
-function move_to_far_target(maxAttack, minXp) {
-    let sorted, monsterSpawns;
-    let maps = Object.values(G.maps);
-    let monsterTypes = [];
-    for (let key of maps) {
-        if (key.monsters) monsterSpawns = key.monsters.forEach((s) => monsterTypes.push(s.type))
-    }
-    let xpTarget = minXp;
-    for (let x = 0; x < 50; x++) {
-        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget && !G.monsters[m].dreturn);
-        if (sorted.length) break;
-        xpTarget *= 0.9;
-    }
-    if (!sorted || !sorted.length) return false;
-    smart_move(sorted[0])
-}
-
 function find_best_monster(maxAttack, minXp) {
     let sorted, monsterSpawns;
     let maps = Object.values(G.maps);
@@ -34,12 +17,13 @@ function find_best_monster(maxAttack, minXp) {
     }
     let xpTarget = minXp;
     for (let x = 0; x < 50; x++) {
-        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget && !G.monsters[m].dreturn);
+        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= 2
+            && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary);
         if (sorted.length) break;
         xpTarget *= 0.9;
     }
     if (!sorted || !sorted.length) return false;
-    return sorted[0];
+    return sorted[getRndInteger(0, sorted.length / 2)];
 }
 
 function find_leader_target() {

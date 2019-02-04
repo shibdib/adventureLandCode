@@ -68,3 +68,16 @@ function blink_to_leader() {
         }
     }
 }
+
+function get_teleport_target() {
+    if (parent.party_list.length > 0) {
+        for (let key in parent.party_list) {
+            let member = parent.party_list[key];
+            let entity = parent.entities[member];
+            if (member === character.name) continue;
+            if (member === character.party) continue;
+            if ((entity && entity.rip) || member.rip) continue;
+            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 1000) return member;
+        }
+    }
+}
