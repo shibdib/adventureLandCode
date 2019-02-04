@@ -1,10 +1,11 @@
-game_log("---Warrior Script Start---");
+game_log("---Rogue Script Start---");
 load_code(2);
+//Put monsters you want to kill in here
+//If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
+
 //Movement And Attacking
 setInterval(function () {
-    loot(true);
-    //If you have a party, farm things
     if (character.party && state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
@@ -36,27 +37,15 @@ function state_controller() {
 }
 
 function farm() {
-    let party_aggro = check_for_party_aggro()[0];
-    let target = find_farming_targets(character.attack * 1.25, character.max_xp * 0.25);
-    if (party_aggro) {
-        let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
-        if (range <= character.range) {
-            if (can_use('taunt')) use('taunt');
-            if (can_attack(party_aggro)) attack(party_aggro);
-        } else {
-            if (can_use('taunt')) use('taunt');
-            if (can_use('charge') && range > 110 && range < 500) use('charge');
-            move_to_target(party_aggro);
-        }
-    } else if (target) {
+    let target = find_leader_target();
+    if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             if (can_attack(target)) attack(target);
         } else {
-            draw_circle(target.x, target.y, 25, 1, 0xDFDC22);
-            if (can_use('taunt')) use('taunt');
-            if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(target);
         }
+    } else {
+        move_to_leader(character.range * 0.5, character.range * 0.7);
     }
 }

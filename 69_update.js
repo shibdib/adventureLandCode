@@ -18,6 +18,8 @@ const allFiles = [
     "11_ranger.js",
     "12_warrior.js",
     "13_mage.js",
+    "14_rogue.js",
+    "15_merchant.js",
     "69_update.js"
 ];
 
