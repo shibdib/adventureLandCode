@@ -1,11 +1,10 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-//Put monsters you want to kill in here
-//If your character has no target, it will travel to a spawn of the first monster in the list below.
 let state = "farm";
 //Movement And Attacking
 setInterval(function () {
     loot(true);
+    //If you have a party, farm things
     if (character.party && state === 'farm') farm();
     if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
@@ -38,8 +37,7 @@ function state_controller() {
 
 function farm() {
     let party_aggro = check_for_party_aggro()[0];
-    let target = find_farming_targets(character.attack * 1.25, character.max_xp * 0.05)[0];
-    if (!target) target = find_farming_targets(character.attack, 1)[0];
+    let target = find_farming_targets(character.attack * 1.25, character.max_xp * 0.25)[0];
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {

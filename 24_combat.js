@@ -1,18 +1,19 @@
 
-
-//Returns an ordered array of all relevant targets as determined by the following:
-////1. The monsters' type is contained in the 'monsterTargets' array.
-////2. The monster is attacking you or a party member.
-////3. The monster is not targeting someone outside your party.
-//The order of the list is as follows:
-////Monsters attacking you or party members are ordered first.
-////Monsters are then ordered by distance.
-function find_farming_targets(maxAttack, minXp, leader) {
-    let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack
-        && mob.xp >= minXp && !monsters_ref[mob.mtype].dreturn);
-    if (leader) {
-        return find_leader_target();
+function find_farming_targets(maxAttack, minXp) {
+    let monsters;
+    // If in party attack the leaders target
+    if (character.party && character.party !== character.name) return find_leader_target();
+    // Search for monsters, for loop 15 times with slowly lowering xp demands to find the best possible target xp wise
+    let xpTarget = minXp;
+    for (let x = 0; x < 15; x++) {
+        monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack
+            && mob.xp >= xpTarget && !monsters_ref[mob.mtype].dreturn && !mob.target);
+        if (monsters.length) break;
+        // Lower target by 10% every cycle
+        xpTarget *= 0.9;
     }
+    //If you still don't have a target find anything
+    if (!monsters.length) find_farming_targets(maxAttack, 1);
     //Order monsters by whether they're attacking us, then by distance.
     monsters.sort(function (current, next) {
         let dist_current = parent.distance(character, current);
