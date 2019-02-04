@@ -40,7 +40,7 @@ function farm() {
     let attack_threshold = character.attack * 0.8;
     if (character.party) {
         party_aggro = check_for_party_aggro()[0];
-        attack_threshold = character.attack * 1.2;
+        attack_threshold = character.attack * 1.1;
     }
     let target = find_best_monster(attack_threshold, character.max_xp * 0.25);
     let in_range_target = find_local_targets(target);
@@ -64,6 +64,7 @@ function farm() {
             move_to_target(in_range_target);
         }
     } else {
+        if (wait_for_party()) return;
         shib_move(target);
     }
 }

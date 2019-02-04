@@ -45,6 +45,7 @@ function find_best_monster(maxAttack, minXp) {
 function find_leader_target() {
     if (!character.party) return;
     let target = get_target_of(get_player(character.party));
+    if (!target) return;
     if (parent.party_list.length) {
         for (id in parent.party_list) {
             let member = parent.party_list[id];
@@ -135,7 +136,7 @@ function dead_partymember() {
         for (id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (member === character.name) continue;
+            if (!entity || member === character.name) continue;
             if (!entity.rip) continue;
             if (entity) return entity;
         }
