@@ -14,3 +14,7 @@ function move_to_position(position) {
 function move_to_coords(x, y) {
     xmove(x, y)
 }
+
+function shib_move(destination) {
+    if (!is_moving(character)) smart_move(destination);
+}

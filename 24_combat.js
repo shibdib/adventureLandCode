@@ -148,7 +148,7 @@ function sort_by_xp(array) {
     array.sort(function (current, next) {
         let xp_current = G.monsters[current].xp;
         let xp_next = G.monsters[next].xp;
-        if (xp_current < xp_next) return 1; else if (xp_current > xp_next) return -1; else return 0;
+        if (xp_current < xp_next) return -1; else if (xp_current > xp_next) return 1; else return 0;
     });
     return array;
 }

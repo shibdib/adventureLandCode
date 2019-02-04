@@ -37,10 +37,12 @@ function state_controller() {
 
 function farm() {
     let party_aggro;
+    let attack_threshold = character.attack * 0.8;
     if (character.party) {
         party_aggro = check_for_party_aggro()[0];
+        attack_threshold = character.attack * 1.2;
     }
-    let target = find_best_monster(character.attack * 1.25, character.max_xp * 0.25);
+    let target = find_best_monster(attack_threshold, character.max_xp * 0.25);
     let in_range_target = find_local_targets(target);
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
@@ -62,6 +64,6 @@ function farm() {
             move_to_target(in_range_target);
         }
     } else {
-        if (!is_moving(character)) smart_move(target);
+        shib_move(target);
     }
 }
