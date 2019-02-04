@@ -5,12 +5,14 @@ function find_farming_targets(maxAttack, minXp) {
     if (character.party && character.party !== character.name) return find_leader_target();
     // Search for monsters, for loop 15 times with slowly lowering xp demands to find the best possible target xp wise
     let xpTarget = minXp;
+    let xpScaleDown = 0.9;
     for (let x = 0; x < 15; x++) {
         monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack
             && mob.xp >= xpTarget && !monsters_ref[mob.mtype].dreturn && !mob.target);
         if (monsters.length) break;
-        // Lower target by 10% every cycle
-        xpTarget *= 0.9;
+        // Lower xp every cycle
+        xpTarget *= xpScaleDown;
+        xpScaleDown *= 0.95;
     }
     //If you still don't have a target find anything
     if (!monsters.length) find_farming_targets(maxAttack, 1);
@@ -18,18 +20,9 @@ function find_farming_targets(maxAttack, minXp) {
     monsters.sort(function (current, next) {
         let dist_current = parent.distance(character, current);
         let dist_next = parent.distance(character, next);
-        // Else go to the 2nd item
-        if (dist_current < dist_next) {
-            return -1;
-        }
-        else if (dist_current > dist_next) {
-            return 1
-        }
-        else {
-            return 0;
-        }
+        if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
     });
-    return monsters;
+    if (monsters.length) return monsters[0];
 }
 
 function find_leader_target() {
