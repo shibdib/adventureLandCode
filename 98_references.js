@@ -1,4 +1,35 @@
-//SKILLS
+//Keys
+let keys = [
+    "tilesets",
+    "images",
+    "classes",
+    "dimensions",
+    "maps",
+    "inflation",
+    "version",
+    "cosmetics",
+    "conditions",
+    "monsters",
+    "itemsets",
+    "shells_to_gold",
+    "docs",
+    "dismantle",
+    "tokens",
+    "craft",
+    "animations",
+    "items",
+    "npcs",
+    "geometry",
+    "positions",
+    "events",
+    "skills",
+    "levels",
+    "games",
+    "sets",
+    "sprites",
+    "quests"
+];
+//Skills
 let skills_ref = {
     "use_town": {
         "explanation": "Teleports you to the center of the map.",
@@ -680,7 +711,7 @@ let skills_ref = {
         "type": "skill"
     }
 };
-
+//Monsters
 let monsters_ref = {
     "bbpompom": {
         "hit": "explode_p",

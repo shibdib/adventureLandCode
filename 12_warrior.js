@@ -36,28 +36,32 @@ function state_controller() {
 }
 
 function farm() {
-    let party_aggro = check_for_party_aggro()[0];
-    let target = find_farming_targets(character.attack * 1.25, character.max_xp * 0.25);
+    let party_aggro;
+    if (character.party) {
+        party_aggro = check_for_party_aggro()[0];
+    }
+    let target = find_best_monster(character.attack * 1.25, character.max_xp * 0.25);
+    let in_range_target = find_local_targets(target);
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
-            if (can_use('taunt')) use('taunt');
+            if (can_use('taunt')) use('taunt', party_aggro);
             if (can_attack(party_aggro)) attack(party_aggro);
         } else {
-            if (can_use('taunt')) use('taunt');
+            if (can_use('taunt')) use('taunt', party_aggro);
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(party_aggro);
         }
-    } else if (target.target) {
-        let range = distance_to_point(target.real_x, target.real_y);
+    } else if (in_range_target) {
+        let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
-            if (can_attack(target)) attack(target);
+            if (can_attack(in_range_target)) attack(in_range_target);
         } else {
-            if (can_use('taunt')) use('taunt');
+            if (can_use('taunt')) use('taunt', in_range_target);
             if (can_use('charge') && range > 110 && range < 500) use('charge');
-            move_to_target(target);
+            move_to_target(in_range_target);
         }
-    } else if (target.x) {
-        move_to_coords(target.x, target.y);
+    } else {
+        if (!is_moving(character)) smart_move(target);
     }
 }

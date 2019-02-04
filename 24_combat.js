@@ -1,34 +1,45 @@
-
-function find_farming_targets(maxAttack, minXp) {
+function find_local_targets(type) {
     let monsters;
-    // If in party attack the leaders target
-    if (character.party && character.party !== character.name) return find_leader_target();
-    // Search for monsters, for loop 15 times with slowly lowering xp demands to find the best possible target xp wise
+    // Look for targets in range
+    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
+    if (!monsters.length) return false;
+    //Order monsters by distance.
+    monsters = sort_by_distance(monsters);
+    return monsters[0];
+}
+
+function move_to_far_target(maxAttack, minXp) {
+    let sorted, monsterSpawns;
+    let maps = Object.values(G.maps);
+    let monsterTypes = [];
+    for (let key of maps) {
+        if (key.monsters) monsterSpawns = key.monsters.forEach((s) => monsterTypes.push(s.type))
+    }
     let xpTarget = minXp;
-    let xpScaleDown = 0.9;
-    for (let x = 0; x < 15; x++) {
-        monsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.attack > 0 && mob.attack < maxAttack
-            && mob.xp >= xpTarget && !monsters_ref[mob.mtype].dreturn && !mob.target);
-        if (monsters.length) break;
-        // Lower xp every cycle
-        xpTarget *= xpScaleDown;
-        xpScaleDown *= 0.95;
+    for (let x = 0; x < 50; x++) {
+        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget && !G.monsters[m].dreturn);
+        if (sorted.length) break;
+        xpTarget *= 0.9;
     }
-    //If you still don't have a target find anything
-    if (!monsters.length) find_farming_targets(maxAttack, 1);
-    //Order monsters by whether they're attacking us, then by distance.
-    monsters.sort(function (current, next) {
-        let dist_current = parent.distance(character, current);
-        let dist_next = parent.distance(character, next);
-        if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
-    });
-    if (monsters.length) {
-        return {
-            'target': monsters[0],
-            'x': monsters[0].real_x,
-            'y': monsters[0].real_y
-        };
+    if (!sorted || !sorted.length) return false;
+    smart_move(sorted[0])
+}
+
+function find_best_monster(maxAttack, minXp) {
+    let sorted, monsterSpawns;
+    let maps = Object.values(G.maps);
+    let monsterTypes = [];
+    for (let key of maps) {
+        if (key.monsters) monsterSpawns = key.monsters.forEach((s) => monsterTypes.push(s.type))
     }
+    let xpTarget = minXp;
+    for (let x = 0; x < 50; x++) {
+        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget && !G.monsters[m].dreturn);
+        if (sorted.length) break;
+        xpTarget *= 0.9;
+    }
+    if (!sorted || !sorted.length) return false;
+    return sorted[0];
 }
 
 function find_leader_target() {
@@ -37,6 +48,7 @@ function find_leader_target() {
 }
 
 function check_for_party_aggro() {
+    if (!character.party) return;
     if (parent.party_list.length) {
         let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster");
         let bad_aggro = monsters.filter((m) => parent.party_list.includes(m.target));
@@ -121,4 +133,22 @@ function dead_partymember() {
             if (entity) return entity;
         }
     }
+}
+
+function sort_by_distance(array) {
+    array.sort(function (current, next) {
+        let dist_current = parent.distance(character, current);
+        let dist_next = parent.distance(character, next);
+        if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
+    });
+    return array;
+}
+
+function sort_by_xp(array) {
+    array.sort(function (current, next) {
+        let xp_current = G.monsters[current].xp;
+        let xp_next = G.monsters[next].xp;
+        if (xp_current < xp_next) return 1; else if (xp_current > xp_next) return -1; else return 0;
+    });
+    return array;
 }
