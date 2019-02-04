@@ -7,15 +7,12 @@ function on_party_invite(name){
 }
 
 function wait_for_party(){
-    for (let char of parent.party) {
-        if (char.map !== character.map) return true;
-        if (!parent.entities[char]) return true;
+    for (let key in Object.values(parent.party)) {
+        if (Object.values(parent.party)[key].map !== character.map) return true;
     }
 }
 
 function move_to_leader (min = 5, max = 10) {
-    // Chance to stop to clear issues
-    if (Math.random() > 0.75) return stop();
     // If moving continue
     if (is_moving(character)) return;
     // Handle different map
