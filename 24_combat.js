@@ -43,7 +43,14 @@ function find_best_monster(maxAttack, minXp) {
 }
 
 function find_leader_target() {
+    if (!character.party) return;
     let target = get_target_of(get_player(character.party));
+    if (parent.party_list.length) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            if (member === target.name) return;
+        }
+    }
     if (target) return target;
 }
 

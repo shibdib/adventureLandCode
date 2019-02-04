@@ -42,8 +42,7 @@ function farm() {
     if (target && distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {
         let kiteLocation = getKitePosition(target);
         if (kiteLocation) move_to_position(kiteLocation)
-    }
-    if (target) {
+    } if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             if (can_attack(target))  attack(target);

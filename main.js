@@ -1,19 +1,16 @@
+load_code(80);
 //Handle github update
 let update = true;
 if (update) {
     load_code(69);
     updateCode();
-}
-load_code(80);
-//Update
-if (update) {
+    setInterval(function () {
+        updateCode();
+    }, 900000);
     for (let char of pve_characters) {
         if (char.name === character.name) continue;
         stop_character(char.name);
     }
-    setInterval(function () {
-        updateCode();
-    }, 900000);
 }
 //Startup characters
 //Healer
