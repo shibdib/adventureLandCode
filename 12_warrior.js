@@ -48,15 +48,16 @@ function farm() {
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(party_aggro);
         }
-    } else if (target) {
+    } else if (target.target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             if (can_attack(target)) attack(target);
         } else {
-            draw_circle(target.x, target.y, 25, 1, 0xDFDC22);
             if (can_use('taunt')) use('taunt');
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(target);
         }
+    } else if (target.x) {
+        move_to_coords(target.x, target.y);
     }
 }

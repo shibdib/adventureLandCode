@@ -22,7 +22,13 @@ function find_farming_targets(maxAttack, minXp) {
         let dist_next = parent.distance(character, next);
         if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
     });
-    if (monsters.length) return monsters[0];
+    if (monsters.length) {
+        return {
+            'target': monsters[0],
+            'x': monsters[0].real_x,
+            'y': monsters[0].real_y
+        };
+    }
 }
 
 function find_leader_target() {

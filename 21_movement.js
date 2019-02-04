@@ -10,3 +10,7 @@ function move_to_target(target, min = 0, max = 0) {
 function move_to_position(position) {
     xmove(position.x, position.y)
 }
+
+function move_to_coords(x, y) {
+    xmove(x, y)
+}
