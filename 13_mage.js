@@ -20,6 +20,8 @@ setInterval(function () {
     } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
         use('use_hp');
     }
+    // Check for BIS
+    equip_best_available();
 }, 500);//Execute 2 times per second
 
 function state_controller() {

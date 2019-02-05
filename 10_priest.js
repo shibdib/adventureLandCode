@@ -25,6 +25,8 @@ setInterval(function () {
         if (can_use('use_hp')) use('use_hp');
         heal(character);
     }
+    // Check for BIS
+    equip_best_available();
 }, 500);//Execute 2 times per second
 
 function state_controller() {

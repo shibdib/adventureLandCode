@@ -5,11 +5,12 @@ let pos = {};
 let state = "farm";
 //Party Management
 setInterval(function () {
-    for (let char of pve_characters) {
+    for (let char of pveCharacters) {
         if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
         send_party_invite(char.name);
     }
 }, 12400);
+
 //Movement And Attacking
 setInterval(function () {
     loot(true);
@@ -18,9 +19,11 @@ setInterval(function () {
     } else if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
-//Potions and state
+//Potions, equipment and state
 setInterval(function () {
+    // Set state
     state_controller();
+    // Handle potion use
     if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
         use('use_hp');
     } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
@@ -28,6 +31,8 @@ setInterval(function () {
     } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
         use('use_hp');
     }
+    // Check for BIS
+    equip_best_available();
 }, 500);//Execute 2 times per second
 
 function state_controller() {

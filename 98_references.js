@@ -29,6 +29,257 @@ let keys = [
     "sprites",
     "quests"
 ];
+//Character Obj
+let char_obj = {
+    "tempDisplayObjectParent": null,
+    "alpha": 1,
+    "visible": true,
+    "renderable": true,
+    "worldAlpha": 1,
+    "filterArea": null,
+    "blendMode": 0,
+    "shader": null,
+    "cachedTint": 16777215,
+    "vertexTrimmedData": null,
+    "pluginName": "sprite",
+    "roundPixels": false,
+    "cskin": "10",
+    "i": 1,
+    "j": 0,
+    "skin": "mwarrior2",
+    "stype": "full",
+    "updates": 20968,
+    "cscale": 2,
+    "hp": 979,
+    "max_hp": 1001,
+    "mp": 168,
+    "max_mp": 395,
+    "xp": 525874,
+    "attack": 98,
+    "frequency": 0.7826810477657935,
+    "speed": 67,
+    "range": 23,
+    "armor": 122,
+    "resistance": 66,
+    "level": 39,
+    "rip": false,
+    "afk": false,
+    "s": {
+        "mluck": {
+            "ms": 2536587,
+            "f": "Lootbot"
+        }
+    },
+    "c": {},
+    "age": 4,
+    "id": "Shibtank",
+    "in": "main",
+    "cid": 22,
+    "cx": [],
+    "slots": {
+        "ring1": {
+            "name": "ringsj",
+            "level": 0
+        },
+        "ring2": null,
+        "earring1": null,
+        "earring2": null,
+        "belt": {
+            "name": "hpbelt",
+            "level": 0
+        },
+        "mainhand": {
+            "name": "blade",
+            "level": 0
+        },
+        "offhand": {
+            "name": "wshield",
+            "level": 0
+        },
+        "helmet": {
+            "name": "helmet",
+            "level": 0
+        },
+        "chest": {
+            "name": "coat",
+            "level": 0
+        },
+        "pants": {
+            "name": "pants",
+            "level": 0
+        },
+        "shoes": null,
+        "gloves": {
+            "name": "gloves",
+            "level": 0
+        },
+        "amulet": {
+            "name": "hpamulet",
+            "level": 0
+        },
+        "orb": null,
+        "elixir": null,
+        "cape": null
+    },
+    "ctype": "warrior",
+    "owner": "5835788110528512",
+    "guild": "",
+    "stats": {
+        "dex": 12,
+        "int": 12,
+        "vit": 19,
+        "str": 50
+    },
+    "mp_cost": 5,
+    "max_xp": 580000,
+    "goldm": 1,
+    "xpm": 1,
+    "luckm": 1.12,
+    "map": "main",
+    "isize": 42,
+    "esize": 31,
+    "gold": 181427,
+    "cash": 50,
+    "targets": 0,
+    "m": 1,
+    "evasion": 0,
+    "miss": 0,
+    "reflection": 0,
+    "lifesteal": 0,
+    "rpiercing": 0,
+    "apiercing": 0,
+    "crit": 0,
+    "dreturn": 0,
+    "tax": 0.04,
+    "items": [
+        {
+            "name": "hpot0",
+            "q": 61
+        },
+        {
+            "name": "ringsj",
+            "level": 0
+        },
+        {
+            "name": "seashell",
+            "q": 39
+        },
+        {
+            "name": "hpbelt",
+            "level": 0
+        },
+        {
+            "name": "hpbelt",
+            "level": 0
+        },
+        {
+            "name": "gem0",
+            "q": 1
+        },
+        {
+            "name": "ringsj",
+            "level": 0
+        },
+        {
+            "name": "hpamulet",
+            "level": 0
+        },
+        {
+            "name": "redenvelopev2",
+            "q": 9
+        },
+        {
+            "name": "mpot0",
+            "q": 61
+        },
+        {
+            "name": "ringsj",
+            "level": 0
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "cc": 3,
+    "ipass": "KMv9dkBX7t4V",
+    "friends": [
+        "6162976538099712"
+    ],
+    "info": {},
+    "last_ms": "2019-02-05T05:14:08.890Z",
+    "cxa": [],
+    "cxc": {},
+    "name": "Shibtank",
+    "walking": null,
+    "fx": {},
+    "emblems": {},
+    "real_alpha": 1,
+    "real_x": -89.5,
+    "real_y": 673.00001,
+    "type": "character",
+    "me": 1,
+    "base": {
+        "h": 8,
+        "v": 7,
+        "vn": 2
+    },
+    "awidth": 26,
+    "aheight": 34,
+    "vision": [
+        700,
+        500
+    ],
+    "last_targets": 0,
+    "updateOrder": 11844698,
+    "zOrder": -673.00001,
+    "displayOrder": 467,
+    "from_x": -89.5,
+    "from_y": 673,
+    "going_x": -89.5,
+    "going_y": 673.00001,
+    "moving": false,
+    "ref_speed": 67,
+    "vx": 0,
+    "vy": 0,
+    "angle": 90,
+    "direction": 0,
+    "ms_walk": "2019-02-05T05:12:50.491Z",
+    "last_stop": "2019-02-05T05:12:50.706Z",
+    "last_walking": 20,
+    "move_num": 8142053,
+    "tp": false,
+    "appearing": false,
+    "target": null,
+    "code": false
+}
 //Skills
 let skills_ref = {
     "use_town": {
