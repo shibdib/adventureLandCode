@@ -1,7 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 
-let currentTarget, target, combat, pendingReboot;
+let currentTarget, target, combat, pendingReboot, drawAggro;
 let state = "farm";
 
 //Party Management (30s)
@@ -91,6 +91,8 @@ function farm() {
     if (character.party) combat = check_for_party_aggro()[0];
     let in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
+        if (!drawAggro) stop();
+        drawAggro = true;
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
@@ -100,6 +102,7 @@ function farm() {
             move_to_target(party_aggro);
         }
     } else if (in_range_target) {
+        drawAggro = undefined;
         let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
@@ -110,6 +113,7 @@ function farm() {
             move_to_target(in_range_target);
         }
     } else {
+        drawAggro = undefined;
         if (wait_for_party() || wait_for_healer()) return stop();
         shib_move(currentTarget);
         refresh_target();
