@@ -65,7 +65,7 @@ function farm()
         if (distance_to_point(lowest_health.real_x, lowest_health.real_y) <= character.range) {
             heal(lowest_health);
         } else {
-            move_to_target(lowest_health);
+            move_to_target(lowest_health, character.range * 0.3, character.range * 0.7);
         }
     } else if (dead_partymember()) { //REVIVE DEAD
         let dead_party = dead_partymember();
@@ -81,11 +81,11 @@ function farm()
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
                     if (can_attack(target) && check_tank_aggro())  attack(target);
                 } else {
-                    move_to_target(curseTarget, character.range * 0.5, character.range * 0.99);
+                    move_to_target(curseTarget, character.range * 0.72, character.range * 0.9);
                 }
             }
     } else {
         alerted = undefined;
-        move_to_leader(character.range * 0.5, character.range * 0.99);
+        move_to_leader(character.range * 0.1, character.range * 0.4);
     }
 }

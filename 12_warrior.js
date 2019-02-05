@@ -112,7 +112,7 @@ function farm() {
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
         } else {
-            if (wait_for_party() || wait_for_healer()) return stop();
+            if (wait_for_healer()) return stop();
             if (can_use('taunt')) use('taunt', in_range_target);
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(in_range_target);
