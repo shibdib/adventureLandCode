@@ -35,8 +35,8 @@ function wait_for_party(range = 300) {
                 }
                 waitNotify = true;
                 if (!waitTime) waitTime = Date.now();
-                // If waiting for 25 seconds then go to the problem child
-                if (waitTime + 25000 < Date.now()) {
+                // If waiting for 45 seconds then go to the problem child
+                if (waitTime + 45000 < Date.now()) {
                     if (!waitMoveNotify) {
                         game_log(member + ' is still far away, moving to them.');
                         whisper_party('Going to ' + member + ' because you are taking way too long.');
