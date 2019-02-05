@@ -6,7 +6,8 @@ function on_party_invite(name){
     if (name === 'Shibtank') accept_party_invite(name);
 }
 
-function wait_for_party(){
+let waitNotify;
+function wait_for_party(range = 300){
     for (let key in Object.values(parent.party)) {
         if (Object.values(parent.party)[key].map !== character.map) return true;
     }
@@ -15,12 +16,29 @@ function wait_for_party(){
             let member = parent.party_list[key];
             let entity = parent.entities[member];
             if (member === character.name) continue;
-            if ((entity && entity.rip) || member.rip) return true;
-            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 300)  return true;
+            if ((entity && entity.rip) || member.rip) {
+                if (!waitNotify) {
+                    game_log(member + ' is dead, waiting on them.');
+                    pm(member, 'Waiting for you to revive.')
+                }
+                return true;
+            } else {
+                waitNotify = undefined;
+            }
+            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
+                if (!waitNotify) {
+                    game_log(member + ' is too far away, waiting on them.');
+                    pm(member, 'Waiting for you to catch up.')
+                }
+                return true;
+            } else {
+                waitNotify = undefined;
+            }
         }
     }
 }
 
+let healerNotify;
 function wait_for_healer(){
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
@@ -28,7 +46,24 @@ function wait_for_healer(){
             let entity = parent.entities[member];
             if (member === character.name) continue;
             if (entity && entity.type !== 'priest') continue;
-            if (!entity.mp < entity.max_mp * 0.85)  return true; // Priest is low MP
+            if (!entity.mp < entity.max_mp * 0.65)  {// Priest is low MP
+                if (!healerNotify) {
+                    game_log('Healer is OOM.');
+                    pm(member, 'Waiting on you to get mana.')
+                }
+                return true;
+            } else {
+                healerNotify = undefined;
+            }
+        }
+    }
+}
+
+function whisper_party(message) {
+    if (parent.party_list.length > 0) {
+        for (let key in parent.party_list) {
+            let member = parent.party_list[key];
+            pm(member, message);
         }
     }
 }

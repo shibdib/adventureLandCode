@@ -13,11 +13,11 @@ setInterval(function () {
 //Potions and state
 setInterval(function () {
     state_controller();
-    if (character.hp / character.max_hp < 0.25) {
+    if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
         use('use_hp');
-    } else if (character.mp / character.max_mp < 0.75) {
+    } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
         use('use_mp');
-    } else if (character.hp / character.max_hp < 0.45) {
+    } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
         use('use_hp');
     }
 }, 500);//Execute 2 times per second

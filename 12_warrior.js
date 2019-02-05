@@ -1,6 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target;
+let pos = {};
 let state = "farm";
 //Party Management
 setInterval(function () {
@@ -20,11 +21,11 @@ setInterval(function () {
 //Potions and state
 setInterval(function () {
     state_controller();
-    if (character.hp / character.max_hp < 0.25) {
+    if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
         use('use_hp');
-    } else if (character.mp / character.max_mp < 0.75) {
+    } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
         use('use_mp');
-    } else if (character.hp / character.max_hp < 0.45) {
+    } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
         use('use_hp');
     }
 }, 500);//Execute 2 times per second
@@ -55,8 +56,15 @@ function farm() {
         party_aggro = check_for_party_aggro()[0];
         attack_threshold = character.attack * 1.6;
     }
-    if (!currentTarget) target = find_best_monster(attack_threshold, 10000);
-    currentTarget = target;
+    if (!currentTarget) {
+        target = find_best_monster(attack_threshold, 10000);
+        if (target) {
+            currentTarget = target;
+            whisper_party('New target is a ' + target);
+            game_log('New target is a ' + target)
+            stop();
+        }
+    }
     let in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
@@ -80,6 +88,25 @@ function farm() {
         }
     } else {
         if (wait_for_party() || wait_for_healer()) return stop();
-        shib_move(target);
+        refresh_target();
+        shib_move(currentTarget);
+    }
+}
+
+let counter = 0;
+function refresh_target () {
+    if (pos.x) {
+        if (pos.x === pos.y) {
+            counter += 1;
+            if (counter > 250) {
+                stop();
+                return currentTarget = undefined;
+            }
+        } else {
+            pos = {x: character.x, y: character.y};
+            counter = 0;
+        }
+    } else {
+        pos = {x: character.x, y: character.y}
     }
 }

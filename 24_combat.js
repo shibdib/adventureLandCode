@@ -52,6 +52,13 @@ function find_leader_target() {
     if (target) return target;
 }
 
+function check_tank_aggro() {
+    if (!character.party) return;
+    let target = get_target_of(get_player(character.party));
+    let targetsTarget = get_target_of(target);
+    if (target && targetsTarget === get_player(character.party) || targetsTarget === character.party) return true;
+}
+
 function check_for_party_aggro() {
     if (!character.party) return;
     if (parent.party_list.length) {

@@ -14,15 +14,15 @@ setInterval(function () {
 setInterval(function () {
     state_controller();
     //Use mana pots and heal yourself, use healing pots if low
-    if (character.hp / character.max_hp < 0.25) {
-        use('use_hp');
+    if (character.hp < character.max_hp * 0.25) {
+        if (can_use('use_hp')) use('use_hp');
         heal(character);
-    } else if (character.mp / character.max_mp < 0.98) {
+    } else if (can_use('use_mp') && character.mp < character.max_mp * 0.98) {
         use('use_mp');
-    } else if (character.hp / character.max_hp < 0.75) {
+    } else if (character.hp < character.max_hp * 0.75) {
         heal(character);
-    } else if (character.hp / character.max_hp < 0.45) {
-        use('use_hp');
+    } else if (character.hp < character.max_hp * 0.45) {
+        if (can_use('use_hp')) use('use_hp');
         heal(character);
     }
 }, 500);//Execute 2 times per second
@@ -71,11 +71,11 @@ function farm()
             move_to_target(dead_party);
         }
     } else if (curseTarget && character.mp > character.max_mp * 0.85) { //ATTACK IF YOU HAVE MANA
-            if (can_use('curse')) {
-                use('curse', curseTarget, character.range * 0.5, character.range * 0.99);
+            if (can_use('curse') && check_tank_aggro()) {
+                use('curse', curseTarget);
             } else {
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
-                    attack(curseTarget);
+                    if (can_attack(target) && check_tank_aggro())  attack(target);
                 } else {
                     move_to_target(curseTarget, character.range * 0.5, character.range * 0.99);
                 }
