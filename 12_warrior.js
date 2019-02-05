@@ -160,6 +160,7 @@ function slowestMan() {
         }
     }
     if (!combatSet && combat) {
+        combatSet = true;
         cruise(9999);
     } else if (!combat && speed !== character.speed) {
         combatSet = undefined;
