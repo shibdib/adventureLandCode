@@ -48,6 +48,7 @@ function farm()
 {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = check_for_party_aggro()[0];
+    let wounded = lowest_health && lowest_health.health_ratio < 0.75;
     let lowest_health = lowest_health_partymember();
     let curseTarget = find_leader_target();
     // Handle kiting
@@ -63,7 +64,7 @@ function farm()
         }
     } else if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         use('partyheal');
-    } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
+    } else if (wounded) { //HEAL WOUNDED
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
@@ -71,7 +72,7 @@ function farm()
         } else {
             if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
         }
-    } else if (dead_partymember()) { //REVIVE DEAD
+    } else if (!wounded && dead_partymember()) { //REVIVE DEAD
         alerted = undefined;
         let dead_party = dead_partymember();
         if (can_use('revive') && in_attack_range(dead_party)) {
@@ -79,7 +80,7 @@ function farm()
         } else {
             if (kiteLocation) move_to_position(kiteLocation); else move_to_target(dead_party);
         }
-    } else if (curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
+    } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
         alerted = undefined;
             if (can_use('curse') && check_tank_aggro()) {
                 use('curse', curseTarget);
@@ -90,7 +91,7 @@ function farm()
                     if (kiteLocation) move_to_position(kiteLocation); else move_to_target(curseTarget, character.range * 0.425, character.range * 0.99);
                 }
             }
-    } else {
+    } else if (!wounded) {
         alerted = undefined;
         if (lowest_health && lowest_health.health_ratio !== 1 && in_attack_range(lowest_health)) heal(lowest_health);
         move_to_leader(character.range * 0.425, character.range * 0.5);
