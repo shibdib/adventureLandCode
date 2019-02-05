@@ -12,7 +12,7 @@ setInterval(function () {
 
 //Potions and state
 setInterval(function () {
-    //state_controller();
+    state_controller();
     if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
         use('use_hp');
     } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
