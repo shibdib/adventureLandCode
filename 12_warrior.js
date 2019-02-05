@@ -131,5 +131,6 @@ function refresh_target () {
         // If waiting for 15 seconds find a new target
         if (waitTime + 15000 < Date.now()) currentTarget = undefined;
     }
+    waitTime = undefined;
     lastPos = {x: character.x, y: character.y};
 }
