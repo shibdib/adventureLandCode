@@ -86,7 +86,8 @@ function get_teleport_target() {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
             if (member === character.name) continue;
-            if (member === character.party) continue;
+            // Don't teleport the tank unless you're in combat
+            if (member === character.party && !combat) continue;
             // Don't teleport the merchant
             if (merchant === member || member === character.name) continue;
             if ((entity && entity.ctype === 'merchant') || member.includes('merch')) {
