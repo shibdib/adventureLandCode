@@ -60,11 +60,11 @@ function wait_for_healer() {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
             if (member === character.name) continue;
-            if (entity && entity.type !== 'priest') continue;
+            if (entity && entity.ctype !== 'priest') continue;
             if (!entity.mp < entity.max_mp * 0.65) {// Priest is low MP
                 if (!healerNotify) {
                     game_log('Healer is OOM.');
-                    pm(member, 'Waiting on you to get mana.')
+                    whisper_party('Waiting for ' + member + ' to get mana.')
                 }
                 healerNotify = true;
                 return true;
