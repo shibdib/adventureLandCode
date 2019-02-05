@@ -74,7 +74,11 @@ function blink_to_leader() {
     if (parent.party_list.length > 0 && character.max_mp > 1600) {
         let leader = get_player(character.party);
         if (!leader || !distance_to_point(target.real_x, target.real_y) || distance_to_point(target.real_x, target.real_y) > 1000) {
-            if (character.mp < 1600) use('use_mp'); else use('blink', character.party);
+            if (character.mp < 1600) {
+                use('use_mp');
+            } else {
+                use('blink', parent.party[character.party].x, parent.party[character.party].y);
+            }
             return true;
         }
     }
