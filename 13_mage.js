@@ -87,6 +87,12 @@ function get_teleport_target() {
             let entity = parent.entities[member];
             if (member === character.name) continue;
             if (member === character.party) continue;
+            // Don't teleport the merchant
+            if (merchant === member || member === character.name) continue;
+            if ((entity && entity.ctype === 'merchant') || member.includes('merch')) {
+                merchant = member;
+                continue;
+            }
             if ((entity && entity.rip) || member.rip) continue;
             if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 1000) return member;
         }
