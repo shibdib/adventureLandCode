@@ -69,7 +69,6 @@ function farm() {
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
-            if (can_use('taunt')) use('taunt', party_aggro);
             if (can_attack(party_aggro)) attack(party_aggro);
         } else {
             if (can_use('taunt')) use('taunt', party_aggro);
@@ -82,7 +81,7 @@ function farm() {
             if (can_attack(in_range_target)) attack(in_range_target);
         } else {
             if (wait_for_party() || wait_for_healer()) return stop();
-            if (can_use('taunt')) use('taunt', in_range_target);
+            if (can_use('taunt') && range > 50) use('taunt', in_range_target);
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(in_range_target);
         }
