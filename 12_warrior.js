@@ -57,11 +57,11 @@ setInterval(function () {
     currentTarget = undefined;
 }, 600000);
 
-// Reset speed every 5 seconds
+// Reset speed every 1.5 seconds
 // Move as fast as the slowest man
 setInterval(function () {
     slowestMan();
-}, 5000);
+}, 1500);
 
 function state_controller() {
     //If dead respawn
@@ -82,7 +82,7 @@ function farm() {
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget) {
-        target = find_best_monster(45 * character.level);
+        target = find_best_monster(55 * character.level);
         if (target) {
             waitTime = undefined;
             currentTarget = target;
@@ -92,9 +92,9 @@ function farm() {
         }
     }
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro()[0];
     let in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
+        combat = true;
         if (!drawAggro) stop();
         drawAggro = true;
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
@@ -106,6 +106,7 @@ function farm() {
             move_to_target(party_aggro);
         }
     } else if (in_range_target) {
+        combat = true;
         // Warcry
         if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
@@ -119,6 +120,7 @@ function farm() {
             move_to_target(in_range_target);
         }
     } else {
+        combat = false;
         drawAggro = undefined;
         if (wait_for_party() || wait_for_healer()) return stop();
         shib_move(currentTarget);
@@ -146,6 +148,7 @@ function refreshTarget () {
 }
 
 //Move as fast as the slowest man
+let combatSet;
 function slowestMan() {
     let speed = character.speed;
     if (parent.party_list.length) {
@@ -156,5 +159,10 @@ function slowestMan() {
             if (entity.speed < speed) speed = entity.speed - 3;
         }
     }
-    if (combat) cruise(9999); else if (speed !== character.speed) cruise(speed);
+    if (!combatSet && combat) {
+        cruise(9999);
+    } else if (!combat && speed !== character.speed) {
+        combatSet = undefined;
+        cruise(speed);
+    }
 }
