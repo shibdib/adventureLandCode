@@ -1,5 +1,5 @@
 game_log("---Warrior Script Start---");
-
+load_code(2);
 let currentTarget, target;
 let state = "farm";
 //Party Management
