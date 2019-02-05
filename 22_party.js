@@ -57,7 +57,7 @@ function wait_for_party(range = 300) {
 
 let healerNotify;
 
-function wait_for_healer() {
+function wait_for_healer(range = 300) {
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
@@ -70,6 +70,10 @@ function wait_for_healer() {
                     whisper_party('Waiting for ' + member + ' to get mana.')
                 }
                 healerNotify = true;
+                return true;
+            }
+            // Handle distance
+            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
                 return true;
             }
         }
