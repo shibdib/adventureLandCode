@@ -42,9 +42,9 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = check_for_party_aggro()[0];
     let target = find_leader_target();
-    if (target) {
+    if (target && check_tank_aggro()) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range && check_tank_aggro()) {
+        if (range <= character.range) {
             // Poison
             if (can_use('pcoat')) use('pcoat');
             // Killy rogue
@@ -56,6 +56,8 @@ function farm() {
             move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
+        // No invis on long moves
+        stop('invis');
         // Speedy rogue
         if (can_use('rspeed')) use('rspeed', character);
         move_to_leader(character.range * 0.5, character.range * 0.7);
