@@ -63,7 +63,7 @@ function wait_for_healer(range = 300) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
             if (member === character.name) continue;
-            if (entity && entity.ctype !== 'priest') continue;
+            if (!entity || entity.ctype !== 'priest') continue;
             if (entity && entity.mp < entity.max_mp * 0.65) {// Priest is low MP
                 if (!healerNotify) {
                     game_log('Healer is OOM.');
@@ -73,7 +73,7 @@ function wait_for_healer(range = 300) {
                 return true;
             }
             // Handle distance
-            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
+            if (distance_to_point(entity.real_x, entity.real_y) >= range) {
                 return true;
             }
         }
