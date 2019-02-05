@@ -43,13 +43,6 @@ function move_to_leader (min = 5, max = 10) {
     if (leader && (range > max || range < min || !range)) move_to_coords(leader.real_x, leader.real_y); else if (!leader) shib_move(parent.party[character.party].x, parent.party[character.party].y);
 }
 
-//This function will ether move straight towards the target entity,
-//or utilize smart_move to find their way there.
-function move_to_position(position) {
-    if (is_moving(character)) return;
-    move_to_coords(position.x, position.y)
-}
-
 function move_to_coords(x, y) {
     if (is_moving(character)) return;
     if(can_move_to(x,y)) {
@@ -62,4 +55,9 @@ function move_to_coords(x, y) {
 function shib_move(destination, y = undefined) {
     if (is_moving(character)) return;
     smart_move(destination, y);
+}
+
+function move_to_position(position) {
+    if (is_moving(character)) return;
+    move_to_coords(position.x, position.y)
 }

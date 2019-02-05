@@ -48,7 +48,7 @@ function farm() {
         if (kiteLocation) move_to_position(kiteLocation)
     } if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range) {
+        if (range <= character.range && check_tank_aggro()) {
             // Poison arrow
             if (can_use('poisonarrow')) use('poisonarrow', target);
             if (can_attack(target))  attack(target);

@@ -44,7 +44,7 @@ function farm() {
     let target = find_leader_target();
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range) {
+        if (range <= character.range && check_tank_aggro()) {
             // Poison
             if (can_use('pcoat')) use('pcoat');
             // Killy rogue

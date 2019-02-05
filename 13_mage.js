@@ -54,14 +54,14 @@ function farm() {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
-        if (range <= character.range) {
+        // Energize the party
+        if (can_use('energize')) randomEnergize();
+        if (range <= character.range && check_tank_aggro()) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.8 && can_use('burst')) {
                 if (can_use('cburst')) use('cburst', target); else use('burst', target);
             }
-            // Energize the party
-            if (can_use('energize')) randomEnergize();
-            if (can_attack(target) && check_tank_aggro())  attack(target);
+            if (can_attack(target))  attack(target);
         } else {
             move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
