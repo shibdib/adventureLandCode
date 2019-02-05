@@ -8,7 +8,7 @@ function move_to_target(target, min = 1, max = 2) {
     // Handle close
     if (target && (range > max || range < min || !range)) {
         let goodPosition = getPositionAtRange(target, min, max);
-        return move_to_coords(goodPosition.x, goodPosition.y);
+        if (goodPosition) return move_to_coords(goodPosition.x, goodPosition.y);
     }
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
@@ -29,7 +29,7 @@ function move_to_leader (min = 10, max = 20) {
     // Handle close
     if (leader && (range > max || range < min || !range)) {
         let goodPosition = getPositionAtRange(leader, min, max);
-        return move_to_coords(goodPosition.x, goodPosition.y);
+        if (goodPosition) return move_to_coords(goodPosition.x, goodPosition.y);
     }
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
@@ -51,10 +51,8 @@ function move_to_leader (min = 10, max = 20) {
 }
 
 function move_to_coords(x, y) {
-    game_log(21)
     if (is_moving(character)) return;
     if(can_move_to(x,y)) {
-        game_log(1)
         if (smart.moving) stop();
         move(x,y);
     } else smart_move({x:x,y:y});
