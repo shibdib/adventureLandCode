@@ -58,12 +58,14 @@ function wait_for_party(range = 300) {
 let healerNotify;
 
 function wait_for_healer(range = 300) {
+    let healerFound = false;
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
             if (member === character.name) continue;
             if (!entity || entity.ctype !== 'priest') continue;
+            healerFound = true;
             if (entity && entity.mp < entity.max_mp * 0.65) {// Priest is low MP
                 if (!healerNotify) {
                     game_log('Healer is OOM.');
@@ -76,6 +78,14 @@ function wait_for_healer(range = 300) {
             if (distance_to_point(entity.real_x, entity.real_y) >= range) {
                 return true;
             }
+        }
+        if (!healerFound) {
+            if (!healerNotify) {
+                game_log('No healer??');
+                whisper_party('Not attacking without a priest.')
+            }
+            healerNotify = true;
+            return true;
         }
         healerNotify = undefined;
     }
