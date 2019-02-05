@@ -6,7 +6,7 @@ function on_party_invite(name) {
     if (name === 'Shibtank') accept_party_invite(name);
 }
 
-let waitNotify, merchant;
+let waitNotify, merchant, waitTime;
 function wait_for_party(range = 300) {
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
@@ -33,6 +33,9 @@ function wait_for_party(range = 300) {
                     game_log(member + ' is too far away, waiting on them.');
                     whisper_party('Waiting for ' + member + ' to catch up.')
                 }
+                if (!waitTime) waitTime = Date.now();
+                // If waiting for 25 seconds then go to the problem child
+                if (waitTime + 25000 < Date.now()) return shib_move(parent.party[member].x, parent.party[member].y);
                 waitNotify = true;
                 return true;
             }
