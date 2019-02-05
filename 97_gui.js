@@ -1,3 +1,3 @@
 //GUI Stuff
-load_code(69); // Update
-//add_bottom_button(1,'Update Code', updateCode()); // Update
+add_bottom_button(1,'Update Code', function(){ updateCode() });
+add_bottom_button(2,'Refresh Party', function(){ restart_lost(true) });
