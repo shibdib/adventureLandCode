@@ -2,7 +2,6 @@ game_log("---Warrior Script Start---");
 load_code(2);
 
 let currentTarget, target, combat, pendingReboot;
-let pos = {};
 let state = "farm";
 
 //Party Management (30s)
@@ -81,6 +80,7 @@ function farm() {
     if (!currentTarget) {
         target = find_best_monster(attack_threshold, 1000);
         if (target) {
+            waitTime = undefined;
             currentTarget = target;
             whisper_party('New target is a ' + target);
             game_log('New target is a ' + target)
@@ -111,25 +111,20 @@ function farm() {
         }
     } else {
         if (wait_for_party() || wait_for_healer()) return stop();
-        refresh_target();
         shib_move(currentTarget);
+        refresh_target();
     }
 }
 
-let counter = 0;
+let waitTime, lastPos;
 function refresh_target () {
-    if (pos.x) {
-        if (pos.x === pos.y) {
-            counter += 1;
-            if (counter > 250) {
-                stop();
-                return currentTarget = undefined;
-            }
-        } else {
-            pos = {x: character.x, y: character.y};
-            counter = 0;
-        }
-    } else {
-        pos = {x: character.x, y: character.y}
+    // Initial pos set
+    if (!lastPos) return lastPos = {x: character.x, y: character.y};
+    // If range doesn't change much start counter
+    if (distance_to_point(lastPos.x, lastPos.y) < 5) {
+        if (!waitTime) waitTime = Date.now();
+        // If waiting for 15 seconds find a new target
+        if (waitTime + 15000 < Date.now()) currentTarget = undefined;
     }
+    lastPos = {x: character.x, y: character.y};
 }
