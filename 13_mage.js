@@ -40,7 +40,7 @@ function state_controller() {
 
 function farm() {
     // If you need to blink to leader do it
-    if (blink_to_leader()) return;
+    if (can_use('blink') && blink_to_leader()) return;
     let target = find_leader_target();
     let teleport_target = get_teleport_target();
     // Handle kiting
@@ -53,6 +53,12 @@ function farm() {
     } else if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
+            // Use burst when high mana
+            if (character.mp >= character.max_mp * 0.8 && can_use('burst')) {
+                if (can_use('cburst')) use('cburst', target); else use('burst', target);
+            }
+            // Energize the party
+            if (can_use('energize')) randomEnergize();
             if (can_attack(target) && check_tank_aggro())  attack(target);
         } else {
             move_to_target(target, character.range * 0.5, character.range * 0.99);
@@ -67,6 +73,7 @@ function blink_to_leader() {
         let leader = get_player(character.party);
         if (!leader || !distance_to_point(target.real_x, target.real_y) || distance_to_point(target.real_x, target.real_y) > 1000) {
             if (character.mp < 1600) use('use_mp'); else use('blink', character.party);
+            return true;
         }
     }
 }
@@ -80,6 +87,19 @@ function get_teleport_target() {
             if (member === character.party) continue;
             if ((entity && entity.rip) || member.rip) continue;
             if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 1000) return member;
+        }
+    }
+}
+
+function randomEnergize() {
+    if (parent.party_list.length > 0) {
+        for (let key in shuffle(parent.party_list)) {
+            let member = parent.party_list[key];
+            let entity = parent.entities[member];
+            // Don't energize far away or merchants
+            if (!entity || entity.ctype === 'merchant') continue;
+            if (member !== character.name) whisper_party('Energizing ' + member + ' with increased MP and Attack Speed.'); else whisper_party('Energizing myself, time to kill.');
+            use('energize', entity);
         }
     }
 }
