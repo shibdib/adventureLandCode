@@ -22,8 +22,6 @@ function wait_for_party(range = 300){
                     pm(member, 'Waiting for you to revive.')
                 }
                 return true;
-            } else {
-                waitNotify = undefined;
             }
             if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
                 if (!waitNotify) {
@@ -31,10 +29,9 @@ function wait_for_party(range = 300){
                     pm(member, 'Waiting for you to catch up.')
                 }
                 return true;
-            } else {
-                waitNotify = undefined;
             }
         }
+        waitNotify = undefined;
     }
 }
 
@@ -52,10 +49,9 @@ function wait_for_healer(){
                     pm(member, 'Waiting on you to get mana.')
                 }
                 return true;
-            } else {
-                healerNotify = undefined;
             }
         }
+        healerNotify = undefined;
     }
 }
 
