@@ -8,12 +8,12 @@ function on_party_invite(name) {
 
 let waitNotify, merchant;
 function wait_for_party(range = 300) {
-    for (let key in Object.values(parent.party)) {
-        if (key === merchant) continue;
-        if (Object.values(parent.party)[key].map !== character.map) {
+    for (let char of Object.values(parent.party)) {
+        if (char === merchant) continue;
+        if (char.map !== character.map) {
             if (!waitNotify) {
-                game_log(key + ' is on the wrong map, waiting.');
-                whisper_party('Waiting for ' + key + ' to get here.')
+                game_log(char + ' is on the wrong map, waiting.');
+                whisper_party('Waiting for ' + char + ' to get here.')
             }
             waitNotify = true;
             return true;
