@@ -93,6 +93,17 @@ function getKitePosition(target) {
     }
 }
 
+function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
+    for (let x = 0; x < 100; x++) {
+        let xChange = getRndInteger(-character.range, character.range);
+        let yChange = getRndInteger(-character.range, character.range);
+        if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
+            let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+            if (newRange >= desiredRangeMin && newRange <= desiredRangeMax) return {x: character.real_x + xChange, y: character.real_y + yChange};
+        }
+    }
+}
+
 // This tries to deal with combined damage;
 function meleeCombat(target) {
     if (character.range < 40) {

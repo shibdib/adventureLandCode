@@ -1,12 +1,15 @@
 //This function will ether move straight towards the target entity,
 //or utilize smart_move to find their way there.
-function move_to_target(target, min = 0, max = 0) {
+function move_to_target(target, min = 1, max = 2) {
     let range;
     if (target) range = distance_to_point(target.real_x, target.real_y) + 0.1;
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
     // Handle close
-    if (target && (range > max || range < min || !range)) return move_to_coords(target.real_x, target.real_y);
+    if (target && (range > max || range < min || !range)) {
+        let goodPosition = getPositionAtRange(target, min, max);
+        return move_to_coords(goodPosition.x, goodPosition.y);
+    }
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
     // If moving continue
@@ -19,12 +22,15 @@ function move_to_target(target, min = 0, max = 0) {
     }
 }
 
-function move_to_leader (min = 5, max = 10) {
+function move_to_leader (min = 10, max = 20) {
     let leader = get_player(character.party);
     let range;
     if (leader) range = distance_to_point(leader.real_x, leader.real_y) + 0.1;
     // Handle close
-    if (leader && (range > max || range < min || !range)) move_to_coords(leader.x, leader.y);
+    if (leader && (range > max || range < min || !range)) {
+        let goodPosition = getPositionAtRange(leader, min, max);
+        return move_to_coords(goodPosition.x, goodPosition.y);
+    }
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
