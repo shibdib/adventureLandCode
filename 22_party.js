@@ -6,17 +6,30 @@ function on_party_invite(name) {
     if (name === 'Shibtank') accept_party_invite(name);
 }
 
-let waitNotify;
-
+let waitNotify, merchant;
 function wait_for_party(range = 300) {
     for (let key in Object.values(parent.party)) {
-        if (Object.values(parent.party)[key].map !== character.map) return true;
+        if (key === merchant) continue;
+        if (Object.values(parent.party)[key].map !== character.map) {
+            if (!waitNotify) {
+                game_log(key + ' is on the wrong map, waiting.');
+                whisper_party('Waiting for ' + key + ' to get here.')
+            }
+            waitNotify = true;
+            return true;
+        }
     }
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
-            if (member === character.name) continue;
+            // Don't wait for merchant or yourself
+            if (merchant === member || member === character.name) continue;
+            if (entity && entity.type === 'merchant') {
+                merchant = member;
+                continue;
+            }
+            // Handle death
             if ((entity && entity.rip) || member.rip) {
                 if (!waitNotify) {
                     game_log(member + ' is dead, waiting on them.');
@@ -25,6 +38,7 @@ function wait_for_party(range = 300) {
                 waitNotify = true;
                 return true;
             }
+            // Handle distance
             if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
                 if (!waitNotify) {
                     game_log(member + ' is too far away, waiting on them.');

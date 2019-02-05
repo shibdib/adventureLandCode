@@ -5,7 +5,7 @@ let currentTarget, target, combat;
 let pos = {};
 let state = "farm";
 
-//Party Management
+//Party Management (30s)
 setInterval(function () {
     // Handle restarting/starting other characters
     restart_lost();
@@ -14,9 +14,14 @@ setInterval(function () {
         if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
         send_party_invite(char.name);
     }
-}, 12400);
+}, 30000);
 
-//Movement And Attacking
+//Force reboot of character (1h)
+setInterval(function () {
+    restart_lost(true);
+}, 3600000 );
+
+//Movement And Attacking (1/10th s)
 setInterval(function () {
     // Loot the things
     loot(true);
@@ -25,7 +30,7 @@ setInterval(function () {
     } else if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
-//Potions, equipment and state
+//Potions, equipment and state (1/2s)
 setInterval(function () {
     // Set state
     state_controller();
@@ -94,7 +99,7 @@ function farm() {
             if (can_attack(in_range_target)) attack(in_range_target);
         } else {
             if (wait_for_party() || wait_for_healer()) return stop();
-            if (can_use('taunt') && range > 50) use('taunt', in_range_target);
+            if (can_use('taunt')) use('taunt', in_range_target);
             if (can_use('charge') && range > 110 && range < 500) use('charge');
             move_to_target(in_range_target);
         }
