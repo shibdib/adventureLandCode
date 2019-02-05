@@ -8,3 +8,4 @@ load_code(97); // GUI
 load_code(98); // References
 load_code(99); // Helpers
 load_code(69); // Update
+load_code(50); // Contribution code
