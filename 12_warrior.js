@@ -1,10 +1,15 @@
 game_log("---Warrior Script Start---");
 load_code(2);
+
 let currentTarget, target, combat;
 let pos = {};
 let state = "farm";
+
 //Party Management
 setInterval(function () {
+    // Handle restarting/starting other characters
+    restart_lost();
+    // Handles sending invites
     for (let char of pveCharacters) {
         if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
         send_party_invite(char.name);
@@ -13,6 +18,7 @@ setInterval(function () {
 
 //Movement And Attacking
 setInterval(function () {
+    // Loot the things
     loot(true);
     if (character.party && (state === 'farm' || combat)) {
         farm();
