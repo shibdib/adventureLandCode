@@ -52,11 +52,15 @@ function farm()
     let lowest_health = lowest_health_partymember();
     let curseTarget = find_leader_target();
     // Handle kiting
-    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.7) {
-        let kiteLocation = getKitePosition(curseTarget);
-        if (kiteLocation) move_to_position(kiteLocation)
-    }
-    if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
+    let kiteLocation;
+    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget);
+    if (lowest_health && lowest_health.health_ratio < 0.25 && can_use('revive')) { //Max heal with revive
+        if (distance_to_point(lowest_health.real_x, lowest_health.real_y) <= character.range) {
+            use('revive', lowest_health);
+        } else {
+            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
+        }
+    } else if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         use('partyheal');
     } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
         lastHurt = lowest_health;
@@ -65,14 +69,14 @@ function farm()
         if (distance_to_point(lowest_health.real_x, lowest_health.real_y) <= character.range) {
             heal(lowest_health);
         } else {
-            move_to_target(lowest_health, character.range * 0.3, character.range * 0.7);
+            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (dead_partymember()) { //REVIVE DEAD
         let dead_party = dead_partymember();
         if (can_use('revive') && distance_to_point(dead_party.real_x, dead_party.real_y) <= character.range) {
             use('revive', dead_party);
         } else {
-            move_to_target(dead_party);
+            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(dead_party);
         }
     } else if (curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
             if (can_use('curse') && check_tank_aggro()) {
@@ -81,11 +85,11 @@ function farm()
                 if (distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range) {
                     if (can_attack(target) && check_tank_aggro())  attack(target);
                 } else {
-                    move_to_target(curseTarget, character.range * 0.72, character.range * 0.9);
+                    if (kiteLocation) move_to_position(kiteLocation); else move_to_target(curseTarget, character.range * 0.425, character.range * 0.99);
                 }
             }
     } else {
         alerted = undefined;
-        move_to_leader(character.range * 0.1, character.range * 0.4);
+        move_to_leader(character.range * 0.425, character.range * 0.5);
     }
 }
