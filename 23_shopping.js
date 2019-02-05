@@ -15,7 +15,6 @@ function potion_check(state) {
 }
 
 //This function contains our logic during resupply runs
-let towned = {};
 function resupply_potions() {
     let potion_merchant = get_npc("fancypots");
     let distance_to_merchant = null;
@@ -23,13 +22,8 @@ function resupply_potions() {
         distance_to_merchant = distance_to_point(potion_merchant.position[0], potion_merchant.position[1]);
     }
     if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250)) {
-        if (!towned[character.id]) {
-            use('use_town');
-            towned[character.id] = undefined;
-        }
-        smart_move({to: "potions"});
+        if (can_use('use_town')) use('use_town'); else smart_move({to: "potions"});
     } if (distance_to_merchant != null && distance_to_merchant < 250) {
-        towned[character.id] = undefined;
         buy_potions();
     }
 }
