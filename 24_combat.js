@@ -99,10 +99,10 @@ function meleeCombat(target) {
         for (let id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distance_to_point(entity.real_x, entity.real_y) < 45) {
+            if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distance_to_point(entity.real_x, entity.real_y) + 0.1 < 45) {
                 for (let x = 0; x < 50; x++) {
-                    let xChange = getRndInteger(-character.range, character.range);
-                    let yChange = getRndInteger(-character.range, character.range);
+                    let xChange = getRndInteger(-5, 5);
+                    let yChange = getRndInteger(-5, 5);
                     if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
                         let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
                         let newTargetRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
