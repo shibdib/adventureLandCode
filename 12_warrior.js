@@ -81,7 +81,7 @@ function farm() {
             waitTime = undefined;
             currentTarget = target;
             whisper_party('New target is a ' + target);
-            game_log('New target is a ' + target)
+            game_log('New target is a ' + target);
             stop();
         }
     }

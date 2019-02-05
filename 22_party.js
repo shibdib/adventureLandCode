@@ -96,15 +96,15 @@ function restart_lost(force = false) {
         }
         //Healer
         let healer = shuffle(pveCharacters.filter((c) => c.role === 'healer'))[0];
-        if (!Object.keys(get_active_characters()).includes(healer.name)) start_character(healer.name, healer.slot);
+        if (!Object.keys(get_active_characters()).includes(healer.name)) start_character(healer.name, healer.slot); else load_code(healer.slot);
         //DPS
         let dps = shuffle(pveCharacters.filter((c) => c.role === 'dps'))[0];
-        if (!Object.keys(get_active_characters()).includes(dps.name)) start_character(dps.name, dps.slot);
+        if (!Object.keys(get_active_characters()).includes(dps.name)) start_character(dps.name, dps.slot); else load_code(dps.slot);
         //Tank
         let tank = shuffle(pveCharacters.filter((c) => c.role === 'tank'))[0];
-        if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot);
+        if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot); else load_code(tank.slot);
         //Merchant
         let merchant = shuffle(pveCharacters.filter((c) => c.role === 'merchant'))[0];
-        if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot);
+        if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
     }
 }
