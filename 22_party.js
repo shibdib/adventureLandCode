@@ -35,10 +35,10 @@ function wait_for_party(range = 300) {
                 }
                 waitNotify = true;
                 if (!waitTime) waitTime = Date.now();
-                // If waiting for 45 seconds then go to the problem child (2 minutes if map change occurred)
+                // If waiting for 45 seconds then go to the problem child (3 minutes if map change occurred)
                 let waitLength = 45000;
-                if (parent.party[member].map !== character.map) waitLength = 120000;
-                if (waitTime + 120000 < Date.now()) {
+                if (parent.party[member].map !== character.map) waitLength = 180000;
+                if (waitTime + waitLength < Date.now()) {
                     if (!waitMoveNotify) {
                         game_log(member + ' is still far away, moving to them.');
                         whisper_party('Going to ' + member + ' because you are taking way too long.');
