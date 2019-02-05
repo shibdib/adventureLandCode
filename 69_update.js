@@ -3,7 +3,7 @@
  * @source	https://github.com/D4ddy-LiLd4rk/AdventureLand
  */
 
-const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/";
+const baseURL = "https://cdn.jsdelivr.net/gh/shibdib/adventureLandCode/";
 
 const allFiles = [
     "2_requires.js",
