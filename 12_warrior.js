@@ -22,7 +22,8 @@ setInterval(function () {
 
 //Force reboot of character (1h)
 setInterval(function () {
-    // Delay reboot if in combat
+    // Update and reboot
+    updateCode();
     if (!combat) restart_lost(true); else pendingReboot = true;
 }, 3600000 );
 
