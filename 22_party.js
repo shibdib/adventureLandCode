@@ -33,13 +33,18 @@ function wait_for_party(range = 300) {
                     game_log(member + ' is too far away, waiting on them.');
                     whisper_party('Waiting for ' + member + ' to catch up.')
                 }
+                waitNotify = true;
                 if (!waitTime) waitTime = Date.now();
                 // If waiting for 25 seconds then go to the problem child
-                if (waitTime + 25000 < Date.now()) return shib_move(parent.party[member].x, parent.party[member].y);
-                waitNotify = true;
+                if (waitTime + 25000 < Date.now()) {
+                    game_log(member + ' is still far away, moving to them.');
+                    whisper_party('Going to ' + member + ' because you are taking way too long.');
+                    return shib_move(parent.party[member].x, parent.party[member].y);
+                }
                 return true;
             }
         }
+        waitTime = undefined;
         waitNotify = undefined;
     }
 }
