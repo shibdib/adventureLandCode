@@ -58,5 +58,7 @@ function wait_for_healer(){
 function whisper_party(message) {
     if (parent.party_list.length > 0) {
         say('/p ' + message);
+    } else {
+        say(message);
     }
 }
