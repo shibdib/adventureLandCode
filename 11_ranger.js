@@ -47,8 +47,12 @@ function farm() {
     } if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
+            // Poison arrow
+            if (can_use('poisonarrow')) use('poisonarrow', target);
             if (can_attack(target))  attack(target);
         } else {
+            // Long range
+            if (can_use('supershot')) use('supershot', target);
             move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
