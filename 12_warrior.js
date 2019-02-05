@@ -132,9 +132,13 @@ function refresh_target () {
     // If range doesn't change much start counter
     if (distance_to_point(lastPos.x, lastPos.y) < 5) {
         if (!waitTime) waitTime = Date.now();
-        // If waiting for 15 seconds find a new target
-        if (waitTime + 15000 < Date.now()) currentTarget = undefined;
+        // If waiting for 20 seconds find a new target
+        if (waitTime + 20000 < Date.now()) {
+            whisper_party('There are no ' + currentTarget + ' here so going to look for a new target.');
+            currentTarget = undefined;
+        }
+    } else {
+        waitTime = undefined;
     }
-    waitTime = undefined;
     lastPos = {x: character.x, y: character.y};
 }
