@@ -13,7 +13,7 @@ function find_local_targets(type) {
 function find_best_monster(minXp) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
-    let maxAttack = character.attack * 0.9;
+    let maxAttack = character.attack * 1.12;
     /**if (character.party) {
         maxAttack = character.attack * 0.8;
         for (let key in parent.party_list) {

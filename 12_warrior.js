@@ -82,7 +82,7 @@ function farm() {
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget) {
-        target = find_best_monster(55 * character.level);
+        target = find_best_monster(1000);
         if (target) {
             waitTime = undefined;
             currentTarget = target;
@@ -123,8 +123,10 @@ function farm() {
         combat = false;
         drawAggro = undefined;
         if (wait_for_party() || wait_for_healer()) return stop();
-        shib_move(currentTarget);
-        refreshTarget();
+        if (currentTarget) {
+            shib_move(currentTarget);
+            refreshTarget();
+        }
     }
 }
 
