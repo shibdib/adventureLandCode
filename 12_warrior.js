@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target;
+let currentTarget, target, combat;
 let pos = {};
 let state = "farm";
 //Party Management
@@ -13,9 +13,9 @@ setInterval(function () {
 //Movement And Attacking
 setInterval(function () {
     loot(true);
-    //If you have a party, farm things
-    if (character.party && state === 'farm') farm();
-    if (state === 'resupply_potions') resupply_potions();
+    if (character.party && (state === 'farm' || combat)) {
+        farm();
+    } else if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
 //Potions and state
@@ -65,6 +65,8 @@ function farm() {
             stop();
         }
     }
+    // Mark in combat if anyone in the party is being targeted
+    if (character.party) combat = check_for_party_aggro()[0];
     let in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);

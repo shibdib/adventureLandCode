@@ -1,13 +1,13 @@
 game_log("---Priest Script Start---");
 load_code(2);
-//Put monsters you want to kill in here
-//If your character has no target, it will travel to a spawn of the first monster in the list below.
+let combat;
 let state = "farm";
 
 //Movement And Attacking
 setInterval(function () {
-    if (character.party && state === 'farm') farm();
-    if (state === 'resupply_potions') resupply_potions();
+    if (character.party && (state === 'farm' || combat)) {
+        farm();
+    } else if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
 
 //Potions and state
@@ -45,6 +45,8 @@ let alerted;
 let lastHurt;
 function farm()
 {
+    // Mark in combat if anyone in the party is being targeted
+    if (character.party) combat = check_for_party_aggro()[0];
     let lowest_health = lowest_health_partymember();
     let curseTarget = find_leader_target();
     // Handle kiting
