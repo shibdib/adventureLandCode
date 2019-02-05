@@ -45,12 +45,12 @@ function farm() {
     if (target && check_tank_aggro()) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
-            // Poison
-            if (can_use('pcoat')) use('pcoat');
             // Killy rogue
             if (can_use('quickstab')) use('quickstab', target); else if (can_use('quickpunch')) use('quickpunch', target);
             if (can_attack(target))  meleeCombat(target);
         } else {
+            // Poison
+            if (can_use('pcoat')) use('pcoat');
             // Sneaky rogue
             if (can_use('invis')) use('invis');
             move_to_target(target, character.range * 0.5, character.range * 0.99);
