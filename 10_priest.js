@@ -70,7 +70,7 @@ function farm()
         } else {
             move_to_target(dead_party);
         }
-    } else if (curseTarget && character.mp > character.max_mp * 0.85) { //ATTACK IF YOU HAVE MANA
+    } else if (curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
             if (can_use('curse') && check_tank_aggro()) {
                 use('curse', curseTarget);
             } else {
