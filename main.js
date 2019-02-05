@@ -1,8 +1,7 @@
-load_code(80);
+load_code(2);
 //Handle github update
 let update = true;
 if (update) {
-    load_code(69);
     updateCode();
     setInterval(function () {
         updateCode();
