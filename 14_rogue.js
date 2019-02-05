@@ -43,7 +43,7 @@ function farm() {
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
-            if (can_attack(target))  attack(target);
+            if (can_attack(target))  meleeCombat(target);
         } else {
             move_to_target(target, character.range * 0.5, character.range * 0.99);
         }

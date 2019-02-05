@@ -70,7 +70,7 @@ function check_for_party_aggro() {
 
 function getKitePosition(target) {
     let range = distance_to_point(target.real_x, target.real_y);
-    for (let x = 0; x < 20; x++) {
+    for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
@@ -80,12 +80,33 @@ function getKitePosition(target) {
     }
 }
 
+// This tries to deal with combined damage;
+function meleeCombat(target) {
+    if (character.range < 40) {
+        for (let id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (entity && distance_to_point(entity.real_x, entity.real_y) < 40) {
+                for (let x = 0; x < 50; x++) {
+                    let xChange = getRndInteger(-character.range, character.range);
+                    let yChange = getRndInteger(-character.range, character.range);
+                    if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
+                        let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
+                        let newTargetRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+                        if (newRange > 40 && newTargetRange <= character.range) move_to_coords(character.real_x + xChange, character.real_y + yChange);
+                    }
+                }
+            }
+        }
+    }
+    attack(target);
+}
+
 //Returns the party member with the lowest hp -> max_hp ratio.
 function lowest_health_partymember() {
     var party = [];
     if (parent.party_list.length > 0) {
-        for(id in parent.party_list)
-        {
+        for (let id in parent.party_list) {
             var member = parent.party_list[id];
             var entity = parent.entities[member];
             if (member == character.name) {
@@ -95,18 +116,15 @@ function lowest_health_partymember() {
                 party.push({name: member, entity: entity});
             }
         }
-    }
-    else
-    {
+    } else {
         //Add Self to Party Array
-        party.push(
-            {
+        party.push({
                 name: character.name,
                 entity: character
             });
     }
     //Populate health percentages
-    for (id in party) {
+    for (let id in party) {
         var member = party[id];
         if (member.entity != null) {
             member.entity.health_ratio = member.entity.hp / member.entity.max_hp;
@@ -126,7 +144,7 @@ function lowest_health_partymember() {
 function party_hurt_count(amount = 0.75) {
     let count = 0;
     if (parent.party_list.length > 0) {
-        for (id in parent.party_list) {
+        for (let id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (entity && entity.hp < entity.max_hp * amount) count += 1;
@@ -137,7 +155,7 @@ function party_hurt_count(amount = 0.75) {
 
 function dead_partymember() {
     if (parent.party_list.length > 0) {
-        for (id in parent.party_list) {
+        for (let id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (!entity || member === character.name) continue;
