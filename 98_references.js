@@ -2459,3 +2459,197 @@ let monsters_ref = {
             "max_hp": 80000
     }
 }
+//Socket callbacks
+let socket_ref = {
+    "$connecting": [
+    null
+],
+    "$connect": [
+    null
+],
+    "$welcome": [
+    null
+],
+    "$observing": [
+    null
+],
+    "$new_map": [
+    null
+],
+    "$start": [
+    null
+],
+    "$correction": [
+    null
+],
+    "$players": [
+    null
+],
+    "$pvp_list": [
+    null
+],
+    "$ping_ack": [
+    null
+],
+    "$requesting_ack": [
+    null
+],
+    "$game_error": [
+    null
+],
+    "$game_log": [
+    null
+],
+    "$game_chat": [
+    null
+],
+    "$fx": [
+    null
+],
+    "$online": [
+    null
+],
+    "$light": [
+    null
+],
+    "$game_event": [
+    null
+],
+    "$game_response": [
+    null
+],
+    "$gm": [
+    null
+],
+    "$secondhands": [
+    null
+],
+    "$lostandfound": [
+    null
+],
+    "$game_chat_log": [
+    null
+],
+    "$chat_log": [
+    null
+],
+    "$ui": [
+    null
+],
+    "$tavern": [
+    null
+],
+    "$dice": [
+    null
+],
+    "$upgrade": [
+    null
+],
+    "$server_message": [
+    null
+],
+    "$notice": [
+    null
+],
+    "$reloaded": [
+    null
+],
+    "$chest_opened": [
+    null
+],
+    "$cm": [
+    null
+],
+    "$pm": [
+    null
+],
+    "$partym": [
+    null
+],
+    "$drop": [
+    null
+],
+    "$reopen": [
+    null
+],
+    "$simple_eval": [
+    null
+],
+    "$eval": [
+    null
+],
+    "$player": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+],
+    "$end": [
+    null
+],
+    "$disconnect": [
+    null
+],
+    "$disconnect_reason": [
+    null
+],
+    "$hit": [
+    null
+],
+    "$disappearing_text": [
+    null
+],
+    "$death": [
+    null
+],
+    "$disappear": [
+    null
+],
+    "$notthere": [
+    null
+],
+    "$entities": [
+    null
+],
+    "$poke": [
+    null
+],
+    "$info": [
+    null
+],
+    "$test": [
+    null
+],
+    "$invite": [
+    null
+],
+    "$request": [
+    null
+],
+    "$frequest": [
+    null
+],
+    "$friend": [
+    null
+],
+    "$party_update": [
+    null
+],
+    "$blocker": [
+    null
+],
+    "$trade_history": [
+    null
+],
+    "$track": [
+    null
+]
+}
