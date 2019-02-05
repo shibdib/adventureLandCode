@@ -19,14 +19,14 @@ function wait_for_party(range = 300){
             if ((entity && entity.rip) || member.rip) {
                 if (!waitNotify) {
                     game_log(member + ' is dead, waiting on them.');
-                    pm(member, 'Waiting for you to revive.')
+                    whisper_party('Waiting for ' + member + ' to revive.')
                 }
                 return true;
             }
             if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
                 if (!waitNotify) {
                     game_log(member + ' is too far away, waiting on them.');
-                    pm(member, 'Waiting for you to catch up.')
+                    whisper_party('Waiting for ' + member + ' to catch up.')
                 }
                 return true;
             }
@@ -57,9 +57,6 @@ function wait_for_healer(){
 
 function whisper_party(message) {
     if (parent.party_list.length > 0) {
-        for (let key in parent.party_list) {
-            let member = parent.party_list[key];
-            pm(member, message);
-        }
+        say('/p ' + message);
     }
 }
