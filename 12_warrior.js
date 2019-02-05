@@ -1,12 +1,17 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 
-let currentTarget, target, combat;
+let currentTarget, target, combat, pendingReboot;
 let pos = {};
 let state = "farm";
 
 //Party Management (30s)
 setInterval(function () {
+    // If reboot is pending do it when out of combat
+    if (!combat && pendingReboot) {
+        restart_lost(true);
+        pendingReboot = undefined;
+    }
     // Handle restarting/starting other characters
     restart_lost();
     // Handles sending invites
@@ -18,7 +23,8 @@ setInterval(function () {
 
 //Force reboot of character (1h)
 setInterval(function () {
-    restart_lost(true);
+    // Delay reboot if in combat
+    if (!combat) restart_lost(true); else pendingReboot = true;
 }, 3600000 );
 
 //Movement And Attacking (1/10th s)
