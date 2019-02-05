@@ -33,10 +33,14 @@ function move_to_leader (min = 5, max = 10) {
     if (parent.party[character.party].map !== character.map) return shib_move(parent.party[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
-        if (leader) move_to_coords(leader.real_x, leader.real_y); else return shib_move(parent.party[character.party].real_x, parent.party[character.party].real_y);
+        if (leader) {
+            return move_to_coords(leader.real_x, leader.real_y);
+        } else {
+            return shib_move(parent.party[character.party].x, parent.party[character.party].y);
+        }
     }
     // Handle close
-    if (leader && (range > max || range < min || !range)) move_to_coords(leader.real_x, leader.real_y); else if (!leader) shib_move(parent.party[character.party].real_x, parent.party[character.party].real_y);
+    if (leader && (range > max || range < min || !range)) move_to_coords(leader.real_x, leader.real_y); else if (!leader) shib_move(parent.party[character.party].x, parent.party[character.party].y);
 }
 
 //This function will ether move straight towards the target entity,
