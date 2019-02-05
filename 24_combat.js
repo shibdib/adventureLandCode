@@ -14,7 +14,7 @@ function find_best_monster(minXp) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
     let maxAttack = character.attack * 0.9;
-    if (character.party) {
+    /**if (character.party) {
         maxAttack = character.attack * 0.8;
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
@@ -24,7 +24,7 @@ function find_best_monster(minXp) {
             if (!entity || entity.ctype === 'merchant') continue;
             maxAttack += entity.attack * 0.8;
         }
-    }
+    }**/
     // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
