@@ -73,15 +73,10 @@ setInterval(function () {
 
 function farm() {
     let party_aggro;
-    let attack_threshold = character.attack * 0.8;
-    if (character.party) {
-        party_aggro = check_for_party_aggro()[0];
-        attack_threshold = character.attack * 1.6;
-    }
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget) {
-        target = find_best_monster(attack_threshold, 1000);
+        target = find_best_monster(45 * character.level);
         if (target) {
             waitTime = undefined;
             currentTarget = target;
