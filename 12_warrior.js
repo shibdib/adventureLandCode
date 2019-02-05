@@ -57,7 +57,7 @@ function farm() {
         attack_threshold = character.attack * 1.6;
     }
     if (!currentTarget) {
-        target = find_best_monster(attack_threshold, 10000);
+        target = find_best_monster(attack_threshold, 1000);
         if (target) {
             currentTarget = target;
             whisper_party('New target is a ' + target);
