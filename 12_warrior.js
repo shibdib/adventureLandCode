@@ -78,10 +78,11 @@ function state_controller() {
 }
 
 function farm() {
-    let party_aggro;
+    let in_range_target;
+    let party_aggro = check_for_party_aggro();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
-    if (!currentTarget) {
+    if (!currentTarget && !party_aggro) {
         target = find_best_monster(1000);
         if (target) {
             waitTime = undefined;
@@ -92,7 +93,7 @@ function farm() {
         }
     }
     // Mark in combat if anyone in the party is being targeted
-    let in_range_target = find_local_targets(currentTarget);
+    if (currentTarget) in_range_target = find_local_targets(currentTarget);
     if (party_aggro) {
         combat = true;
         if (!drawAggro) stop();
