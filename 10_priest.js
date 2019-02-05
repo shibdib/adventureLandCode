@@ -17,7 +17,7 @@ setInterval(function () {
     if (character.hp / character.max_hp < 0.25) {
         use('use_hp');
         heal(character);
-    } else if (character.mp / character.max_mp < 0.75) {
+    } else if (character.mp / character.max_mp < 0.98) {
         use('use_mp');
     } else if (character.hp / character.max_hp < 0.75) {
         heal(character);
@@ -70,7 +70,7 @@ function farm()
         } else {
             move_to_target(dead_party);
         }
-    } else if (curseTarget) {
+    } else if (curseTarget && character.mp > character.max_mp * 0.85) { //ATTACK IF YOU HAVE MANA
             if (can_use('curse')) {
                 use('curse', curseTarget, character.range * 0.5, character.range * 0.99);
             } else {

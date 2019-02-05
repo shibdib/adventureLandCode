@@ -20,3 +20,15 @@ function wait_for_party(){
         }
     }
 }
+
+function wait_for_healer(){
+    if (parent.party_list.length > 0) {
+        for (let key in parent.party_list) {
+            let member = parent.party_list[key];
+            let entity = parent.entities[member];
+            if (member === character.name) continue;
+            if (entity && entity.type !== 'priest') continue;
+            if (!entity.mp < entity.max_mp * 0.85)  return true; // Priest is low MP
+        }
+    }
+}

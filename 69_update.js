@@ -8,6 +8,7 @@ const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/mas
 const allFiles = [
     "2_requires.js",
     "80_constants.js",
+    "97_gui.js",
     "98_references.js",
     "99_helpers.js",
     "21_movement.js",

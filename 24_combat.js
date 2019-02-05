@@ -8,21 +8,34 @@ function find_local_targets(type) {
     return monsters[0];
 }
 
+// Returns the best monster based off of a maxAttack and minXp var. This is slightly random and will usually return a different
+// monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
 function find_best_monster(maxAttack, minXp) {
     let sorted, monsterSpawns;
+    // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
+    // Get all monster types from G.maps
     for (let key of maps) {
         if (key.monsters) monsterSpawns = key.monsters.forEach((s) => monsterTypes.push(s.type))
     }
+    // Set your XP threshold
     let xpTarget = minXp;
+    // This will loop until it finds targets that meet the XP threshold which is progressively lowered 10% every loop.
     for (let x = 0; x < 50; x++) {
-        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= 2
+        // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
+        // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
+        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
             && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary);
         if (sorted.length) break;
+        // Lower the XP target per loop
         xpTarget *= 0.9;
     }
+    // If it doesn't find anything return false
     if (!sorted || !sorted.length) return false;
+    // If it finds something it returns a random entity in the top half of the list
+    // Uncomment the below and comment the other return to get the same return every time
+    // return sorted[0];
     return sorted[getRndInteger(0, sorted.length / 2)];
 }
 

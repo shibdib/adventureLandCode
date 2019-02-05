@@ -26,10 +26,3 @@ if (dps.name === character.name) load_code(dps.slot); else if (!Object.keys(get_
 let tank = shuffle(pve_characters.filter((c) => c.role === 'tank'))[0];
 loadedCharacters.push(tank);
 if (tank.name === character.name) load_code(tank.slot); else if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot);
-//Party Management
-setInterval(function () {
-    for (let char of pve_characters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
-        send_party_invite(char.name);
-    }
-}, 12400);

@@ -1,4 +1,9 @@
-
+function can_use(name)
+{
+    if(G.skills[name] && G.skills[name].class && !in_arr(character.ctype,G.skills[name].class)) return false; // checks the class
+    if(G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
+    return parent.can_use(name); // checks the cooldown
+}
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
