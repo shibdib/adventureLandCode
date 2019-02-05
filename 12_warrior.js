@@ -52,6 +52,17 @@ setInterval(function () {
     equip_best_available();
 }, 500);//Execute 2 times per second
 
+// Farm target refreshes every 10 minutes
+setInterval(function () {
+    currentTarget = undefined;
+}, 600000);
+
+// Reset speed every 5 seconds
+// Move as fast as the slowest man
+setInterval(function () {
+    slowestMan();
+}, 5000);
+
 function state_controller() {
     //If dead respawn
     if (character.rip) return respawn();
@@ -65,11 +76,6 @@ function state_controller() {
         state = new_state;
     }
 }
-
-// Farm target refreshes every 10 minutes
-setInterval(function () {
-    currentTarget = undefined;
-}, 600000);//Execute 10 times per second
 
 function farm() {
     let party_aggro;
@@ -116,12 +122,13 @@ function farm() {
         drawAggro = undefined;
         if (wait_for_party() || wait_for_healer()) return stop();
         shib_move(currentTarget);
-        refresh_target();
+        refreshTarget();
     }
 }
 
+// Refresh your target if the spawn is empty
 let waitTime, lastPos;
-function refresh_target () {
+function refreshTarget () {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // If range doesn't change much start counter
@@ -136,4 +143,18 @@ function refresh_target () {
         waitTime = undefined;
     }
     lastPos = {x: character.x, y: character.y};
+}
+
+//Move as fast as the slowest man
+function slowestMan() {
+    let speed = character.speed;
+    if (parent.party_list.length) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (!entity || member === character.name || entity.ctype === 'merchant') continue;
+            if (entity.speed < speed) speed = entity.speed - 3;
+        }
+    }
+    if (combat) cruise(9999); else if (speed !== character.speed) cruise(speed);
 }
