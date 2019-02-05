@@ -78,6 +78,8 @@ function farm() {
         party_aggro = check_for_party_aggro()[0];
         attack_threshold = character.attack * 1.6;
     }
+    // Hardshell when health is low
+    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget) {
         target = find_best_monster(attack_threshold, 1000);
         if (target) {
@@ -103,6 +105,8 @@ function farm() {
             move_to_target(party_aggro);
         }
     } else if (in_range_target) {
+        // Warcry
+        if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
         let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
