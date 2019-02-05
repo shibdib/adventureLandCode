@@ -141,8 +141,7 @@ function lowest_health_partymember() {
         var member = party[id];
         if (member.entity != null) {
             member.entity.health_ratio = member.entity.hp / member.entity.max_hp;
-        }
-        else {
+        } else {
             member.health_ratio = 1;
         }
     }
