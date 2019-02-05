@@ -56,9 +56,9 @@ function farm()
         let kiteLocation = getKitePosition(curseTarget);
         if (kiteLocation) move_to_position(kiteLocation)
     }
-    if (party_hurt_count(0.75) > 1 && can_use('partyheal')) {//MASS HEAL WHEN NEEDED
+    if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         use('partyheal');
-    } else if (lowest_health && lowest_health.health_ratio < 0.85) { //HEAL WOUNDED
+    } else if (lowest_health && lowest_health.health_ratio < 0.75) { //HEAL WOUNDED
         lastHurt = lowest_health;
         if (!alerted) pm (lowest_health.name, 'Healing You!!');
         alerted = true;
