@@ -25,7 +25,7 @@ function find_best_monster(minXp) {
             maxAttack += entity.attack * 0.8;
         }
     }**/
-    // Make G.maps an array
+        // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
     // Get all monster types from G.maps
@@ -34,13 +34,13 @@ function find_best_monster(minXp) {
     }
     // Set your XP threshold
     let xpTarget = minXp;
-    // This will loop until it finds 5+ targets that meet the XP threshold which is progressively lowered 10% every loop.
+    // This will loop until it finds 2+ targets that meet the XP threshold which is progressively lowered 10% every loop.
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
         sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
-            && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary && G.monsters[m].evasion <= 80);
-        if (sorted.length > 5) break;
+            && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80));
+        if (sorted.length > 2) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
     }
@@ -132,9 +132,9 @@ function lowest_health_partymember() {
     } else {
         //Add Self to Party Array
         party.push({
-                name: character.name,
-                entity: character
-            });
+            name: character.name,
+            entity: character
+        });
     }
     //Populate health percentages
     for (let id in party) {
