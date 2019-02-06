@@ -63,10 +63,10 @@ function checkForWeaponType(type) {
 }
 
 //Looks for item in inventory
-function checkInventoryForItem(item) {
+function checkInventoryForItem(search) {
     for (let key in character.items) {
         let item = character.items[key];
         if (!item || item === null) continue;
-        if (item.name === item) return true;
+        if (item.name === search) return true;
     }
 }
