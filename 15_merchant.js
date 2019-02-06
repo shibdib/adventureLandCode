@@ -27,20 +27,19 @@ function merchantStateTasks(state) {
     } // DEAD
     if (state === 12) { // WALLET REFILL
         withdrawGold(spendingAmount - character.gold);
-        return false;
+        return true;
     }
     if (state === 8) { // POTION RESTOCK
         resupply_potions(100);
-        return false;
+        return true;
     }
     if (state === 2) { // Deposits
         depositGold();
         depositItems();
-        return false;
+        return true;
     }
     if (state === 9) { // MERCHANT SALES
-        shibMove(49.07556111191911, 8.729439757833251);
-        if (distanceToPoint(49.07556111191911, 8.729439757833251) < 5) use('stand1');
+        if (distanceToPoint(50, 9) && distanceToPoint(50, 9) < 15) use('stand1'); else shibMove(50, 9);
         return false;
     }
     if (state === 11) { // ACCOUNTING
