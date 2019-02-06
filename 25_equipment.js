@@ -136,15 +136,15 @@ function compareEquip(itemInfo, key, don = false, pack){
             let slottedItem = character.slots[slot];
             // If not a slottable item continue main
             if (slottedItem === undefined) return;
-            slottedItem.iLevel = item_properties(slottedItem).level;
             // If slot is empty equip
             if (slottedItem === null) {
                 if (don) equip(key); else bankItemWithdraw(key, pack);
                 if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + slot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 return;
             }
+            slottedItem.iLevel = item_properties(slottedItem).level;
             // If slotted item is less valuable unequip and equip the new item
-            else if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
+            if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
                 if (don) unequip(itemInfo.type);
                 if (don) equip(key); else bankItemWithdraw(key, pack);
                 if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
@@ -156,15 +156,15 @@ function compareEquip(itemInfo, key, don = false, pack){
         let slottedItem = character.slots[itemSlot];
         // If not a slottable item continue
         if (slottedItem === undefined) return;
-        slottedItem.iLevel = item_properties(slottedItem).level;
         // If slot is empty equip
         if (slottedItem === null) {
             if (don) equip(key); else bankItemWithdraw(key, pack);
             if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + itemSlot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
             return;
         }
+        slottedItem.iLevel = item_properties(slottedItem).level;
         // If slotted item is less valuable unequip and equip the new item
-        else if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
+        if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
             if (don) unequip(itemSlot);
             if (don) equip(key); else bankItemWithdraw(key, pack);
             if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
