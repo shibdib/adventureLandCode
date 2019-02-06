@@ -14,7 +14,7 @@ setInterval(function () {
         currentTarget = undefined;
     }
     if (!state) return;
-    if (combat || !stateTasks(state, combat)) farm();
+    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 100);
 
 function farm() {
