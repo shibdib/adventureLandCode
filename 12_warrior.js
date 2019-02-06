@@ -97,10 +97,8 @@ function farm() {
     }
     // Mark in combat if anyone in the party is being targeted
     if (currentTarget) in_range_target = find_local_targets(currentTarget);
-    if (party_aggro) {
+    if (party_aggro && party_aggro.target !== character.name) {
         combat = true;
-        if (!drawAggro) stop();
-        drawAggro = true;
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
@@ -109,6 +107,8 @@ function farm() {
         }
     } else if (in_range_target) {
         combat = true;
+        // Pull more if we can handle it
+        if (in_range_target.attack < character.max_hp * 0.12 && pullAdds()) return;
         let aggressiveMonsters = nearbyAggressors();
         let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
@@ -117,8 +117,6 @@ function farm() {
         let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
-            // Pull more if we can handle it
-            if (can_use('taunt') && in_range_target.attack < character.max_hp * 0.12) pullAdds();
             // Pull him to a safer location if needed
             if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition)
         } else {
@@ -150,9 +148,10 @@ function pullAdds () {
     if (totalAttack > character.hp * 0.24) return;
     let possibleAdds = findAdds();
     if (possibleAdds.length) {
-        if (can_use('taunt', possibleAdds[0])) use('taunt', possibleAdds[0]); else if (can_use('charge', possibleAdds[0])) use('charge', possibleAdds[0]); else return;
+        if (can_use('taunt', possibleAdds[0])) use('taunt', possibleAdds[0]); else if (can_use('charge', possibleAdds[0])) use('charge', possibleAdds[0]); else if (can_attack(possibleAdds[0])) meleeCombat(possibleAdds[0]); else move_to_target(possibleAdds[0]);
         whisper_party('Going to pull an additional ' + possibleAdds[0].mtype + ' kill it!');
         game_log('Pulling add ' + possibleAdds[0].mtype);
+        return true;
     }
 }
 
