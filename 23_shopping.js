@@ -1,28 +1,28 @@
-let min_potions = 5; //The number of potions at which to do a resupply run.
-let purchase_amount = 25;//How many potions to buy at once.
+let purchase_amount = 50;//How many potions to buy at once.
 let potion_types = ["hpot1", "mpot1"];//The types of potions to keep supplied.
-
-function potion_check(state) {
-    for (type_id in potion_types) {
-        let type = potion_types[type_id];
-        let num_potions = num_items(type);
-        if (num_potions < min_potions) {
-            return true;
-        }
-    }
-}
 
 //This function contains our logic during resupply runs
 function resupply_potions() {
     let potion_merchant = get_npc("fancypots");
     let distance_to_merchant = null;
-    if (potion_merchant != null) {
-        distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
-    }
-    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250)) {
-        smart_move({to: "potions"});
-    } if (distance_to_merchant != null && distance_to_merchant < 250) {
-        buy_potions();
+    if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
+    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250)) smart_move({to: "potions"});
+    if (distance_to_merchant != null && distance_to_merchant < 250) {
+        if (buy_potions()) {
+            if (character.map !== 'bank') {
+                shibMove('bank');
+                return false;
+            } else {
+                for (let key in character.items) {
+                    let item = character.items[key];
+                    if (!item || item === null) continue;
+                    let itemInfo = G.items[item.name];
+                    if (itemInfo.type === 'pot') bank_store(key);
+                }
+                accounting();
+                return true;
+            }
+        }
     }
 }
 
@@ -35,17 +35,40 @@ function buy_potions() {
             if (item_def != null) {
                 let cost = item_def.g * purchase_amount;
                 if (character.gold >= cost) {
-                    let num_potions = num_items(type);
-                    if (num_potions < min_potions) {
-                        buy(type, purchase_amount);
-                    }
+                    buy(type, purchase_amount);
                 } else {
-                    game_log("Not Enough Gold!");
+                    return true;
                 }
             }
         }
     } else {
-        game_log("Inventory Full!");
+        return true;
+    }
+}
+
+//Get bank information
+function accounting() {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        let accountingInfo = {};
+        for (let key in Object.values(character.user)) {
+            let slot = Object.values(character.user)[key];
+            if (!slot || !slot.length) continue;
+            for (let packKey in slot) {
+                let banker = slot[packKey];
+                if (!banker) continue;
+                let itemInfo = G.items[banker.name];
+                if (accountingInfo[itemInfo.id]) {
+                    accountingInfo[itemInfo.id] += 1;
+                } else {
+                    accountingInfo[itemInfo.id] = 1;
+                }
+            }
+        }
+        accountingInfo['gold'] = character.user['gold'];
+        return accountingInfo;
     }
 }
 

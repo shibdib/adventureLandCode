@@ -15,6 +15,10 @@ let states = {
     5: 'crafting',
     6: 'upgrading',
     7: 'combining',
+    8: 'potionDeliver',
+    9: 'sales',
     10: 'rest',
+    11: 'accounting',
+    12: 'withdrawGold',
     99: 'dead'
 };

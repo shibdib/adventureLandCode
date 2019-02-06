@@ -38,7 +38,7 @@ function stateTasks(state, combat) {
         depositItems();
         return true;
     }
-    if (state === 3) { // POTIONS
+    if (state === 3) { // POTION PICKUP
         return false;
     }
     if (state === 4) { // GEAR

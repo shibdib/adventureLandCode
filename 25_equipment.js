@@ -90,7 +90,7 @@ function depositGold(amount = character.gold - 5000) {
     }
     if (character.map !== 'bank') {
         shibMove('bank');
-        return true;
+        return false;
     } else {
         bank_deposit(amount);
         goldNotify = undefined;
@@ -106,7 +106,7 @@ function depositItems(potions = false) {
     }
     if (character.map !== 'bank') {
         shibMove('bank');
-        return true;
+        return false;
     } else {
         equipBIS();
         for (let key in character.items) {
@@ -117,6 +117,17 @@ function depositItems(potions = false) {
             if (itemInfo.type === 'stand') continue;
             bank_store(key);
         }
+    }
+}
+
+//Pick Up Gold
+function withdrawGold(amount) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        if (amount > character.user['gold']) amount = character.user['gold'];
+        bank_withdraw(amount);
     }
 }
 //UPGRADING and COMBINING
