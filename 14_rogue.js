@@ -46,7 +46,7 @@ function farm() {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range) {
             // Killy rogue
-            if (can_use('quickstab')) use('quickstab', target); else if (can_use('quickpunch')) use('quickpunch', target);
+            if (can_use('quickstab', target)) use('quickstab', target); else if (can_use('quickpunch', target)) use('quickpunch', target);
             if (can_attack(target))  meleeCombat(target);
         } else {
             // Poison
@@ -59,7 +59,7 @@ function farm() {
         // No invis on long moves
         stop('invis');
         // Speedy rogue
-        if (can_use('rspeed')) use('rspeed', character);
+        if (can_use('rspeed', character)) use('rspeed', character);
         move_to_leader(character.range * 0.5, character.range * 0.7);
     }
 }

@@ -56,7 +56,7 @@ function farm()
     let aggressiveMonsters = nearbyAggressors();
     if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
     if (curseTarget && aggressiveMonsters.length && distance_to_point(aggressiveMonsters[0].real_x, aggressiveMonsters[0].real_y) < 65) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
-    if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive')) { //Max heal with revive
+    if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
@@ -83,14 +83,14 @@ function farm()
     } else if (!wounded && dead_partymember()) { //REVIVE DEAD
         alerted = undefined;
         let dead_party = dead_partymember();
-        if (can_use('revive') && in_attack_range(dead_party)) {
+        if (can_use('revive', dead_party)) {
             use('revive', dead_party);
         } else {
             if (kiteLocation) move_to_position(kiteLocation); else move_to_target(dead_party);
         }
     } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
         alerted = undefined;
-            if (can_use('curse') && check_tank_aggro()) {
+            if (can_use('curse', curseTarget) && check_tank_aggro()) {
                 use('curse', curseTarget);
             } else {
                 if (in_attack_range(curseTarget)) {

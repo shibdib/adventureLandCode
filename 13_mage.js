@@ -58,8 +58,8 @@ function farm() {
         if (can_use('energize')) randomEnergize();
         if (range <= character.range && check_tank_aggro()) {
             // Use burst when high mana
-            if (character.mp >= character.max_mp * 0.8 && can_use('burst')) {
-                if (can_use('cburst')) use('cburst', target); else use('burst', target);
+            if (character.mp >= character.max_mp * 0.8 && can_use('burst', target)) {
+                if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
             // Kite if needed
             if (kiteLocation) move_to_position(kiteLocation);

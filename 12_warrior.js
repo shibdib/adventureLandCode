@@ -102,9 +102,7 @@ function farm() {
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
         } else {
-            if (can_use('taunt')) use('taunt', party_aggro);
-            if (can_use('charge') && range > 110 && range < 500) use('charge');
-            move_to_target(party_aggro);
+            if (can_use('taunt', party_aggro)) use('taunt', party_aggro); else if (can_use('charge', party_aggro) && range > 110 && range < 500) use('charge', party_aggro); else move_to_target(party_aggro);
         }
     } else if (in_range_target) {
         combat = true;
@@ -123,8 +121,7 @@ function farm() {
             if (wait_for_healer()) {
                 if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition); else return stop();
             }
-            if (can_use('taunt')) use('taunt', in_range_target); else if (can_use('charge')) use('charge');
-            move_to_target(in_range_target);
+            if (can_use('taunt', in_range_target)) use('taunt', in_range_target); else if (can_use('charge', in_range_target)) use('charge', in_range_target); else move_to_target(in_range_target);
         }
     } else {
         combat = false;

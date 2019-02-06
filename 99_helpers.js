@@ -1,9 +1,10 @@
-function can_use(name) {
+function can_use(name, target = undefined) {
     if (G.skills[name] && G.skills[name].class && !in_arr(character.ctype,G.skills[name].class)) return false; // checks the class
     if (G.skills[name] && G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
     if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
     if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
     if (G.skills[name] && G.skills[name].consume && !checkInventoryForItem(G.skills[name].consume)) return false; // checks for consumable
+    if (target && G.skills[name] && G.skills[name].range && distanceToEntity(target) > G.skills[name].range) return false; // checks for range
     return parent.can_use(name);  // checks the cooldown
 }
 
