@@ -10,7 +10,7 @@ function move_to_target(target, min = 0, max = 0) {
     // If moving continue
     if (is_moving(character)) return;
     // Handle different map
-    if (parent.party[character.party].map !== character.map) return shib_move(parent.party[character.party].map);
+    if (parent.party[character.party] && parent.party[character.party].map !== character.map) return shib_move(parent.party[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (target) move_to_coords(target.real_x, target.real_y); else return shib_move(target);
@@ -30,7 +30,7 @@ function move_to_leader (min = 5, max = 10) {
     // If moving continue
     if (is_moving(character)) return;
     // Handle different map
-    if (parent.party[character.party].map !== character.map) return shib_move(parent.party[character.party].map);
+    if (parent.party[character.party] && parent.party[character.party].map !== character.map) return shib_move(parent.party[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (leader) move_to_coords(leader.x, leader.y); else return shib_move(parent.party[character.party].x, parent.party[character.party].y);
