@@ -108,7 +108,7 @@ function depositItems(potions = false) {
         shibMove('bank');
         return false;
     } else {
-        equipBIS();
+        if (character.ctype !== 'merchant') equipBIS();
         for (let key in character.items) {
             let item = character.items[key];
             if (!item || item === null) continue;
