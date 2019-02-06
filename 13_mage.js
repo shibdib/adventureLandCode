@@ -109,8 +109,8 @@ function randomEnergize() {
         for (let key in shuffle(parent.party_list)) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
-            // Don't energize far away, high mp or merchants
-            if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11) continue;
+            // Don't energize far away, high mp, has energize or merchants
+            if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11 || checkEntityForBuff(entity, 'energized')) continue;
             if (Math.random() > 0.7) {
                 if (member !== character.name) whisper_party('Energizing ' + member + ' with increased MP regen and Attack Speed.'); else whisper_party('Energizing myself.');
                 use('energize', entity);

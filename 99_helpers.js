@@ -5,6 +5,11 @@ function can_use(name) {
     return parent.can_use(name);  // checks the cooldown
 }
 
+function checkEntityForBuff(entity, buff) {
+    if (!entity.s) return false;
+    return Object.keys(entity.s).includes(buff);
+}
+
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
