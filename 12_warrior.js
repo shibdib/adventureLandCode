@@ -150,7 +150,7 @@ function pullAdds () {
     if (totalAttack > character.hp * 0.24) return;
     let possibleAdds = findAdds();
     if (possibleAdds.length) {
-        use('taunt', possibleAdds[0]);
+        if (can_use('taunt', possibleAdds[0])) use('taunt', possibleAdds[0]); else if (can_use('charge', possibleAdds[0])) use('charge', possibleAdds[0]); else return;
         whisper_party('Going to pull an additional ' + possibleAdds[0].mtype + ' kill it!');
         game_log('Pulling add ' + possibleAdds[0].mtype);
     }
