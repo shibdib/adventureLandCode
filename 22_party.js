@@ -84,15 +84,15 @@ function wait_for_healer(range = 300) {
                 return true;
             }
         }
-        if (!healerFound) {
-            if (!healerNotify) {
-                game_log('No healer??');
-                whisper_party('Where did the healer go??');
-            }
-            healerNotify = true;
-            return true;
-        }
         healerNotify = undefined;
+    }
+    if (!healerFound) {
+        if (!healerNotify) {
+            game_log('No healer??');
+            whisper_party('Where did the healer go??');
+        }
+        healerNotify = true;
+        return true;
     }
 }
 

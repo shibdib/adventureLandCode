@@ -120,8 +120,9 @@ function farm() {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (wait_for_healer()) {
                 if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition); else return stop();
+            } else {
+                if (can_use('taunt', in_range_target)) use('taunt', in_range_target); else if (can_use('charge', in_range_target)) use('charge', in_range_target); else move_to_target(in_range_target);
             }
-            if (can_use('taunt', in_range_target)) use('taunt', in_range_target); else if (can_use('charge', in_range_target)) use('charge', in_range_target); else move_to_target(in_range_target);
         }
     } else {
         combat = false;
