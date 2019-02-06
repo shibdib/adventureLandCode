@@ -1,12 +1,12 @@
-let min_potions = 50; //The number of potions at which to do a resupply run.
-let purchase_amount = 50;//How many potions to buy at once.
-let potion_types = ["hpot0", "mpot0"];//The types of potions to keep supplied.
+let min_potions = 5; //The number of potions at which to do a resupply run.
+let purchase_amount = 25;//How many potions to buy at once.
+let potion_types = ["hpot1", "mpot1"];//The types of potions to keep supplied.
 
 function potion_check(state) {
     for (type_id in potion_types) {
         let type = potion_types[type_id];
         let num_potions = num_items(type);
-        if (num_potions < min_potions) {
+        if (num_potions < min_potions && character.gold > 25000) {
             return "resupply_potions";
         } else {
             return state;
@@ -22,7 +22,7 @@ function resupply_potions() {
         distance_to_merchant = distance_to_point(potion_merchant.position[0], potion_merchant.position[1]);
     }
     if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250)) {
-        if (can_use('use_town')) use('use_town'); else smart_move({to: "potions"});
+        smart_move({to: "potions"});
     } if (distance_to_merchant != null && distance_to_merchant < 250) {
         buy_potions();
     }
@@ -38,18 +38,15 @@ function buy_potions() {
                 let cost = item_def.g * purchase_amount;
                 if (character.gold >= cost) {
                     let num_potions = num_items(type);
-
                     if (num_potions < min_potions) {
                         buy(type, purchase_amount);
                     }
-                }
-                else {
+                } else {
                     game_log("Not Enough Gold!");
                 }
             }
         }
-    }
-    else {
+    } else {
         game_log("Inventory Full!");
     }
 }

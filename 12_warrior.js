@@ -81,7 +81,6 @@ function state_controller() {
 }
 
 function farm() {
-    let in_range_target;
     let party_aggro = check_for_party_aggro();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
@@ -96,27 +95,28 @@ function farm() {
         }
     }
     // Mark in combat if anyone in the party is being targeted
-    if (currentTarget) in_range_target = find_local_targets(currentTarget);
-    if (party_aggro && party_aggro.target !== character.name) {
+    combat = check_for_party_aggro();
+    let mainTarget = find_local_targets(currentTarget);
+    if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
         combat = true;
         let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
         } else {
-            if (can_use('taunt', party_aggro)) use('taunt', party_aggro); else if (can_use('charge', party_aggro) && range > 110 && range < 500) use('charge', party_aggro); else move_to_target(party_aggro);
+            tackle(party_aggro);
         }
-    } else if (in_range_target) {
+    } else if (mainTarget) {
         combat = true;
         // Pull more if we can handle it
-        if (in_range_target.attack < character.max_hp * 0.12 && pullAdds()) return;
+        if (mainTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
         let aggressiveMonsters = nearbyAggressors();
         let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
         if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
-        let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
+        let range = distance_to_point(mainTarget.real_x, mainTarget.real_y);
         if (range <= character.range) {
-            if (can_attack(in_range_target)) meleeCombat(in_range_target);
+            if (can_attack(mainTarget)) meleeCombat(mainTarget);
             // Pull him to a safer location if needed
             if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition)
         } else {
@@ -124,7 +124,7 @@ function farm() {
             if (wait_for_healer()) {
                 if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition); else return stop();
             } else {
-                if (can_use('taunt', in_range_target)) use('taunt', in_range_target); else if (can_use('charge', in_range_target)) use('charge', in_range_target); else move_to_target(in_range_target);
+                tackle(mainTarget);
             }
         }
     } else {
@@ -145,15 +145,11 @@ function pullAdds () {
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack);
     // If attack is greater than 25% of remaining health, return
-    if (totalAttack > character.hp * 0.24 || currentThreats.length > 3) return;
+    if (totalAttack > character.hp * 0.2 || currentThreats.length > 2) return;
     let possibleAdds = findAdds();
     if (possibleAdds.length) {
-        if (can_use('taunt', possibleAdds[0])) use('taunt', possibleAdds[0]); else if (can_use('charge', possibleAdds[0])) use('charge', possibleAdds[0]); else if (can_attack(possibleAdds[0])) meleeCombat(possibleAdds[0]); else move_to_target(possibleAdds[0]);
-        if (possibleAdds[0].target === character.name) {
-            whisper_party('Pulled an additional ' + possibleAdds[0].mtype + ' kill it!');
-            game_log('Pulling add ' + possibleAdds[0].mtype);
-            return true;
-        }
+        tackle(possibleAdds[0]);
+        return true;
     }
 }
 
@@ -195,4 +191,9 @@ function slowestMan() {
         combatSet = undefined;
         cruise(speed);
     }
+}
+
+//Tackle a target
+function tackle(target) {
+    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else move_to_target(target);
 }
