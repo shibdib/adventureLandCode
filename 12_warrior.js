@@ -129,7 +129,7 @@ function farm() {
     } else {
         combat = false;
         drawAggro = undefined;
-        if (wait_for_party()) return stop();
+        if (wait_for_party(9999)) return stop();
         if (currentTarget) {
             shib_move(currentTarget);
             refreshTarget();
