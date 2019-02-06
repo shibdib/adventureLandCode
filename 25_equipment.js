@@ -34,7 +34,7 @@ function gearIssue() {
     }
     if (character.map !== 'bank') {
         shibMove('bank');
-        return true;
+        return false;
     } else {
         equipBIS();
         for (let key in Object.values(character.user)) {
@@ -51,6 +51,7 @@ function gearIssue() {
         }
         equipBIS();
         depositItems();
+        return true;
     }
 }
 
