@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, drawAggro, state;
+let currentTarget, target, combat, pendingReboot, drawAggro, state, primary;
 
 //State Controller
 setInterval(function () {
@@ -32,6 +32,8 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget = findLocalMonsters(currentTarget);
+    if (primary && primary.dead) primary = undefined;
+    if (mainTarget && !primary) primary = mainTarget;
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
         let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
@@ -39,17 +41,17 @@ function farm() {
         } else {
             tackle(party_aggro);
         }
-    } else if (mainTarget) {
+    } else if (primary) {
         // Pull more if we can handle it
-        if (mainTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
+        if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
         let aggressiveMonsters = nearbyAggressors();
         let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
         if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
-        let range = distanceToPoint(mainTarget.real_x, mainTarget.real_y);
+        let range = distanceToPoint(primary.real_x, primary.real_y);
         if (range <= character.range) {
-            if (can_attack(mainTarget)) meleeCombat(mainTarget);
+            if (can_attack(primary)) meleeCombat(primary);
             // Pull him to a safer location if needed
             if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition)
         } else {
@@ -57,7 +59,7 @@ function farm() {
             if (waitForHealer()) {
                 if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition); else return stop();
             } else {
-                tackle(mainTarget);
+                tackle(primary);
             }
         }
     } else {
@@ -78,7 +80,7 @@ function pullAdds () {
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if (totalAttack + possibleAdds[0].attack > character.hp * 0.05 || currentThreats.length > 3) return;
+    if (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.05 || currentThreats.length > 3) return;
     if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 90) {
         tackle(possibleAdds[0]);
         return true;
