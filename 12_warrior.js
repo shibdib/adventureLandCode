@@ -4,7 +4,7 @@ let currentTarget, target, combat, pendingReboot, drawAggro, state;
 
 //State Controller
 setInterval(function () {
-    state = state_controller(state);
+    state = stateController(state);
 }, 120000);
 
 //Primary Loop
