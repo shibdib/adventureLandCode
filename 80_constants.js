@@ -6,3 +6,15 @@ let pveCharacters = [
     {'name': 'Shibtard', 'class': 'ranger', 'slot': 11, 'role': 'dps'},
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
+
+let states = {
+    1: 'farm',
+    2: 'banking',
+    3: 'potions',
+    4: 'equip',
+    5: 'crafting',
+    6: 'upgrading',
+    7: 'combining',
+    10: 'rest',
+    99: 'dead'
+};

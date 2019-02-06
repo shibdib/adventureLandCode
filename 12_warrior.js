@@ -1,86 +1,20 @@
 game_log("---Warrior Script Start---");
 load_code(2);
+let currentTarget, target, combat, pendingReboot, drawAggro, state;
 
-let currentTarget, target, combat, pendingReboot, drawAggro;
-let state = "farm";
-
-//Party Management (30s)
+//State Controller
 setInterval(function () {
-    // If reboot is pending do it when out of combat
-    if (!combat && pendingReboot) {
-        refreshCharacters(true);
-        pendingReboot = undefined;
-    }
-    // Handle restarting/starting other characters
-    refreshCharacters();
-    // Handles sending invites
-    for (let char of pveCharacters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
-        send_party_invite(char.name);
-    }
-}, 30000);
+    state = state_controller(state);
+}, 120000);
 
-//Force reboot of character (1h)
+//Primary Loop
 setInterval(function () {
-    // Update and reboot
-    updateCode();
-    if (!combat) refreshCharacters(true); else pendingReboot = true;
-}, 3600000 );
-
-//Movement And Attacking (1/10th s)
-setInterval(function () {
-    // Loot the things
-    loot(true);
-    if (state === 'farm' || combat) {
-        farm();
-    } else if (state === 'resupply_potions') resupply_potions();
-}, 100);//Execute 10 times per second
-
-//Potions, equipment and state (1/2s)
-setInterval(function () {
-    // Set state
-    state_controller();
-    // Handle potion use
-    if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
-        use('use_hp');
-    } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
-        use('use_mp');
-    } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
-        use('use_hp');
-    }
-    // Check for BIS
-    equipBIS();
-}, 500);//Execute 2 times per second
-
-// Farm target refreshes every 10 minutes
-setInterval(function () {
-    currentTarget = undefined;
-}, 600000);
-
-// Reset speed every 1.5 seconds
-// Move as fast as the slowest man
-setInterval(function () {
-    slowestMan();
-}, 1500);
-
-function state_controller() {
-    //If dead respawn and reset target
-    if (character.rip) {
-        currentTarget = undefined;
-        return respawn();
-    }
-    //Default to farming
-    let new_state = "farm";
-    //Do we need potions?
-    new_state = potion_check(new_state)
-    //If state changed set it and announce
-    if (state != new_state) {
-        game_log("---NEW STATE " + new_state + "---");
-        state = new_state;
-    }
-}
+    stateTasks(state);
+}, 100);
 
 function farm() {
+    loot();
+    potionController();
     let party_aggro = checkPartyAggro();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
@@ -195,3 +129,42 @@ function slowestMan() {
 function tackle(target) {
     if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else moveToTarget(target);
 }
+
+///
+///
+/// OTHER LOOPS
+///
+///
+
+//Party Management (30s)
+setInterval(function () {
+    // If reboot is pending do it when out of combat
+    if (!combat && pendingReboot) {
+        refreshCharacters(true);
+        pendingReboot = undefined;
+    }
+    // Handle restarting/starting other characters when needed
+    refreshCharacters();
+    // Handles sending invites
+    for (let char of pveCharacters) {
+        if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
+        send_party_invite(char.name);
+    }
+}, 30000);
+
+// Party Move Speed Management
+setInterval(function () {
+    slowestMan();
+}, 1500);
+
+//Force reboot of character (1h)
+setInterval(function () {
+    // Update and reboot
+    updateCode();
+    if (!combat) refreshCharacters(true); else pendingReboot = true;
+}, 3600000 );
+
+// Farm target refreshes every 10 minutes
+setInterval(function () {
+    currentTarget = undefined;
+}, 600000);

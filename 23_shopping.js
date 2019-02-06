@@ -6,10 +6,8 @@ function potion_check(state) {
     for (type_id in potion_types) {
         let type = potion_types[type_id];
         let num_potions = num_items(type);
-        if (num_potions < min_potions && character.gold > 25000) {
-            return "resupply_potions";
-        } else {
-            return state;
+        if (num_potions < min_potions) {
+            return true;
         }
     }
 }
@@ -30,7 +28,7 @@ function resupply_potions() {
 
 //Buys potions until the amount of each potion_type we defined in the start of the script is above the min_potions value.
 function buy_potions() {
-    if (empty_slots() > 0) {
+    if (openInventorySpots() > 0) {
         for (type_id in potion_types) {
             let type = potion_types[type_id];
             let item_def = parent.G.items[type];
@@ -61,7 +59,7 @@ function num_items(name) {
 }
 
 //Returns how many inventory slots have not yet been filled.
-function empty_slots() {
+function openInventorySpots() {
     return character.esize;
 }
 

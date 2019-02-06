@@ -41,6 +41,20 @@ function moveToLeader (min = 5, max = 10) {
     if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), leader.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), parent.party[character.party].y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
 }
 
+// Travel to an NPC
+function travelToNPC(name) {
+    let targetNPC = get_npc(name);
+    let distance;
+    if (targetNPC) distance = distanceToPoint(targetNPC.position[0], targetNPC.position[1]);
+    if (!smart.moving && (!distance || !distance > 250)) {
+        smart_move(name);
+        return;
+    } if (distance && distance < 150) {
+        stop();
+        return true;
+    }
+}
+
 // Move to coords wrapper
 function moveToPosition(position) {
     moveToCoords(position.x, position.y)

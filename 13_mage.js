@@ -1,44 +1,20 @@
 game_log("---Mage Script Start---");
 load_code(2);
-let combat;
-let state = "farm";
+let combat, state;
 
-//Movement And Attacking
+//State Controller
 setInterval(function () {
-    if (character.party && (state === 'farm' || combat)) {
-        farm();
-    } else if (state === 'resupply_potions') resupply_potions();
-}, 100);//Execute 10 times per second
+    state = state_controller(state);
+}, 120000);
 
-//Potions and state
+//Primary Loop
 setInterval(function () {
-    state_controller();
-    if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
-        use('use_hp');
-    } else if (can_use('use_mp') && character.mp < character.max_mp * 0.75) {
-        use('use_mp');
-    } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
-        use('use_hp');
-    }
-    // Check for BIS
-    equipBIS();
-}, 500);//Execute 2 times per second
-
-function state_controller() {
-    //If dead respawn
-    if (character.rip) return respawn();
-    //Default to farming
-    let new_state = "farm";
-    //Do we need potions?
-    new_state = potion_check(new_state)
-    //If state changed set it and announce
-    if (state !== new_state) {
-        game_log("---NEW STATE " + new_state + "---");
-        state = new_state;
-    }
-}
+    stateTasks(state);
+}, 100);
 
 function farm() {
+    loot();
+    potionController();
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it

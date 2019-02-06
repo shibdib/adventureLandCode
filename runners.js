@@ -1057,6 +1057,16 @@ function continue_pathfinding()
     bfs();
 }
 
+function bank_store(item)
+{
+    //
+}
+
+function bank_deposit(amount)
+{
+    //
+}
+
 function smart_move_logic()
 {
     if(!smart.moving) return;
