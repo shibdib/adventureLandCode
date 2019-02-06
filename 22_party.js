@@ -103,6 +103,8 @@ function whisper_party(message) {
 function restart_lost(force = false) {
     let count = Object.values(get_active_characters()).length;
     if (count < 4 || force) {
+        stop();
+        whisper_party('Going to refresh the party, one second...');
         //Stops all
         for (let char of pveCharacters) {
             if (char.name === character.name) continue;
