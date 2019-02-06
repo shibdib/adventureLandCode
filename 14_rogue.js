@@ -53,13 +53,13 @@ function farm() {
             if (can_use('pcoat')) use('pcoat');
             // Sneaky rogue
             if (can_use('invis')) use('invis');
-            move_to_target(target, character.range * 0.5, character.range * 0.99);
+            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         // No invis on long moves
         stop('invis');
         // Speedy rogue
         if (can_use('rspeed', character)) use('rspeed', character);
-        move_to_leader(character.range * 0.5, character.range * 0.7);
+        moveToLeader(character.range * 0.5, character.range * 0.7);
     }
 }

@@ -196,5 +196,5 @@ function slowestMan() {
 
 //Tackle a target
 function tackle(target) {
-    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else move_to_target(target);
+    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else moveToTarget(target);
 }
