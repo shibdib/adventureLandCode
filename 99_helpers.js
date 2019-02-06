@@ -2,7 +2,25 @@ function can_use(name) {
     if (G.skills[name] && G.skills[name].class && !in_arr(character.ctype,G.skills[name].class)) return false; // checks the class
     if (G.skills[name] && G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
     if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
+    if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
+    if (G.skills[name] && G.skills[name].consume && !checkInventoryForItem(G.skills[name].consume)) return false; // checks for consumable
     return parent.can_use(name);  // checks the cooldown
+}
+
+//Looks for weapon type equipped
+function checkForWeaponType(type) {
+    for (let slot of Object.values(character.slots)) {
+        if (slot.name && G.items[slot.name].wtype && G.items[slot.name].wtype === type) return true;
+    }
+}
+
+//Looks for item in inventory
+function checkInventoryForItem(item) {
+    for (let key in character.items) {
+        let item = character.items[key];
+        if (!item || item === null) continue;
+        if (item.name === item) return true;
+    }
 }
 
 function checkEntityForBuff(entity, buff) {

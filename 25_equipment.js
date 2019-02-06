@@ -24,3 +24,19 @@ function equip_best_available() {
         }
     }
 }
+
+//Looks for weapon type equipped
+function checkForWeaponType(type) {
+    for (let slot of Object.values(character.slots)) {
+        if (slot.name && G.items[slot.name].wtype && G.items[slot.name].wtype === type) return true;
+    }
+}
+
+//Looks for item in inventory
+function checkInventoryForItem(item) {
+    for (let key in character.items) {
+        let item = character.items[key];
+        if (!item || item === null) continue;
+        if (item.name === item) return true;
+    }
+}

@@ -60,6 +60,9 @@ function farm()
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
+            // If you need to kite do so
+            if (kiteLocation) move_to_position(kiteLocation);
+            // Use revive as a mega heal
             use('revive', lowest_health);
         } else {
             if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
@@ -70,6 +73,9 @@ function farm()
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
+            // If you need to kite do so
+            if (kiteLocation) move_to_position(kiteLocation);
+            // Heal
             heal(lowest_health);
         } else {
             if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
