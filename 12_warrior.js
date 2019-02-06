@@ -9,6 +9,10 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
+    if (character.rip) {
+        primary = undefined;
+        currentTarget = undefined;
+    }
     if (!state) return;
     if (combat || !stateTasks(state, combat)) farm();
 }, 100);
