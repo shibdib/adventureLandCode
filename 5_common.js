@@ -26,7 +26,7 @@ function stateController(state) {
 }
 
 //State tasks
-function stateTasks(state) {
+function stateTasks(state, combat) {
     if (state === 99) return respawn(); // DEAD
     if (state === 1 || combat) return farm(); // FARM
     if (state === 2) { // GOLD RICH
