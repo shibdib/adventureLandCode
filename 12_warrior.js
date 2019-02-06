@@ -118,7 +118,8 @@ function farm() {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (wait_for_healer()) {
                 let aggressiveMonsters = nearbyAggressors();
-                if (aggressiveMonsters.length) return move_to_position(getKitePosition(target, aggressiveMonsters, 190)); else return stop();
+                let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
+                if (aggressiveMonsters.length && kitePosition) return move_to_position(getKitePosition(target, aggressiveMonsters, 190)); else return stop();
             }
             if (can_use('taunt')) use('taunt', in_range_target); else if (can_use('charge')) use('charge');
             move_to_target(in_range_target);
