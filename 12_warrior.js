@@ -161,9 +161,10 @@ function refreshTarget () {
     // If range doesn't change much start counter
     if (distance_to_point(lastPos.x, lastPos.y) < 5) {
         if (!waitTime) waitTime = Date.now();
-        // If waiting for 20 seconds find a new target
-        if (waitTime + 20000 < Date.now()) {
-            whisper_party('There are no ' + currentTarget + ' here so going to look for a new target.');
+        let cutoff = 20000; // Wait 20 seconds
+        if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded
+        if (waitTime + cutoff < Date.now()) {
+            if (cutoff === 20000) whisper_party('There are no ' + currentTarget + ' here, so time for a new target.'); else whisper_party('There is too many people farming here, so I will look for a new target.');
             currentTarget = undefined;
         }
     } else {

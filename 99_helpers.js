@@ -13,6 +13,11 @@ function checkEntityForBuff(entity, buff) {
     return Object.keys(entity.s).includes(buff);
 }
 
+function getNearbyCharacters(range = 200) {
+    let characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob));
+    if (characters.length) return characters;
+}
+
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
