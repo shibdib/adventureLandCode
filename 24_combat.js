@@ -87,27 +87,6 @@ function nearbyAggressors() {
     return sort_by_distance(aggressiveMonsters);
 }
 
-function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
-    let range = distance_to_point(target.real_x, target.real_y);
-    for (let x = 0; x < 100; x++) {
-        let xChange = getRndInteger(-character.range, character.range);
-        let yChange = getRndInteger(-character.range, character.range);
-        if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-            let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-            // Handle avoiding others
-            let closestAvoid;
-            if (avoidArray && avoidArray.length) {
-                for (let avoid of avoidArray) {
-                    if (avoid.id === target.id) continue;
-                    let avoidRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                    if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
-                }
-            }
-            if (newRange > range && newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > 65)) return {x: character.real_x + xChange, y: character.real_y + yChange};
-        }
-    }
-}
-
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
     for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);
@@ -201,22 +180,4 @@ function dead_partymember() {
             if (entity) return entity;
         }
     }
-}
-
-function sort_by_distance(array) {
-    array.sort(function (current, next) {
-        let dist_current = parent.distance(character, current);
-        let dist_next = parent.distance(character, next);
-        if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
-    });
-    return array;
-}
-
-function sort_by_xp(array) {
-    array.sort(function (current, next) {
-        let xp_current = G.monsters[current].xp;
-        let xp_next = G.monsters[next].xp;
-        if (xp_current < xp_next) return -1; else if (xp_current > xp_next) return 1; else return 0;
-    });
-    return array;
 }
