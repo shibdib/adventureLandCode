@@ -64,8 +64,11 @@ setInterval(function () {
 }, 1500);
 
 function state_controller() {
-    //If dead respawn
-    if (character.rip) return respawn();
+    //If dead respawn and reset target
+    if (character.rip) {
+        currentTarget = undefined;
+        return respawn();
+    }
     //Default to farming
     let new_state = "farm";
     //Do we need potions?
@@ -114,6 +117,8 @@ function farm() {
         let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
+            // Pull more if we can handle it
+            if (can_use('taunt') && in_range_target.attack < character.max_hp * 0.12) pullAdds();
             // Pull him to a safer location if needed
             if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition)
         } else {
@@ -132,6 +137,22 @@ function farm() {
             shib_move(currentTarget);
             refreshTarget();
         }
+    }
+}
+
+// Pull additional monsters
+function pullAdds () {
+    let currentThreats = getMonstersTargettingMe();
+    // Get total incoming attack damage
+    let totalAttack = 0;
+    currentThreats.forEach((t) => totalAttack += t.attack);
+    // If attack is greater than 25% of remaining health, return
+    if (totalAttack > character.hp * 0.24) return;
+    let possibleAdds = findAdds();
+    if (possibleAdds.length) {
+        use('taunt', possibleAdds[0]);
+        whisper_party('Going to pull an additional ' + possibleAdds[0].mtype + ' kill it!');
+        game_log('Pulling add ' + possibleAdds[0].mtype);
     }
 }
 

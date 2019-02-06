@@ -87,6 +87,18 @@ function nearbyAggressors() {
     return sort_by_distance(aggressiveMonsters);
 }
 
+function findAdds(attack = 0.07) {
+    let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && can_use('taunt', mob) && mob.attack < character.hp * attack);
+    //Order monsters by distance.
+    return sort_by_distance(adds);
+}
+
+function getMonstersTargettingMe() {
+    let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === character.name);
+    //Order monsters by distance.
+    return sort_by_distance(all);
+}
+
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
     for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);

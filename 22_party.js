@@ -75,7 +75,7 @@ function wait_for_healer(range = 300) {
                 return true;
             }
             // Handle distance
-            if (distance_to_point(entity.real_x, entity.real_y) >= entity.range * 0.95) {
+            if (distance_to_point(entity.real_x, entity.real_y) >= entity.range * 1.2) {
                 if (!healerNotify) {
                     game_log('Healer Range.');
                     whisper_party('Waiting on our healer ' + member + ' to get in range before I pull.');
