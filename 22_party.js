@@ -28,8 +28,8 @@ function waitForParty(range = 400) {
                 }
                 waitNotify = true;
                 if (!waitTime) waitTime = Date.now();
-                // If waiting for 45 seconds then go to the problem child (3 minutes if map change occurred)
-                let waitLength = 45000;
+                // If waiting for 25 seconds then go to the problem child (3 minutes if map change occurred)
+                let waitLength = 25000;
                 if (parent.party[member].map !== character.map) waitLength = 180000;
                 if (waitTime + waitLength < Date.now() && entity && entity.ctype !== 'priest') {
                     if (!waitMoveNotify) {
