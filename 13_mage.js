@@ -116,7 +116,7 @@ function randomEnergize() {
             // Don't energize far away, high mp, has energize or merchants
             if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11 || checkEntityForBuff(entity, 'energized')) continue;
             if (Math.random() > 0.7) {
-                if (member !== character.name) whisper_party('Energizing ' + member + ' with increased MP regen and Attack Speed.'); else whisper_party('Energizing myself.');
+                if (member !== character.name) whisperParty('Energizing ' + member + ' with increased MP regen and Attack Speed.'); else whisperParty('Energizing myself.');
                 use('energize', entity);
             }
         }

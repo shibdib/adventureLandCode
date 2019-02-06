@@ -8,11 +8,11 @@ let state = "farm";
 setInterval(function () {
     // If reboot is pending do it when out of combat
     if (!combat && pendingReboot) {
-        restart_lost(true);
+        refreshCharacters(true);
         pendingReboot = undefined;
     }
     // Handle restarting/starting other characters
-    restart_lost();
+    refreshCharacters();
     // Handles sending invites
     for (let char of pveCharacters) {
         if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
@@ -24,7 +24,7 @@ setInterval(function () {
 setInterval(function () {
     // Update and reboot
     updateCode();
-    if (!combat) restart_lost(true); else pendingReboot = true;
+    if (!combat) refreshCharacters(true); else pendingReboot = true;
 }, 3600000 );
 
 //Movement And Attacking (1/10th s)
@@ -89,7 +89,7 @@ function farm() {
         if (target) {
             waitTime = undefined;
             currentTarget = target;
-            whisper_party('New target is a ' + target);
+            whisperParty('New target is a ' + target);
             game_log('New target is a ' + target);
             stop();
         }
@@ -121,7 +121,7 @@ function farm() {
             if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition)
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (wait_for_healer()) {
+            if (waitForHealer()) {
                 if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition); else return stop();
             } else {
                 tackle(mainTarget);
@@ -130,7 +130,7 @@ function farm() {
     } else {
         combat = false;
         drawAggro = undefined;
-        if (wait_for_party(9999)) return stop();
+        if (waitForParty(9999)) return stop();
         if (currentTarget) {
             shibMove(currentTarget);
             refreshTarget();
@@ -164,7 +164,7 @@ function refreshTarget () {
         let cutoff = 20000; // Wait 20 seconds
         if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded
         if (waitTime + cutoff < Date.now()) {
-            if (cutoff === 20000) whisper_party('There are no ' + currentTarget + ' here, so time for a new target.'); else whisper_party('There is too many people farming here, so I will look for a new target.');
+            if (cutoff === 20000) whisperParty('There are no ' + currentTarget + ' here, so time for a new target.'); else whisperParty('There is too many people farming here, so I will look for a new target.');
             currentTarget = undefined;
         }
     } else {

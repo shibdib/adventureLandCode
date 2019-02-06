@@ -1,7 +1,6 @@
-
-
+// Handle waiting for party members
 let waitNotify, waitMoveNotify, merchant, waitTime;
-function wait_for_party(range = 400) {
+function waitForParty(range = 400) {
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
@@ -16,7 +15,7 @@ function wait_for_party(range = 400) {
             if ((entity && entity.rip) || member.rip) {
                 if (!waitNotify) {
                     game_log(member + ' is dead, waiting on them.');
-                    whisper_party('Waiting for ' + member + ' to revive.')
+                    whisperParty('Waiting for ' + member + ' to revive.')
                 }
                 waitNotify = true;
                 return true;
@@ -25,7 +24,7 @@ function wait_for_party(range = 400) {
             if (!entity || distanceToPoint(entity.real_x, entity.real_y) >= range) {
                 if (!waitNotify) {
                     game_log(member + ' is too far away, waiting on them.');
-                    whisper_party('Waiting for ' + member + ' to catch up.')
+                    whisperParty('Waiting for ' + member + ' to catch up.')
                 }
                 waitNotify = true;
                 if (!waitTime) waitTime = Date.now();
@@ -35,7 +34,7 @@ function wait_for_party(range = 400) {
                 if (waitTime + waitLength < Date.now()) {
                     if (!waitMoveNotify) {
                         game_log(member + ' is still far away, moving to them.');
-                        whisper_party('Going to ' + member + ' because you are taking way too long.');
+                        whisperParty('Going to ' + member + ' because you are taking way too long.');
                     }
                     waitMoveNotify = true;
                     return shibMove(parent.party[member].x, parent.party[member].y);
@@ -49,9 +48,9 @@ function wait_for_party(range = 400) {
     }
 }
 
+// Handle waiting for a healer
 let healerNotify;
-
-function wait_for_healer(range = 300) {
+function waitForHealer(range = 300) {
     let healerFound = false;
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
@@ -63,7 +62,7 @@ function wait_for_healer(range = 300) {
             if (entity && entity.mp < entity.max_mp * 0.45) {// Priest is low MP
                 if (!healerNotify) {
                     game_log('Healer is OOM.');
-                    whisper_party('Waiting for ' + member + ' to get their mp up.')
+                    whisperParty('Waiting for ' + member + ' to get their mp up.')
                 }
                 healerNotify = true;
                 return true;
@@ -72,7 +71,7 @@ function wait_for_healer(range = 300) {
             if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.2) {
                 if (!healerNotify) {
                     game_log('Healer Range.');
-                    whisper_party('Waiting on our healer ' + member + ' to get in range before I pull.');
+                    whisperParty('Waiting on our healer ' + member + ' to get in range before I pull.');
                 }
                 healerNotify = true;
                 return true;
@@ -82,7 +81,7 @@ function wait_for_healer(range = 300) {
     if (!healerFound) {
         if (!healerNotify) {
             game_log('No healer??');
-            whisper_party('Where did the healer go??');
+            whisperParty('Where did the healer go??');
         }
         healerNotify = true;
         return true;
@@ -90,7 +89,8 @@ function wait_for_healer(range = 300) {
     healerNotify = undefined;
 }
 
-function whisper_party(message) {
+// Whisper the party
+function whisperParty(message) {
     if (parent.party_list.length > 0) {
         say('/p ' + message);
     } else {
@@ -99,11 +99,11 @@ function whisper_party(message) {
 }
 
 // Restarts lost party members
-function restart_lost(force = false) {
+function refreshCharacters(force = false) {
     let count = Object.values(get_active_characters()).length;
     if (count < 4 || force) {
         stop();
-        whisper_party('Going to refresh the party, one second...');
+        whisperParty('Going to refresh the party, one second...');
         //Stops all
         for (let char of pveCharacters) {
             if (char.name === character.name) continue;
