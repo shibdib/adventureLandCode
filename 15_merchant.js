@@ -21,6 +21,7 @@ setInterval(function () {
 
 //State tasks
 function merchantStateTasks(state) {
+    if (state !== 9) closeStand();
     if (state === 99) {
         respawn();
         return true;
@@ -39,7 +40,7 @@ function merchantStateTasks(state) {
         return true;
     }
     if (state === 9) { // MERCHANT SALES
-        if (distanceToPoint(50, 9) && distanceToPoint(50, 9) < 15) use('stand1'); else shibMove(50, 9);
+        if (distanceToPoint(69, 12) && distanceToPoint(69, 12) < 15) placeStand(); else shibMove(69, 12);
         return false;
     }
     if (state === 11) { // ACCOUNTING
@@ -81,4 +82,13 @@ function merchantStateController(state) {
         state = new_state;
     }
     return state;
+}
+
+function placeStand() {
+    let slot = checkInventoryForItem('stand0');
+    parent.socket.emit("merchant", { num: slot });
+}
+
+function closeStand() {
+    parent.socket.emit("merchant", {close:1});
 }
