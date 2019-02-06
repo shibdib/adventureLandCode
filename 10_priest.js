@@ -9,7 +9,7 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
-    if(stateTasks(state, combat)) farm();
+    if (!stateTasks(state, combat)) farm();
 }, 100);
 
 function farm() {
