@@ -1,6 +1,6 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, bankDetails, potionsNeeded;
+let lastBankCheck, bankDetails, potionsNeeded, state;
 let spendingAmount = 1000000;
 
 //State Controller
@@ -32,7 +32,7 @@ function merchantStateTasks(state) {
         return false;
     }
     if (state === 8) { // POTION RESTOCK
-        resupply_potions();
+        resupply_potions(100);
         return false;
     }
     if (state === 9) { // MERCHANT SALES

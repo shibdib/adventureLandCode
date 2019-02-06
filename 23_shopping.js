@@ -34,7 +34,7 @@ function buy_potions() {
             let item_def = parent.G.items[type];
             if (item_def != null) {
                 let cost = item_def.g * purchase_amount;
-                if (character.gold >= cost) {
+                if (character.gold >= cost && num_items(type) < purchase_amount) {
                     buy(type, purchase_amount);
                 } else {
                     return true;
