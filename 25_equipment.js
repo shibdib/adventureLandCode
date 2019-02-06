@@ -16,20 +16,20 @@ let classItems = {
 
 // Cycles thru inventory and equips bis
 function equipBIS() {
-        for (let key in character.items) {
-            let item = character.items[key];
-            if (!item || item === null) continue;
-            let itemInfo = G.items[item.name];
-            if (itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
-            compareEquip(itemInfo, key);
-        }
+    for (let key in character.items) {
+        let item = character.items[key];
+        if (!item || item === null) continue;
+        let itemInfo = G.items[item.name];
+        if (itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
+        compareEquip(itemInfo, key, true);
+    }
 }
 
 //Get gear and make sure all slots are filled
 let gearNotify;
 function gearIssue() {
     if (!gearNotify) {
-        whisperParty('Heading to the bank to see if there is any upgraded gear available.')
+        whisperParty('Going to the bank to check if I can upgrade my gear.')
         gearNotify = true;
     }
     if (character.map !== 'bank') {
@@ -37,12 +37,20 @@ function gearIssue() {
         return true;
     } else {
         equipBIS();
-        for (let slot of Object.values(character.user)) {
-            if (!slot) continue;
-            let itemInfo = G.items[slot.name];
-            if (itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
-            compareEquip(itemInfo, slot)
+        for (let key in Object.values(character.user)) {
+            let slot = Object.values(character.user)[key]
+            if (!slot || !slot.length) continue;
+            for (let packKey in slot) {
+                let banker = slot[packKey];
+                if (!banker) continue;
+                let itemInfo = G.items[banker.name];
+                if (itemInfo && itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
+                itemInfo.iLevel = item_properties(banker).level
+                compareEquip(itemInfo, packKey, false, Object.keys(character.user)[key]);
+            }
         }
+        equipBIS();
+        depositItems();
     }
 }
 
@@ -74,9 +82,9 @@ function countEmptyGear() {
 //BANKING
 //Drop off gold
 let goldNotify;
-function depositGold(amount = character.gold) {
+function depositGold(amount = character.gold - 5000) {
     if (!goldNotify) {
-        whisperParty('Running to the bank to drop off some loot, brb.')
+        whisperParty('I have way too much gold, brb.');
         goldNotify = true;
     }
     if (character.map !== 'bank') {
@@ -92,7 +100,7 @@ function depositGold(amount = character.gold) {
 let itemsNotify;
 function depositItems(potions = false) {
     if (!itemsNotify) {
-        whisperParty('Running to the bank to drop off some loot, brb.')
+        whisperParty('Running to the bank to drop off some loot, brb.');
         itemsNotify = true;
     }
     if (character.map !== 'bank') {
@@ -117,7 +125,7 @@ function combineItems() {
 
 //Reused functions
 //Gear compare
-function compareEquip(itemInfo, key){
+function compareEquip(itemInfo, key, don = false, pack){
     // Check if slot doesn't match type
     let itemSlot = itemInfo.type;
     if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
@@ -128,17 +136,18 @@ function compareEquip(itemInfo, key){
             let slottedItem = character.slots[slot];
             // If not a slottable item continue main
             if (slottedItem === undefined) return;
+            slottedItem.iLevel = item_properties(slottedItem).level;
             // If slot is empty equip
-            else if (slottedItem === null) {
-                equip(key);
-                game_log('Equipping ' + item.name + ' in the ' + slot + ' position.');
+            if (slottedItem === null) {
+                if (don) equip(key); else bankItemWithdraw(key, pack);
+                if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + slot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 return;
             }
             // If slotted item is less valuable unequip and equip the new item
-            else if (G.items[slottedItem.name].g < itemInfo.g) {
-                unequip(itemInfo.type);
-                equip(key);
-                game_log('Equipping ' + item.name + ' in place of ' + slottedItem.name);
+            else if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
+                if (don) unequip(itemInfo.type);
+                if (don) equip(key); else bankItemWithdraw(key, pack);
+                if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 return;
             }
         }
@@ -147,16 +156,19 @@ function compareEquip(itemInfo, key){
         let slottedItem = character.slots[itemSlot];
         // If not a slottable item continue
         if (slottedItem === undefined) return;
+        slottedItem.iLevel = item_properties(slottedItem).level;
         // If slot is empty equip
-        else if (slottedItem === null) {
-            equip(key);
-            game_log('Equipping ' + item.name + ' in the ' + itemSlot + ' position.');
+        if (slottedItem === null) {
+            if (don) equip(key); else bankItemWithdraw(key, pack);
+            if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + itemSlot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            return;
         }
         // If slotted item is less valuable unequip and equip the new item
-        else if (G.items[slottedItem.name].g < itemInfo.g) {
-            unequip(itemInfo.type);
-            equip(key);
-            game_log('Equipping ' + item.name + ' in place of ' + slottedItem.name);
+        else if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
+            if (don) unequip(itemSlot);
+            if (don) equip(key); else bankItemWithdraw(key, pack);
+            if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            return;
         }
     }
 }

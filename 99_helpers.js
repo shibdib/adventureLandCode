@@ -82,3 +82,7 @@ function sortEntitiesByXp(array) {
     });
     return array;
 }
+
+function bankItemWithdraw(key, pack) {
+    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
+}
