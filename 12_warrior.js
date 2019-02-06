@@ -75,9 +75,9 @@ function pullAdds () {
     let currentThreats = getMonstersTargetingMe();
     // Get total incoming attack damage
     let totalAttack = 0;
-    currentThreats.forEach((t) => totalAttack += t.attack);
+    currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
-    if (totalAttack > character.hp * 0.2 || currentThreats.length > 2) return;
+    if (totalAttack > character.hp * 0.05 || currentThreats.length > 3) return;
     let possibleAdds = findAdds();
     if (possibleAdds.length) {
         tackle(possibleAdds[0]);
