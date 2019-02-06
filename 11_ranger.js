@@ -40,8 +40,8 @@ function state_controller() {
 
 function farm() {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro();
-    let target = find_leader_target() || check_for_party_aggro();
+    if (character.party) combat = checkPartyAggro();
+    let target = findLeaderTarget() || checkPartyAggro();
     // Handle kiting
     let kiteLocation;
     let aggressiveMonsters = nearbyAggressors();
@@ -49,7 +49,7 @@ function farm() {
     if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target) {
         let range = distanceToPoint(target.real_x, target.real_y);
-        if (range <= character.range && check_tank_aggro()) {
+        if (range <= character.range && checkTankAggro()) {
             // Poison arrow
             if (can_use('poisonarrow', target)) use('poisonarrow', target);
             // If you need to kite do so

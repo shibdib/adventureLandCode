@@ -1,4 +1,5 @@
-function find_local_targets(type) {
+// Find in view range monsters base off type
+function findLocalMonsters(type) {
     let monsters;
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
@@ -10,7 +11,7 @@ function find_local_targets(type) {
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
-function find_best_monster(minXp) {
+function findBestMonster(minXp) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
     let maxAttack = character.attack * 0.9;
@@ -52,7 +53,8 @@ function find_best_monster(minXp) {
     return sorted[getRndInteger(0, sorted.length / 2)];
 }
 
-function find_leader_target() {
+// Returns the target of the leader
+function findLeaderTarget() {
     if (!character.party) return;
     let target = get_target_of(get_player(character.party));
     if (!target) return;
@@ -65,14 +67,16 @@ function find_leader_target() {
     if (target) return target;
 }
 
-function check_tank_aggro() {
+// Check if the tank has aggro
+function checkTankAggro() {
     if (!character.party) return;
     let target = get_target_of(get_player(character.party));
     let targetsTarget = get_target_of(target);
     if (target && targetsTarget === get_player(character.party) || targetsTarget === character.party) return true;
 }
 
-function check_for_party_aggro() {
+// Check if anyone has aggro
+function checkPartyAggro() {
     if (!character.party) return;
     if (parent.party_list.length) {
         let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster");
@@ -81,12 +85,15 @@ function check_for_party_aggro() {
     }
 }
 
+// Check for monsters nearby who will aggro
 function nearbyAggressors() {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro);
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro
+        && parent.distance(character, mob) <= mob.range * 1.1);
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
 }
 
+// Find possible targets to pull with your main target
 function findAdds(attack = 0.07) {
     let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
         && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80));
@@ -94,12 +101,14 @@ function findAdds(attack = 0.07) {
     return sortEntitiesByDistance(adds);
 }
 
-function getMonstersTargettingMe() {
+// Return all monsters targeting you
+function getMonstersTargetingMe() {
     let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === character.name);
     //Order monsters by distance.
     return sortEntitiesByDistance(all);
 }
 
+// WIP
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
     for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);
@@ -134,7 +143,7 @@ function meleeCombat(target) {
 }
 
 //Returns the party member with the lowest hp -> max_hp ratio.
-function lowest_health_partymember() {
+function lowHealth() {
     var party = [];
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
@@ -171,7 +180,8 @@ function lowest_health_partymember() {
     return party[0].entity;
 }
 
-function party_hurt_count(amount = 0.75) {
+// Return number of wounded below a threshold
+function partyHurtCount(amount = 0.75) {
     let count = 0;
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
@@ -183,7 +193,8 @@ function party_hurt_count(amount = 0.75) {
     return count;
 }
 
-function dead_partymember() {
+// Return a dead party member
+function deadParty() {
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
             let member = parent.party_list[id];

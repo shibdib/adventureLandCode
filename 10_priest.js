@@ -47,10 +47,10 @@ let alerted;
 function farm()
 {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro();
-    let lowest_health = lowest_health_partymember();
+    if (character.party) combat = checkPartyAggro();
+    let lowest_health = lowHealth();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
-    let curseTarget = find_leader_target();
+    let curseTarget = findLeaderTarget();
     // Handle kiting
     let kiteLocation;
     let aggressiveMonsters = nearbyAggressors();
@@ -67,7 +67,7 @@ function farm()
         } else {
             if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
-    } else if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
+    } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         use('partyheal');
     } else if (wounded) { //HEAL WOUNDED
         if (in_attack_range(lowest_health)) {
@@ -80,21 +80,21 @@ function farm()
         } else {
             if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
-    } else if (!wounded && dead_partymember()) { //REVIVE DEAD
+    } else if (!wounded && deadParty()) { //REVIVE DEAD
         alerted = undefined;
-        let dead_party = dead_partymember();
+        let dead_party = deadParty();
         if (can_use('revive', dead_party)) {
             use('revive', dead_party);
         } else {
             if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(dead_party);
         }
-    } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
+    } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && checkTankAggro()) { //ATTACK IF YOU HAVE MANA
         alerted = undefined;
-            if (can_use('curse', curseTarget) && check_tank_aggro()) {
+            if (can_use('curse', curseTarget) && checkTankAggro()) {
                 use('curse', curseTarget);
             } else {
                 if (in_attack_range(curseTarget)) {
-                    if (can_attack(target) && check_tank_aggro())  attack(target);
+                    if (can_attack(target) && checkTankAggro())  attack(target);
                 } else {
                     if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(curseTarget, character.range * 0.425, character.range * 0.99);
                 }

@@ -40,10 +40,10 @@ function state_controller() {
 
 function farm() {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro();
+    if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it
     if (can_use('blink') && blink_to_leader()) return;
-    let target = find_leader_target() || check_for_party_aggro();
+    let target = findLeaderTarget() || checkPartyAggro();
     let teleport_target = get_teleport_target();
     // Handle kiting
     let kiteLocation;
@@ -56,7 +56,7 @@ function farm() {
         let range = distanceToPoint(target.real_x, target.real_y);
         // Energize the party
         if (can_use('energize')) randomEnergize();
-        if (range <= character.range && check_tank_aggro()) {
+        if (range <= character.range && checkTankAggro()) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.8 && can_use('burst', target)) {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);

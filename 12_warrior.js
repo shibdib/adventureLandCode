@@ -81,11 +81,11 @@ function state_controller() {
 }
 
 function farm() {
-    let party_aggro = check_for_party_aggro();
+    let party_aggro = checkPartyAggro();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget && !party_aggro) {
-        target = find_best_monster(1000);
+        target = findBestMonster(1000);
         if (target) {
             waitTime = undefined;
             currentTarget = target;
@@ -95,8 +95,8 @@ function farm() {
         }
     }
     // Mark in combat if anyone in the party is being targeted
-    combat = check_for_party_aggro();
-    let mainTarget = find_local_targets(currentTarget);
+    combat = checkPartyAggro();
+    let mainTarget = findLocalMonsters(currentTarget);
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
         combat = true;
         let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
@@ -140,7 +140,7 @@ function farm() {
 
 // Pull additional monsters
 function pullAdds () {
-    let currentThreats = getMonstersTargettingMe();
+    let currentThreats = getMonstersTargetingMe();
     // Get total incoming attack damage
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack);

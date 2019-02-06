@@ -40,9 +40,9 @@ function state_controller() {
 
 function farm() {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro();
-    let target = find_leader_target() || check_for_party_aggro();
-    if (target && check_tank_aggro()) {
+    if (character.party) combat = checkPartyAggro();
+    let target = findLeaderTarget() || checkPartyAggro();
+    if (target && checkTankAggro()) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range) {
             // Killy rogue
