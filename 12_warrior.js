@@ -5,11 +5,11 @@ let currentTarget, target, combat, pendingReboot, drawAggro, state;
 //State Controller
 setInterval(function () {
     state = stateController(state);
-}, 120000);
+}, 5000);
 
 //Primary Loop
 setInterval(function () {
-    stateTasks(state, combat);
+    if(stateTasks(state, combat)) farm();
 }, 100);
 
 function farm() {

@@ -28,14 +28,14 @@ function stateController(state) {
 //State tasks
 function stateTasks(state, combat) {
     if (state === 99) return respawn(); // DEAD
-    if (state === 1 || combat) return farm(); // FARM
+    if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
         state = stateController(state);
         depositGold();
         return depositItems();
     }
     if (state === 3) { // POTIONS
-        return farm();
+        return false;
     }
     if (state === 4) { // GEAR
         lastBankGearCheck = Date.now();

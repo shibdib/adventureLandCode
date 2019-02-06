@@ -101,7 +101,7 @@ function whisperParty(message) {
 // Restarts lost party members
 function refreshCharacters(force = false) {
     let count = Object.values(get_active_characters()).length;
-    if (count < 4 || force) {
+    if (count < 3 || force) {
         stop();
         whisperParty('Going to refresh the party, one second...');
         //Stops all
