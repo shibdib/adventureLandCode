@@ -47,9 +47,9 @@ function farm() {
     let teleport_target = get_teleport_target();
     // Handle kiting
     let kiteLocation;
-    let nearbyAggressors = nearbyAggressors();
-    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, nearbyAggressors);
-    if (target && nearbyAggressors.length && distanceToEntity(nearbyAggressors[0]) < 65) kiteLocation = getKitePosition(target, nearbyAggressors);
+    let aggressiveMonsters = nearbyAggressors();
+    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
+    if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {

@@ -82,7 +82,7 @@ function check_for_party_aggro() {
 }
 
 function nearbyAggressors() {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob].aggression && G.monsters[mob].aggression > 0);
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro);
     //Order monsters by distance.
     return sort_by_distance(aggressiveMonsters);
 }

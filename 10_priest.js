@@ -53,9 +53,9 @@ function farm()
     let curseTarget = find_leader_target();
     // Handle kiting
     let kiteLocation;
-    let nearbyAggressors = nearbyAggressors();
-    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget, nearbyAggressors);
-    if (curseTarget && nearbyAggressors.length && distance_to_point(nearbyAggressors[0].real_x, nearbyAggressors[0].real_y) < 65) kiteLocation = getKitePosition(curseTarget, nearbyAggressors);
+    let aggressiveMonsters = nearbyAggressors();
+    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
+    if (curseTarget && aggressiveMonsters.length && distance_to_point(aggressiveMonsters[0].real_x, aggressiveMonsters[0].real_y) < 65) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
     if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive')) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');

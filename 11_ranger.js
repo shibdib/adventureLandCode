@@ -44,9 +44,9 @@ function farm() {
     let target = find_leader_target() || check_for_party_aggro();
     // Handle kiting
     let kiteLocation;
-    let nearbyAggressors = nearbyAggressors();
-    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, nearbyAggressors);
-    if (target && nearbyAggressors.length && distanceToEntity(nearbyAggressors[0]) < 65) kiteLocation = getKitePosition(target, nearbyAggressors);
+    let aggressiveMonsters = nearbyAggressors();
+    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
+    if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range && check_tank_aggro()) {
