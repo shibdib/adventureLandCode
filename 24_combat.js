@@ -88,7 +88,7 @@ function nearbyAggressors() {
 }
 
 function findAdds(attack = 0.07) {
-    let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && !mob.target && !mob.xp > 0 && mob.attack < character.hp * attack
+    let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
         && !G.monsters[mob].dreturn && !G.monsters[mob].rage && !G.monsters[mob].stationary && (!G.monsters[mob].evasion || G.monsters[mob].evasion <= 80));
     //Order monsters by distance.
     return sort_by_distance(adds);
