@@ -62,10 +62,12 @@ function accounting() {
                 let banker = slot[packKey];
                 if (!banker) continue;
                 let itemInfo = G.items[banker.name];
+                if (itemInfo.id === 'hpot1') show_json(itemInfo)
+                let quantity = banker.q || 1;
                 if (accountingInfo[itemInfo.id]) {
-                    accountingInfo[itemInfo.id] += 1;
+                    accountingInfo[itemInfo.id] += quantity;
                 } else {
-                    accountingInfo[itemInfo.id] = 1;
+                    accountingInfo[itemInfo.id] = quantity;
                 }
             }
         }

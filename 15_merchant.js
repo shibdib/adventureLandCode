@@ -19,8 +19,6 @@ setInterval(function () {
     if (!merchantStateTasks(state)) sell();
 }, 100);
 
-shibMove('town');
-
 //State tasks
 function merchantStateTasks(state) {
     if (state === 99) {
@@ -42,6 +40,7 @@ function merchantStateTasks(state) {
     }
     if (state === 9) { // MERCHANT SALES
         shibMove(49.07556111191911, 8.729439757833251);
+        if (distanceToPoint(49.07556111191911, 8.729439757833251) < 5) use('stand1');
         return false;
     }
     if (state === 11) { // ACCOUNTING
