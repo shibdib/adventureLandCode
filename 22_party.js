@@ -44,7 +44,7 @@ function wait_for_party(range = 400) {
                         whisper_party('Going to ' + member + ' because you are taking way too long.');
                     }
                     waitMoveNotify = true;
-                    return shib_move(parent.party[member].x, parent.party[member].y);
+                    return shibMove(parent.party[member].x, parent.party[member].y);
                 }
                 return true;
             }

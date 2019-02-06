@@ -37,5 +37,5 @@ function state_controller() {
 }
 
 function farm() {
-    shib_move('town')
+    shibMove('town')
 }

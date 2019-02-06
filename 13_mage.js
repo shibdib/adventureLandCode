@@ -62,12 +62,12 @@ function farm() {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
             // Kite if needed
-            if (kiteLocation) move_to_position(kiteLocation);
+            if (kiteLocation) moveToPosition(kiteLocation);
             // Attack
             if (can_attack(target))  attack(target);
         } else {
             // If you need to kite do so, otherwise get in range
-            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(target, character.range * 0.5, character.range * 0.99);
+            if (kiteLocation) moveToPosition(kiteLocation); else move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         move_to_leader(character.range * 0.5, character.range * 0.7);

@@ -61,11 +61,11 @@ function farm()
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
             // If you need to kite do so
-            if (kiteLocation) move_to_position(kiteLocation);
+            if (kiteLocation) moveToPosition(kiteLocation);
             // Use revive as a mega heal
             use('revive', lowest_health);
         } else {
-            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
+            if (kiteLocation) moveToPosition(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (party_hurt_count(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         use('partyheal');
@@ -74,11 +74,11 @@ function farm()
             if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
             // If you need to kite do so
-            if (kiteLocation) move_to_position(kiteLocation);
+            if (kiteLocation) moveToPosition(kiteLocation);
             // Heal
             heal(lowest_health);
         } else {
-            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
+            if (kiteLocation) moveToPosition(kiteLocation); else move_to_target(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (!wounded && dead_partymember()) { //REVIVE DEAD
         alerted = undefined;
@@ -86,7 +86,7 @@ function farm()
         if (can_use('revive', dead_party)) {
             use('revive', dead_party);
         } else {
-            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(dead_party);
+            if (kiteLocation) moveToPosition(kiteLocation); else move_to_target(dead_party);
         }
     } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && check_tank_aggro()) { //ATTACK IF YOU HAVE MANA
         alerted = undefined;
@@ -96,7 +96,7 @@ function farm()
                 if (in_attack_range(curseTarget)) {
                     if (can_attack(target) && check_tank_aggro())  attack(target);
                 } else {
-                    if (kiteLocation) move_to_position(kiteLocation); else move_to_target(curseTarget, character.range * 0.425, character.range * 0.99);
+                    if (kiteLocation) moveToPosition(kiteLocation); else move_to_target(curseTarget, character.range * 0.425, character.range * 0.99);
                 }
             }
     } else if (!wounded) {

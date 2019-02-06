@@ -124,7 +124,7 @@ function meleeCombat(target) {
                     if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
                         let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
                         let newTargetRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-                        if (newRange > 40 && newTargetRange <= character.range) move_to_coords(character.real_x + xChange, character.real_y + yChange);
+                        if (newRange > 40 && newTargetRange <= character.range) moveToCoords(character.real_x + xChange, character.real_y + yChange);
                     }
                 }
             }

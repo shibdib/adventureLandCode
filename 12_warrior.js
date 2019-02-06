@@ -118,11 +118,11 @@ function farm() {
         if (range <= character.range) {
             if (can_attack(mainTarget)) meleeCombat(mainTarget);
             // Pull him to a safer location if needed
-            if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition)
+            if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition)
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (wait_for_healer()) {
-                if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition); else return stop();
+                if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition); else return stop();
             } else {
                 tackle(mainTarget);
             }
@@ -132,7 +132,7 @@ function farm() {
         drawAggro = undefined;
         if (wait_for_party(9999)) return stop();
         if (currentTarget) {
-            shib_move(currentTarget);
+            shibMove(currentTarget);
             refreshTarget();
         }
     }
