@@ -31,7 +31,7 @@ setInterval(function () {
 setInterval(function () {
     // Loot the things
     loot(true);
-    if (character.party && (state === 'farm' || combat)) {
+    if (state === 'farm' || combat) {
         farm();
     } else if (state === 'resupply_potions') resupply_potions();
 }, 100);//Execute 10 times per second
