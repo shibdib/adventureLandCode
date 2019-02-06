@@ -49,7 +49,7 @@ setInterval(function () {
         use('use_hp');
     }
     // Check for BIS
-    equip_best_available();
+    equipBIS();
 }, 500);//Execute 2 times per second
 
 // Farm target refreshes every 10 minutes

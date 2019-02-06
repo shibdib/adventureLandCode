@@ -1,5 +1,5 @@
 // Cycles thru inventory and equips bis
-function equip_best_available() {
+function equipBIS() {
     let specialSlots = {
         'weapon': 'mainhand',
         'shield': 'offhand',
