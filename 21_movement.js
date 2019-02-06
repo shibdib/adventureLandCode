@@ -31,6 +31,8 @@ function moveToLeader (min = 5, max = 10) {
     if (range && smart.moving && range <= character.range) return stop();
     // If moving continue
     if (is_moving(character)) return;
+    // Handle bank
+    if (parent.party[character.party].map === 'bank') return shibMove('main');
     // Handle different map
     if (parent.party[character.party] && parent.party[character.party].map !== character.map) return shibMove(parent.party[character.party].map);
     // Handle same map but far away
