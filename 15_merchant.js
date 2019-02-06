@@ -35,6 +35,11 @@ function merchantStateTasks(state) {
         resupply_potions(100);
         return false;
     }
+    if (state === 2) { // Deposits
+        depositGold();
+        depositItems();
+        return false;
+    }
     if (state === 9) { // MERCHANT SALES
         shibMove(49.07556111191911, 8.729439757833251);
         return false;
@@ -65,7 +70,10 @@ function merchantStateController(state) {
     } //NO POORS
     else if (character.gold < spendingAmount * 0.25) {
         new_state = 12;
-    }  //POTION RESTOCK
+    } // Deposits
+    else if (character.gold >= spendingAmount * 2) {
+        new_state = 2;
+    }   //POTION RESTOCK
     else if (potionsNeeded) {
         new_state = 8;
     }

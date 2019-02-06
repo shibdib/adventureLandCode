@@ -19,6 +19,5 @@ let states = {
     9: 'sales',
     10: 'rest',
     11: 'accounting',
-    12: 'withdrawGold',
     99: 'dead'
 };
