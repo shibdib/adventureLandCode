@@ -47,7 +47,7 @@ let alerted;
 function farm()
 {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro()[0];
+    if (character.party) combat = check_for_party_aggro();
     let lowest_health = lowest_health_partymember();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
     let curseTarget = find_leader_target();

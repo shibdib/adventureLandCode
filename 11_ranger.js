@@ -40,7 +40,7 @@ function state_controller() {
 
 function farm() {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro()[0];
+    if (character.party) combat = check_for_party_aggro();
     let target = find_leader_target();
     // Handle kiting
     if (target && distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {

@@ -40,7 +40,7 @@ function state_controller() {
 
 function farm() {
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = check_for_party_aggro()[0];
+    if (character.party) combat = check_for_party_aggro();
     // If you need to blink to leader do it
     if (can_use('blink') && blink_to_leader()) return;
     let target = find_leader_target();
