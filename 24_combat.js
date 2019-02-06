@@ -4,7 +4,7 @@ function find_local_targets(type) {
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
     if (!monsters.length) return false;
     //Order monsters by distance.
-    monsters = sort_by_distance(monsters);
+    monsters = sortEntitiesByDistance(monsters);
     return monsters[0];
 }
 
@@ -38,7 +38,7 @@ function find_best_monster(minXp) {
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
-        sorted = sort_by_xp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
+        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
             && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80));
         if (sorted.length > 2) break;
         // Lower the XP target per loop
@@ -84,20 +84,20 @@ function check_for_party_aggro() {
 function nearbyAggressors() {
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro);
     //Order monsters by distance.
-    return sort_by_distance(aggressiveMonsters);
+    return sortEntitiesByDistance(aggressiveMonsters);
 }
 
 function findAdds(attack = 0.07) {
     let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
         && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80));
     //Order monsters by distance.
-    return sort_by_distance(adds);
+    return sortEntitiesByDistance(adds);
 }
 
 function getMonstersTargettingMe() {
     let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === character.name);
     //Order monsters by distance.
-    return sort_by_distance(all);
+    return sortEntitiesByDistance(all);
 }
 
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
@@ -105,7 +105,7 @@ function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
         let xChange = getRndInteger(-character.range, character.range);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-            let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+            let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
             if (newRange >= desiredRangeMin && newRange <= desiredRangeMax) return {x: character.real_x + xChange, y: character.real_y + yChange};
         }
     }
@@ -117,13 +117,13 @@ function meleeCombat(target) {
         for (let id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distance_to_point(entity.real_x, entity.real_y) + 0.1 < 45) {
+            if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distanceToPoint(entity.real_x, entity.real_y) + 0.1 < 45) {
                 for (let x = 0; x < 50; x++) {
                     let xChange = getRndInteger(-5, 5);
                     let yChange = getRndInteger(-5, 5);
                     if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-                        let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
-                        let newTargetRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+                        let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
+                        let newTargetRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
                         if (newRange > 40 && newTargetRange <= character.range) moveToCoords(character.real_x + xChange, character.real_y + yChange);
                     }
                 }

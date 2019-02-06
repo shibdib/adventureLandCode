@@ -53,7 +53,7 @@ function farm() {
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
-        let range = distance_to_point(target.real_x, target.real_y);
+        let range = distanceToPoint(target.real_x, target.real_y);
         // Energize the party
         if (can_use('energize')) randomEnergize();
         if (range <= character.range && check_tank_aggro()) {
@@ -77,7 +77,7 @@ function farm() {
 function blink_to_leader() {
     if (parent.party_list.length > 0 && character.max_mp > 1600) {
         let leader = get_player(character.party);
-        if (!leader || !distance_to_point(target.real_x, target.real_y) || distance_to_point(target.real_x, target.real_y) > 1000) {
+        if (!leader || !distanceToPoint(target.real_x, target.real_y) || distanceToPoint(target.real_x, target.real_y) > 1000) {
             if (character.mp < 1600) {
                 use('use_mp');
             } else {
@@ -103,7 +103,7 @@ function get_teleport_target() {
                 continue;
             }
             if ((entity && entity.rip) || member.rip) continue;
-            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= 1000) return member;
+            if (!entity || distanceToPoint(entity.real_x, entity.real_y) >= 1000) return member;
         }
     }
 }

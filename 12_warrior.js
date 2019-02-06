@@ -99,7 +99,7 @@ function farm() {
     let mainTarget = find_local_targets(currentTarget);
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
         combat = true;
-        let range = distance_to_point(party_aggro.real_x, party_aggro.real_y);
+        let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
         } else {
@@ -114,7 +114,7 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
-        let range = distance_to_point(mainTarget.real_x, mainTarget.real_y);
+        let range = distanceToPoint(mainTarget.real_x, mainTarget.real_y);
         if (range <= character.range) {
             if (can_attack(mainTarget)) meleeCombat(mainTarget);
             // Pull him to a safer location if needed
@@ -159,7 +159,7 @@ function refreshTarget () {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // If range doesn't change much start counter
-    if (distance_to_point(lastPos.x, lastPos.y) < 5) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 5) {
         if (!waitTime) waitTime = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded

@@ -2,7 +2,7 @@
 // TODO: send_cm/on_cm stuff for map change
 function moveToTarget(target, min = 0, max = 0) {
     let range;
-    if (target) range = distance_to_point(target.real_x, target.real_y) + 0.1;
+    if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
@@ -24,7 +24,7 @@ function moveToTarget(target, min = 0, max = 0) {
 function moveToLeader (min = 5, max = 10) {
     let leader = get_player(character.party);
     let range;
-    if (leader) range = distance_to_point(leader.real_x, leader.real_y) + 0.1;
+    if (leader) range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
@@ -64,19 +64,19 @@ function shibMove(destination, y = undefined) {
 
 // Kite from your current target and also take into account an avoid array
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
-    let range = distance_to_point(target.real_x, target.real_y);
+    let range = distanceToPoint(target.real_x, target.real_y);
     main:
     for (let x = 0; x < 500; x++) {
         let xChange = getRndInteger(-character.range, character.range);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-            let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+            let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
             // Handle avoiding others
             let closestAvoid, maxRange;
             if (avoidArray && avoidArray.length) {
                 for (let avoid of avoidArray) {
                     if (avoid.id === target.id) continue;
-                    let avoidRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
+                    let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
                     if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
                     if (!maxRange || maxRange < avoid.range) maxRange = avoid.range;
                 }

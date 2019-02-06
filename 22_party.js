@@ -1,10 +1,4 @@
-function on_party_request(name) {
-    accept_party_request(name);
-}
 
-function on_party_invite(name) {
-    if (name === 'Shibtank') accept_party_invite(name);
-}
 
 let waitNotify, waitMoveNotify, merchant, waitTime;
 function wait_for_party(range = 400) {
@@ -28,7 +22,7 @@ function wait_for_party(range = 400) {
                 return true;
             }
             // Handle distance
-            if (!entity || distance_to_point(entity.real_x, entity.real_y) >= range) {
+            if (!entity || distanceToPoint(entity.real_x, entity.real_y) >= range) {
                 if (!waitNotify) {
                     game_log(member + ' is too far away, waiting on them.');
                     whisper_party('Waiting for ' + member + ' to catch up.')
@@ -75,7 +69,7 @@ function wait_for_healer(range = 300) {
                 return true;
             }
             // Handle distance
-            if (distance_to_point(entity.real_x, entity.real_y) >= entity.range * 1.2) {
+            if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.2) {
                 if (!healerNotify) {
                     game_log('Healer Range.');
                     whisper_party('Waiting on our healer ' + member + ' to get in range before I pull.');

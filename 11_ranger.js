@@ -48,7 +48,7 @@ function farm() {
     if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target) {
-        let range = distance_to_point(target.real_x, target.real_y);
+        let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range && check_tank_aggro()) {
             // Poison arrow
             if (can_use('poisonarrow', target)) use('poisonarrow', target);
