@@ -108,18 +108,20 @@ function farm() {
         }
     } else if (in_range_target) {
         combat = true;
+        let aggressiveMonsters = nearbyAggressors();
+        let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
         if (can_use('warcry')) use('warcry');
         drawAggro = undefined;
         let range = distance_to_point(in_range_target.real_x, in_range_target.real_y);
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
+            // Pull him to a safer location if needed
+            if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition)
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (wait_for_healer()) {
-                let aggressiveMonsters = nearbyAggressors();
-                let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
-                if (aggressiveMonsters.length && kitePosition) return move_to_position(getKitePosition(target, aggressiveMonsters, 190)); else return stop();
+                if (aggressiveMonsters.length && kitePosition) return move_to_position(kitePosition); else return stop();
             }
             if (can_use('taunt')) use('taunt', in_range_target); else if (can_use('charge')) use('charge');
             move_to_target(in_range_target);

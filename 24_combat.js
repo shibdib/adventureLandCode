@@ -98,6 +98,7 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
             let closestAvoid;
             if (avoidArray && avoidArray.length) {
                 for (let avoid of avoidArray) {
+                    if (avoid.id === target.id) continue;
                     let avoidRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
                     if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
                 }
