@@ -145,13 +145,15 @@ function pullAdds () {
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack);
     // If attack is greater than 25% of remaining health, return
-    if (totalAttack > character.hp * 0.24) return;
+    if (totalAttack > character.hp * 0.24 || currentThreats.length > 3) return;
     let possibleAdds = findAdds();
     if (possibleAdds.length) {
         if (can_use('taunt', possibleAdds[0])) use('taunt', possibleAdds[0]); else if (can_use('charge', possibleAdds[0])) use('charge', possibleAdds[0]); else if (can_attack(possibleAdds[0])) meleeCombat(possibleAdds[0]); else move_to_target(possibleAdds[0]);
-        whisper_party('Going to pull an additional ' + possibleAdds[0].mtype + ' kill it!');
-        game_log('Pulling add ' + possibleAdds[0].mtype);
-        return true;
+        if (possibleAdds[0].target === character.name) {
+            whisper_party('Pulled an additional ' + possibleAdds[0].mtype + ' kill it!');
+            game_log('Pulling add ' + possibleAdds[0].mtype);
+            return true;
+        }
     }
 }
 
