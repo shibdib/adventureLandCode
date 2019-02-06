@@ -60,7 +60,7 @@ function shib_move(destination, y = undefined) {
 
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
     let range = distance_to_point(target.real_x, target.real_y);
-    for (let x = 0; x < 100; x++) {
+    for (let x = 0; x < 500; x++) {
         let xChange = getRndInteger(-character.range, character.range);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
@@ -74,7 +74,7 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
                     if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
                 }
             }
-            if (newRange > range && newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > 65)) return {x: character.real_x + xChange, y: character.real_y + yChange};
+            if (newRange > range && newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > 35)) return {x: character.real_x + xChange, y: character.real_y + yChange};
         }
     }
 }
