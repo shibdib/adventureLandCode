@@ -31,13 +31,13 @@ function waitForParty(range = 400) {
                 // If waiting for 45 seconds then go to the problem child (3 minutes if map change occurred)
                 let waitLength = 45000;
                 if (parent.party[member].map !== character.map) waitLength = 180000;
-                if (waitTime + waitLength < Date.now()) {
+                if (waitTime + waitLength < Date.now() && entity && entity.ctype !== 'priest') {
                     if (!waitMoveNotify) {
-                        game_log(member + ' is still far away, moving to them.');
-                        whisperParty('Going to ' + member + ' because you are taking way too long.');
+                        game_log(member + ' wait timed out.');
+                        whisperParty(member + ' we are going on without you, catchup when you can!!');
                     }
                     waitMoveNotify = true;
-                    return shibMove(parent.party[member].x, parent.party[member].y);
+                    return false;
                 }
                 return true;
             }
