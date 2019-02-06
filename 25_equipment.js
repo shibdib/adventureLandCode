@@ -67,7 +67,7 @@ function checkInventoryForItem(search) {
     for (let key in character.items) {
         let item = character.items[key];
         if (!item || item === null) continue;
-        if (item.includes(search)) return key;
+        if (item.name === search || item.id === search) return key;
     }
 }
 

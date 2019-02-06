@@ -21,7 +21,7 @@ function moveToTarget(target, min = 0, max = 0) {
 
 // Handle moving to party leader
 // TODO: send_cm/on_cm stuff for map change
-function moveToLeader (min = 5, max = 10) {
+function moveToLeader(min = 5, max = 10) {
     let leader = get_player(character.party);
     let range;
     if (leader) range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
