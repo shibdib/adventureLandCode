@@ -84,7 +84,6 @@ function wait_for_healer(range = 300) {
                 return true;
             }
         }
-        healerNotify = undefined;
     }
     if (!healerFound) {
         if (!healerNotify) {
@@ -94,6 +93,7 @@ function wait_for_healer(range = 300) {
         healerNotify = true;
         return true;
     }
+    healerNotify = undefined;
 }
 
 function whisper_party(message) {
