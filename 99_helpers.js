@@ -5,7 +5,7 @@ function can_use(name, target = undefined) {
     if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
     if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
     if (G.skills[name] && G.skills[name].consume && !checkInventoryForItem(G.skills[name].consume)) return false; // checks for consumable
-    if (target && G.skills[name] && G.skills[name].range && distanceToEntity(target) > G.skills[name].range) return false; // checks for range
+    if (target && G.skills[name] && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
     if (target && G.skills[name] && checkEntityForBuff(target, name)) return false; // checks if this is already applied
     return parent.can_use(name);  // checks the cooldown
 }
