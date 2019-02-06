@@ -77,8 +77,8 @@ function pullAdds () {
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
-    if (totalAttack > character.hp * 0.05 || currentThreats.length > 3) return;
     let possibleAdds = findAdds();
+    if (totalAttack + possibleAdds[0].attack > character.hp * 0.05 || currentThreats.length > 3) return;
     if (possibleAdds.length) {
         tackle(possibleAdds[0]);
         return true;
