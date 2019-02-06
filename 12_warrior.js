@@ -87,7 +87,7 @@ function farm() {
     if (!currentTarget && !party_aggro) {
         target = findBestMonster(1000);
         if (target) {
-            waitTime = undefined;
+            farmWait = undefined;
             currentTarget = target;
             whisperParty('New target is a ' + target);
             game_log('New target is a ' + target);
@@ -151,21 +151,21 @@ function pullAdds () {
 }
 
 // Refresh your target if the spawn is empty
-let waitTime, lastPos;
+let farmWait, lastPos;
 function refreshTarget () {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // If range doesn't change much start counter
     if (distanceToPoint(lastPos.x, lastPos.y) < 5) {
-        if (!waitTime) waitTime = Date.now();
+        if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded
-        if (waitTime + cutoff < Date.now()) {
+        if (farmWait + cutoff < Date.now()) {
             if (cutoff === 20000) whisperParty('There are no ' + currentTarget + ' here, so time for a new target.'); else whisperParty('There is too many people farming here, so I will look for a new target.');
             currentTarget = undefined;
         }
     } else {
-        waitTime = undefined;
+        farmWait = undefined;
     }
     lastPos = {x: character.x, y: character.y};
 }
