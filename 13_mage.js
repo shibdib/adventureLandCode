@@ -43,7 +43,7 @@ function farm() {
     if (character.party) combat = check_for_party_aggro();
     // If you need to blink to leader do it
     if (can_use('blink') && blink_to_leader()) return;
-    let target = find_leader_target();
+    let target = find_leader_target() || check_for_party_aggro();
     let teleport_target = get_teleport_target();
     // Handle kiting
     if (target && distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {
@@ -109,10 +109,12 @@ function randomEnergize() {
         for (let key in shuffle(parent.party_list)) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
-            // Don't energize far away or merchants
-            if (!entity || entity.ctype === 'merchant') continue;
-            if (member !== character.name) whisper_party('Energizing ' + member + ' with increased MP and Attack Speed.'); else whisper_party('Energizing myself, time to kill.');
-            use('energize', entity);
+            // Don't energize far away, high mp or merchants
+            if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11) continue;
+            if (Math.random() > 0.7) {
+                if (member !== character.name) whisper_party('Energizing ' + member + ' with increased MP regen and Attack Speed.'); else whisper_party('Energizing myself.');
+                use('energize', entity);
+            }
         }
     }
 }
