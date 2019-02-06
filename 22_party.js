@@ -120,6 +120,6 @@ function refreshCharacters(force = false) {
         if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot); else load_code(tank.slot);
         //Merchant
         let merchant = shuffle(pveCharacters.filter((c) => c.role === 'merchant'))[0];
-        if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
+        //if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
     }
 }
