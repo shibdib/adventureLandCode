@@ -95,10 +95,9 @@ function farm() {
         }
     }
     // Mark in combat if anyone in the party is being targeted
-    combat = checkPartyAggro();
+    combat = party_aggro;
     let mainTarget = findLocalMonsters(currentTarget);
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
-        combat = true;
         let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
@@ -106,7 +105,6 @@ function farm() {
             tackle(party_aggro);
         }
     } else if (mainTarget) {
-        combat = true;
         // Pull more if we can handle it
         if (mainTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
         let aggressiveMonsters = nearbyAggressors();
@@ -128,7 +126,6 @@ function farm() {
             }
         }
     } else {
-        combat = false;
         drawAggro = undefined;
         if (waitForParty(9999)) return stop();
         if (currentTarget) {

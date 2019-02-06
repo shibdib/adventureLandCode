@@ -79,9 +79,8 @@ function checkTankAggro() {
 function checkPartyAggro() {
     if (!character.party) return;
     if (parent.party_list.length) {
-        let monsters = Object.values(parent.entities).filter(mob => mob.type === "monster");
-        let bad_aggro = monsters.filter((m) => parent.party_list.includes(m.target));
-        if (bad_aggro) return bad_aggro[0];
+        let bad_aggro = Object.values(parent.entities).filter(mob => mob.type === "monster" && parent.party_list.includes(mob.target));
+        if (bad_aggro.length) return bad_aggro[0];
     }
 }
 
