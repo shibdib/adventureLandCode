@@ -115,15 +115,18 @@ function farm() {
         if (range <= character.range) {
             if (can_attack(in_range_target)) meleeCombat(in_range_target);
         } else {
-            if (wait_for_healer()) return stop();
-            if (can_use('taunt')) use('taunt', in_range_target);
-            if (can_use('charge') && range > 110 && range < 500) use('charge');
+            // If waiting on the healer don't pull and make sure you're not in range of aggro
+            if (wait_for_healer()) {
+                let aggressiveMonsters = nearbyAggressors();
+                if (aggressiveMonsters.length) return move_to_position(getKitePosition(target, aggressiveMonsters, 190)); else return stop();
+            }
+            if (can_use('taunt')) use('taunt', in_range_target); else if (can_use('charge')) use('charge');
             move_to_target(in_range_target);
         }
     } else {
         combat = false;
         drawAggro = undefined;
-        if (wait_for_party() || wait_for_healer()) return stop();
+        if (wait_for_party()) return stop();
         if (currentTarget) {
             shib_move(currentTarget);
             refreshTarget();

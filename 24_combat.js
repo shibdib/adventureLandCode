@@ -87,7 +87,7 @@ function nearbyAggressors() {
     return sort_by_distance(aggressiveMonsters);
 }
 
-function getKitePosition(target, avoidArray) {
+function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
     let range = distance_to_point(target.real_x, target.real_y);
     for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);
@@ -102,7 +102,7 @@ function getKitePosition(target, avoidArray) {
                     if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
                 }
             }
-            if (newRange > range && newRange >= character.range * 0.95 && newRange <= character.range && (!closestAvoid || closestAvoid > 65)) return {x: character.real_x + xChange, y: character.real_y + yChange};
+            if (newRange > range && newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > 65)) return {x: character.real_x + xChange, y: character.real_y + yChange};
         }
     }
 }

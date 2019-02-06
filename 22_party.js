@@ -7,7 +7,7 @@ function on_party_invite(name) {
 }
 
 let waitNotify, waitMoveNotify, merchant, waitTime;
-function wait_for_party(range = 300) {
+function wait_for_party(range = 400) {
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
@@ -66,23 +66,28 @@ function wait_for_healer(range = 300) {
             if (member === character.name) continue;
             if (!entity || entity.ctype !== 'priest') continue;
             healerFound = true;
-            if (entity && entity.mp < entity.max_mp * 0.65) {// Priest is low MP
+            if (entity && entity.mp < entity.max_mp * 0.45) {// Priest is low MP
                 if (!healerNotify) {
                     game_log('Healer is OOM.');
-                    whisper_party('Waiting for ' + member + ' to get mana.')
+                    whisper_party('Waiting for ' + member + ' to get their mp up.')
                 }
                 healerNotify = true;
                 return true;
             }
             // Handle distance
-            if (distance_to_point(entity.real_x, entity.real_y) >= range) {
+            if (distance_to_point(entity.real_x, entity.real_y) >= entity.range) {
+                if (!healerNotify) {
+                    game_log('Healer Range.');
+                    whisper_party('Waiting on our healer ' + member + ' to get in range before I pull.');
+                }
+                healerNotify = true;
                 return true;
             }
         }
         if (!healerFound) {
             if (!healerNotify) {
                 game_log('No healer??');
-                whisper_party('Not attacking without a priest.')
+                whisper_party('Where did the healer go??');
             }
             healerNotify = true;
             return true;
