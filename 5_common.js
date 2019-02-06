@@ -10,13 +10,14 @@ function stateController(state) {
     } //BANKING
     else if (character.gold >= 50000 || openInventorySpots() < 30) {
         new_state = 2;
-    } //POTIONS
-    else if (potion_check()) {
-        new_state = 3;
     } //GEAR
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
         new_state = 4;
-    }
+    } //POTIONS
+        /**
+    else if (potion_check()) {
+        new_state = 3;
+    }**/
     //If state changed set it and announce
     if (state !== new_state) {
         game_log("--- NEW STATE " + states[new_state] + " ---");
