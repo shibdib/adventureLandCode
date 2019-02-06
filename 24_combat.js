@@ -81,14 +81,28 @@ function check_for_party_aggro() {
     }
 }
 
-function getKitePosition(target) {
+function nearbyAggressors() {
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob].aggression && G.monsters[mob].aggression > 0);
+    //Order monsters by distance.
+    return sort_by_distance(aggressiveMonsters);
+}
+
+function getKitePosition(target, avoidArray) {
     let range = distance_to_point(target.real_x, target.real_y);
     for (let x = 0; x < 100; x++) {
         let xChange = getRndInteger(-character.range, character.range);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
             let newRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-            if (newRange > range && newRange >= character.range * 0.95 && newRange <= character.range) return {x: character.real_x + xChange, y: character.real_y + yChange};
+            // Handle avoiding others
+            let closestAvoid;
+            if (avoidArray && avoidArray.length) {
+                for (let avoid of avoidArray) {
+                    let avoidRange = distance_between_points(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
+                    if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
+                }
+            }
+            if (newRange > range && newRange >= character.range * 0.95 && newRange <= character.range && (!closestAvoid || closestAvoid > 65)) return {x: character.real_x + xChange, y: character.real_y + yChange};
         }
     }
 }

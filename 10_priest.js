@@ -37,7 +37,7 @@ function state_controller() {
     //Do we need potions?
     new_state = potion_check(new_state)
     //If state changed set it and announce
-    if (state != new_state) {
+    if (state !== new_state) {
         game_log("---NEW STATE " + new_state + "---");
         state = new_state;
     }
@@ -53,7 +53,9 @@ function farm()
     let curseTarget = find_leader_target();
     // Handle kiting
     let kiteLocation;
-    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget);
+    let nearbyAggressors = nearbyAggressors();
+    if (curseTarget && distance_to_point(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget, nearbyAggressors);
+    if (curseTarget && nearbyAggressors.length && distance_to_point(nearbyAggressors[0].real_x, nearbyAggressors[0].real_y) < 65) kiteLocation = getKitePosition(curseTarget, nearbyAggressors);
     if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive')) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');

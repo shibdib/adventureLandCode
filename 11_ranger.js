@@ -32,7 +32,7 @@ function state_controller() {
     //Do we need potions?
     new_state = potion_check(new_state)
     //If state changed set it and announce
-    if (state != new_state) {
+    if (state !== new_state) {
         game_log("---NEW STATE " + new_state + "---");
         state = new_state;
     }
@@ -43,19 +43,24 @@ function farm() {
     if (character.party) combat = check_for_party_aggro();
     let target = find_leader_target() || check_for_party_aggro();
     // Handle kiting
-    if (target && distance_to_point(target.real_x, target.real_y) <= character.range * 0.7) {
-        let kiteLocation = getKitePosition(target);
-        if (kiteLocation) move_to_position(kiteLocation)
-    } if (target) {
+    let kiteLocation;
+    let nearbyAggressors = nearbyAggressors();
+    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, nearbyAggressors);
+    if (target && nearbyAggressors.length && distanceToEntity(nearbyAggressors[0]) < 65) kiteLocation = getKitePosition(target, nearbyAggressors);
+    if (target) {
         let range = distance_to_point(target.real_x, target.real_y);
         if (range <= character.range && check_tank_aggro()) {
             // Poison arrow
             if (can_use('poisonarrow')) use('poisonarrow', target);
+            // If you need to kite do so
+            if (kiteLocation) move_to_position(kiteLocation);
+            // Attack
             if (can_attack(target))  attack(target);
         } else {
             // Long range
             if (can_use('supershot')) use('supershot', target);
-            move_to_target(target, character.range * 0.5, character.range * 0.99);
+            // If you need to kite do so, otherwise get in range
+            if (kiteLocation) move_to_position(kiteLocation); else move_to_target(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         move_to_leader(character.range * 0.5, character.range * 0.7);

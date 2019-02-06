@@ -32,7 +32,7 @@ function state_controller() {
     //Do we need potions?
     new_state = potion_check(new_state)
     //If state changed set it and announce
-    if (state != new_state) {
+    if (state !== new_state) {
         game_log("---NEW STATE " + new_state + "---");
         state = new_state;
     }
