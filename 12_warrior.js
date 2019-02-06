@@ -12,6 +12,7 @@ setInterval(function () {
     if (character.rip) {
         primary = undefined;
         currentTarget = undefined;
+        state = 99;
     }
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
