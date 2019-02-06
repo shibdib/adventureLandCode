@@ -29,7 +29,7 @@ function checkEntityForBuff(entity, buff) {
 // Get all characters within range
 function getNearbyCharacters(range = 200) {
     let characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob));
-    if (characters.length) return characters;
+    if (characters.length) return characters; else return [];
 }
 
 // Get random int between 2
