@@ -27,7 +27,7 @@ function equip_best_available() {
 
 //Looks for weapon type equipped
 function checkForWeaponType(type) {
-    for (let slot of Object.values(character.slots)) {
+    for (let slot in Object.values(character.slots)) {
         if (slot.name && G.items[slot.name].wtype && G.items[slot.name].wtype === type) return true;
     }
 }
