@@ -10730,7 +10730,7 @@ let parent_ref = [
     "cosmetics_logic",
     "add_character",
     "add_chest",
-    "get_npc",
+    "getNpc",
     "add_npc",
     "add_machine",
     "add_door",

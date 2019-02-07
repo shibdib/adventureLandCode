@@ -55,7 +55,7 @@ function merchantStateTasks(state) {
 // State controller
 function merchantStateController(state) {
     if (theBook) {
-        if (num_items('mpot1') < 200 || num_items('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
+        if (itemCount('mpot1') < 200 || itemCount('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
         if (theBook['gold'] < spendingAmount) spendingAmount = theBook['gold'];
     }
     let new_state = 9;

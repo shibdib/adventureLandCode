@@ -79,7 +79,7 @@ function moveToMerchant(min = 5, max = 10) {
 
 // Travel to an NPC
 function travelToNPC(name) {
-    let targetNPC = get_npc(name);
+    let targetNPC = getNpc(name);
     let distance;
     if (targetNPC) distance = distanceToPoint(targetNPC.position[0], targetNPC.position[1]);
     if (!smart.moving && (!distance || !distance > 250)) {

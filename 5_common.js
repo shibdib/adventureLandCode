@@ -79,7 +79,7 @@ function potionCheck() {
         let type = buyThesePotions[type_id];
         let item_def = parent.G.items[type];
         if (item_def != null) {
-            if (num_items(type) < 5) {
+            if (itemCount(type) < 5) {
                 needPots = true;
             }
         }
