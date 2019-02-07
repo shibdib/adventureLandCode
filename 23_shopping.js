@@ -38,6 +38,7 @@ function accounting() {
         shibMove('bank');
         return false;
     } else {
+        depositItems();
         let accountingInfo = {};
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
