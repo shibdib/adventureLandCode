@@ -1,6 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, currentItem, currentTask, craftingLevel, needsBookKeeping;
+let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc, needsBookKeeping;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -88,66 +89,47 @@ function merchantStateController(state) {
 function merch() {
     if (needsBookKeeping) return bookKeeping();
     if (!getItems.length && !currentItem) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+    if (character.map === 'bank') bookKeeping();
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
+    } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
+        exchangeStuff();
     } else {
         if (!sellExcessToNPC()) placeStand();
     }
 }
 
-//UPGRADING and COMBINING
-function combineItems() {
-    closeStand();
-    if (!currentItem) {
-        for (let l=0; l<4; l++) {
-            for (let item of combineTargets) {
-                let append = l;
-                if (!l) append = '';
-                if (theBook[item+append] >= 3) {
-                    currentItem = item;
-                    currentTask = 'combine';
-                    craftingLevel = l;
-                    lastAttemptedCrafting = undefined;
-                    return;
-                }
-            }
-            for (let item of upgradeTargets) {
-                let append = l;
-                if (!l) append = '';
-                if (theBook[item+append]) {
-                    currentItem = item;
-                    currentTask = 'upgrade';
-                    craftingLevel = l;
-                    lastAttemptedCrafting = undefined;
-                    return;
-                } else {
-                    if (!buyItems.includes(item)) buyItems.push(item);
-                }
+// Exchange Items
+function exchangeStuff() {
+    if (!theBook) return;
+    if (!exchangeTarget) {
+        for (let item of exchangeItems) {
+            if (theBook[item.item]) {
+                exchangeTarget = item.item;
+                exchangeNpc = item.npc;
+                lastAttemptedExchange = undefined;
+                return;
             }
         }
-        lastAttemptedCrafting = Date.now();
+        lastAttemptedExchange = Date.now();
     } else {
-        let needed = 1;
-        if (currentTask === 'combine') needed = 3;
-        if (itemCount(currentItem, craftingLevel) >= needed) {
-            if (itemCount('cscroll0')) {
-                let scroll = getInventorySlot('cscroll0');
-                let components = getInventorySlot(currentItem, true, craftingLevel);
-                if (currentTask === 'combine') compound(components[0],components[1],components[2],scroll); else upgrade(components[0],scroll);
+        if (itemCount(exchangeTarget)) {
+            exchangeItem(exchangeTarget, exchangeNpc);
+            if (!itemCount(exchangeTarget)) {
                 needsBookKeeping = true;
-                currentItem = undefined;
-                currentTask = undefined;
-                craftingLevel = undefined;
-            } else {
-                buyScroll('cscroll0');
+                exchangeTarget = undefined;
+                exchangeNpc = undefined;
+                exchangeStuff();
+                lastAttemptedExchange = Date.now();
             }
         } else {
-            let withdraw = withdrawItem(currentItem, craftingLevel);
-            if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
-                currentItem = undefined;
-                currentTask = undefined;
-                craftingLevel = undefined;
-                lastAttemptedCrafting = Date.now();
+            let withdraw = withdrawItem(exchangeTarget);
+            if (withdraw === null && !itemCount(exchangeTarget)) {
+                needsBookKeeping = true;
+                exchangeTarget = undefined;
+                exchangeNpc = undefined;
+                exchangeStuff();
+                lastAttemptedExchange = Date.now();
             }
         }
     }
@@ -201,6 +183,75 @@ function sellItemsToPlayers() {
                         trade(current, slotPrefix + s);
                     }
                 }
+            }
+        }
+    }
+}
+
+//UPGRADING and COMBINING
+function combineItems() {
+    closeStand();
+    if (!currentItem) {
+        for (let l=0; l<4; l++) {
+            for (let item of combineTargets) {
+                let append = l;
+                if (!l) append = '';
+                if (theBook[item+append] >= 3) {
+                    currentItem = item;
+                    currentTask = 'combine';
+                    craftingLevel = l;
+                    lastAttemptedCrafting = undefined;
+                    return;
+                }
+            }
+            for (let item of upgradeTargets) {
+                let append = l;
+                if (!l) append = '';
+                if (theBook[item+append]) {
+                    currentItem = item;
+                    currentTask = 'upgrade';
+                    craftingLevel = l;
+                    lastAttemptedCrafting = undefined;
+                    return;
+                } else {
+                    if (!buyItems.includes(item)) buyItems.push(item);
+                }
+            }
+        }
+        needsBookKeeping = true;
+        lastAttemptedCrafting = Date.now();
+    } else {
+        let needed = 1;
+        if (currentTask === 'combine') needed = 3;
+        if (itemCount(currentItem, craftingLevel) >= needed) {
+            let scroll;
+            let componentSlot = getInventorySlot(currentItem, true, craftingLevel);
+            let grade = item_grade(character.items[componentSlot]);
+            if (currentTask === 'combine') {
+                if (!grade) scroll = 'cscroll0'; else if (grade === 1) scroll = 'cscroll1'; else scroll = 'cscroll2';
+            } else {
+                if (!grade) scroll = 'scroll0'; else if (grade === 1) scroll = 'scroll1'; else scroll = 'scroll2';
+            }
+            if (itemCount(scroll)) {
+                let scrollSlot = getInventorySlot(scroll);
+                if (currentTask === 'combine') compound(componentSlot[0],componentSlot[1],componentSlot[2],scrollSlot); else upgrade(componentSlot[0],scrollSlot);
+                needsBookKeeping = true;
+                currentItem = undefined;
+                currentTask = undefined;
+                craftingLevel = undefined;
+                combineItems();
+            } else {
+                buyScroll(scroll);
+            }
+        } else {
+            let withdraw = withdrawItem(currentItem, craftingLevel);
+            if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
+                needsBookKeeping = true;
+                currentItem = undefined;
+                currentTask = undefined;
+                craftingLevel = undefined;
+                combineItems();
+                lastAttemptedCrafting = Date.now();
             }
         }
     }

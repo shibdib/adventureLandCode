@@ -2,11 +2,11 @@ let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied
 
 //This function contains our logic during resupply runs
 function restockPotions(amount) {
-    let potion_merchant = getNpc("fancypots");
-    let distance_to_merchant = null;
-    if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
-    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
-    if (distance_to_merchant != null && distance_to_merchant < 155) {
+    let potionMerchant = getNpc("fancypots");
+    let distanceToMerchant = null;
+    if (potionMerchant != null) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
+    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
+    if (distanceToMerchant != null && distanceToMerchant < 155) {
         if (buyPotions(amount)) return true;
     }
 }
@@ -27,17 +27,27 @@ function buyPotions(amount) {
     return true;
 }
 
-//But scrolls
+//Buy scrolls
 function buyScroll(type) {
-    let potion_merchant = getNpc("scrolls");
-    let distance_to_merchant = null;
-    if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
-    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 150 || character.map !== 'main')) return smart_move({to: "scrolls"});
-    if (distance_to_merchant != null && distance_to_merchant < 155) {
+    let scrollsMerchant = getNpc("scrolls");
+    let distanceToMerchant = null;
+    if (scrollsMerchant != null) distanceToMerchant = distanceToPoint(scrollsMerchant.position[0], scrollsMerchant.position[1]);
+    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "scrolls"});
+    if (distanceToMerchant != null && distanceToMerchant < 155) {
         buy(type, 1);
     }
 }
 
+// Exchange Item
+function exchangeItem(type, npc) {
+    let exchangeMerchant = getNpc(npc);
+    let distanceToMerchant = null;
+    if (exchangeMerchant != null) distanceToMerchant = distanceToPoint(exchangeMerchant.position[0], exchangeMerchant.position[1]);
+    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "exchange"});
+    if (distanceToMerchant != null && distanceToMerchant < 155) {
+        exchange(getInventorySlot(type));
+    }
+}
 
 //Returns the number of items in your inventory for a given item name;
 function itemCount(name, level = undefined) {
