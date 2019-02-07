@@ -1,7 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc, needsBookKeeping;
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -87,9 +87,7 @@ function merchantStateController(state) {
 
 //ACTIVE SELLING
 function merch() {
-    if (needsBookKeeping) return bookKeeping();
-    if (!getItems.length && !currentItem) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
-    if (character.map === 'bank') bookKeeping();
+    if (!getItems.length && !currentItem && !exchangeTarget) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
@@ -101,6 +99,7 @@ function merch() {
 
 // Exchange Items
 function exchangeStuff() {
+    closeStand();
     if (!theBook) return;
     if (!exchangeTarget) {
         for (let item of exchangeItems) {
@@ -116,16 +115,15 @@ function exchangeStuff() {
         if (itemCount(exchangeTarget)) {
             exchangeItem(exchangeTarget, exchangeNpc);
             if (!itemCount(exchangeTarget)) {
-                needsBookKeeping = true;
+                if (theBook[exchangeTarget] - 1 === 0) theBook[exchangeTarget] = undefined; else theBook[exchangeTarget] -= 1;
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
-                exchangeStuff();
-                lastAttemptedExchange = Date.now();
+                lastAttemptedExchange = undefined;
             }
         } else {
             let withdraw = withdrawItem(exchangeTarget);
             if (withdraw === null && !itemCount(exchangeTarget)) {
-                needsBookKeeping = true;
+                theBook[exchangeTarget] = undefined;
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
                 exchangeStuff();
@@ -218,7 +216,6 @@ function combineItems() {
                 }
             }
         }
-        needsBookKeeping = true;
         lastAttemptedCrafting = Date.now();
     } else {
         let needed = 1;
@@ -235,18 +232,18 @@ function combineItems() {
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
                 if (currentTask === 'combine') compound(componentSlot[0],componentSlot[1],componentSlot[2],scrollSlot); else upgrade(componentSlot[0],scrollSlot);
-                needsBookKeeping = true;
+                if (theBook[currentItem] - 1 === 0) theBook[currentItem] = undefined; else theBook[currentItem] -= 1;
                 currentItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
-                combineItems();
+                lastAttemptedCrafting = undefined;
             } else {
                 buyScroll(scroll);
             }
         } else {
             let withdraw = withdrawItem(currentItem, craftingLevel);
             if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
-                needsBookKeeping = true;
+                theBook[currentItem] = undefined;
                 currentItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
@@ -282,7 +279,7 @@ function bookKeeping() {
             }
         }
         bankDetails['gold'] = character.user['gold'];
-        needsBookKeeping = undefined;
+        lastBankCheck = Date.now();
         return bankDetails;
     }
 }

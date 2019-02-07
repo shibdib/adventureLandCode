@@ -13,7 +13,7 @@ let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearr
 
 let upgradeTargets = ['quiver', 'shield', 'bow'];
 
-let exchangeItems = [{item: 'redenvelopev2', npc: 'xyn'}];
+let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}];
 
 let states = {
     1: 'farm',
