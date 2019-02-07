@@ -50,7 +50,7 @@ function gearIssue() {
             }
         }
         equipBIS();
-        depositItems();
+        bankDepositItems();
         return true;
     }
 }
@@ -99,7 +99,7 @@ function depositGold(amount = character.gold - 5000) {
 
 //Drop off items
 let itemsNotify;
-function depositItems(potions = false) {
+function bankDepositItems(potions = false) {
     if (!itemsNotify) {
         whisperParty('Running to the bank to drop off some loot, brb.');
         itemsNotify = true;

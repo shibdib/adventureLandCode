@@ -34,7 +34,7 @@ function merchantStateTasks(state) {
     }
     if (state === 2) { // Deposits
         depositGold();
-        depositItems();
+        bankDepositItems();
         return true;
     }
     if (state === 9) { // MERCHANT SALES
@@ -163,7 +163,7 @@ function bookKeeping() {
         closeStand();
         shibMove('bank');
     } else {
-        depositItems();
+        bankDepositItems();
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
