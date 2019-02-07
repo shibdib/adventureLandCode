@@ -1,9 +1,11 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, theBook;
+let lastBankCheck, potionsNeeded, state, theBook, currentCombination;
+let combineTargets = ['hpbelt'];
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
+let buyItems = [];
 
 //State Controller
 setInterval(function () {
@@ -85,17 +87,41 @@ function merchantStateController(state) {
 
 //UPGRADING and COMBINING
 function combineItems() {
-
+    if (!currentCombination) {
+        for (let item of combineTargets) {
+            if (theBook[item] >= 3) {
+                currentCombination = item;
+                break;
+            } else {
+                buyItems.push(item);
+            }
+        }
+    } else {
+        if (itemCount(currentCombination) >= 3) {
+            if (itemCount('cscroll0')) {
+                let scroll = getInventorySlot('cscroll0');
+                let components = getInventorySlot(currentCombination, true);
+                compound(components[0],components[1],components[2],scroll);
+                depositItems();
+                currentCombination = undefined;
+            } else {
+                buyScroll('cscroll0');
+            }
+        } else {
+            withdrawItem(currentCombination);
+        }
+    }
 }
 
 //ACTIVE SELLING
 function merch() {
     if (!getItems.length) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
     sellExcessToNPC();
+    combineItems();
 }
 
 function placeStand() {
-    let slot = checkInventoryForItem('stand0');
+    let slot = getInventorySlot('stand0');
     parent.socket.emit("merchant", {num: slot});
 }
 
@@ -124,8 +150,8 @@ function sellExcessToNPC() {
             getItems.shift();
         }
     } else if (sellItems.length) {
-        let key = checkInventoryForItem(sellItems[0]);
-        if (key) sell(checkInventoryForItem(sellItems[0]), 1);
+        let key = getInventorySlot(sellItems[0]);
+        if (key) sell(getInventorySlot(sellItems[0]), 1);
         sellItems.shift();
     } else {
         for (let key of Object.keys(theBook)) {
@@ -142,9 +168,9 @@ function sellItemsToPlayers() {
         let prefix = "trade";
         for (let s = 1; s <= 16; s++) {
             let slot = buyers.slots[prefix + s];
-            if (slot !== null && slot.b && (theBook[slot.name] || checkInventoryForItem(slot.name))) {
+            if (slot !== null && slot.b && (theBook[slot.name] || getInventorySlot(slot.name))) {
                 if (slot.price >= G.items[slot.name].g * 0.7) {
-                    if (checkInventoryForItem(slot.name)) {
+                    if (getInventorySlot(slot.name)) {
                         game_log("Item Bought: " + tradeSlot.name);
                         game_log("From: " + current.name);
                         game_log("Price: " + tradeSlot.price);

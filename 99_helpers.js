@@ -4,7 +4,7 @@ function can_use(name, target = undefined) {
     if (G.skills[name] && G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
     if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
     if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
-    if (G.skills[name] && G.skills[name].consume && !checkInventoryForItem(G.skills[name].consume)) return false; // checks for consumable
+    if (G.skills[name] && G.skills[name].consume && !getInventorySlot(G.skills[name].consume)) return false; // checks for consumable
     if (target && G.skills[name] && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
     if (target && G.skills[name] && checkEntityForBuff(target, name)) return false; // checks if this is already applied
     return parent.can_use(name);  // checks the cooldown
@@ -15,7 +15,7 @@ function on_cm(name,data) {
     // Potion requests
     if (character.ctype === 'merchant') {
         for (let key of Object.keys(data)) {
-            let slot = checkInventoryForItem(key);
+            let slot = getInventorySlot(key);
             if (slot) send_item(parent.entities[name], slot, data[key]);
             pm(name, data[key] + ' items sent.')
         }
