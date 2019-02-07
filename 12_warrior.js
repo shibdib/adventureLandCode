@@ -39,7 +39,7 @@ function farm() {
     let mainTarget = findLocalMonsters(currentTarget);
     if (primary && primary.dead) primary = undefined;
     if (mainTarget && !primary) primary = mainTarget;
-    if (party_aggro && (party_aggro.target !== character.name || !currentTarget)) {
+    if (party_aggro && (party_aggro.target !== character.name || !currentTarget || !mainTarget)) {
         let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
         if (range <= character.range) {
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
