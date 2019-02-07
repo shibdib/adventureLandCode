@@ -50,7 +50,7 @@ function gearIssue() {
             }
         }
         equipBIS();
-        bankDepositItems();
+        depositItems();
         return true;
     }
 }
@@ -82,24 +82,33 @@ function countEmptyGear() {
 
 //BANKING
 //Drop off gold
-let goldNotify;
+let goldWithdrawNotify;
 function depositGold(amount = character.gold - 5000) {
-    if (!goldNotify) {
+    if (!goldWithdrawNotify) {
         whisperParty('I have way too much gold, brb.');
-        goldNotify = true;
+        goldWithdrawNotify = true;
     }
     if (character.map !== 'bank') {
         shibMove('bank');
         return false;
     } else {
         bank_deposit(amount);
-        goldNotify = undefined;
+        goldWithdrawNotify = undefined;
     }
 }
-
+//Pick Up Gold
+function withdrawGold(amount) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        if (amount > character.user['gold']) amount = character.user['gold'];
+        bank_withdraw(amount);
+    }
+}
 //Drop off items
 let itemsNotify;
-function bankDepositItems(potions = false) {
+function depositItems(potions = false) {
     if (!itemsNotify) {
         whisperParty('Running to the bank to drop off some loot, brb.');
         itemsNotify = true;
@@ -119,33 +128,6 @@ function bankDepositItems(potions = false) {
         }
     }
 }
-//BANKING
-//Drop off gold
-let goldNotify;
-function depositGold(amount = character.gold - 5000) {
-    if (!goldNotify) {
-        whisperParty('I have way too much gold, brb.');
-        goldNotify = true;
-    }
-    if (character.map !== 'bank') {
-        shibMove('bank');
-        return false;
-    } else {
-        bank_deposit(amount);
-        goldNotify = undefined;
-    }
-}
-//Pick Up Gold
-function withdrawGold(amount) {
-    if (character.map !== 'bank') {
-        shibMove('bank');
-        return false;
-    } else {
-        if (amount > character.user['gold']) amount = character.user['gold'];
-        bank_withdraw(amount);
-    }
-}
-
 //Withdraw Item
 function withdrawItem(target) {
     if (character.map !== 'bank') {
@@ -167,7 +149,6 @@ function withdrawItem(target) {
         }
     }
 }
-
 //Pick Up Potions
 let requestOnce;
 function getPotions() {
