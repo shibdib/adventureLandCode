@@ -40,7 +40,7 @@ function merchantStateTasks(state) {
         return true;
     }
     if (state === 9) { // MERCHANT SALES
-        if (distanceToPoint(69, 12) && distanceToPoint(69, 12) < 15) placeStand(); else if (character.map !== 'main') smart_move('main'); else shibMove(69, 12);
+        if (distanceToPoint(69, 12) && distanceToPoint(69, 12) < 15) placeStand(); else if (character.map === 'bank') smart_move('halloween'); else shibMove(69, 12);
         return false;
     }
     if (state === 11) { // ACCOUNTING

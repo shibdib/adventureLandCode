@@ -13,11 +13,7 @@ function stateController(state) {
     } //GEAR
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
         new_state = 4;
-    } //POTIONS
-        /**
-    else if (potion_check()) {
-        new_state = 3;
-    }**/
+    }
     //If state changed set it and announce
     if (state !== new_state) {
         game_log("--- NEW STATE " + states[new_state] + " ---");
@@ -37,9 +33,6 @@ function stateTasks(state, combat) {
         depositGold();
         depositItems();
         return true;
-    }
-    if (state === 3) { // POTION PICKUP
-        return false;
     }
     if (state === 4) { // GEAR
         if (gearIssue()) lastBankGearCheck = Date.now();

@@ -29,7 +29,7 @@ function equipBIS() {
 let gearNotify;
 function gearIssue() {
     if (!gearNotify) {
-        whisperParty('Going to the bank to check if I can upgrade my gear.')
+        whisperParty('Going to the bank to check if I can upgrade my gear and restock.');
         gearNotify = true;
     }
     if (character.map !== 'bank') {
@@ -38,14 +38,14 @@ function gearIssue() {
     } else {
         equipBIS();
         for (let key in Object.values(character.user)) {
-            let slot = Object.values(character.user)[key]
+            let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
             for (let packKey in slot) {
                 let banker = slot[packKey];
                 if (!banker) continue;
                 let itemInfo = G.items[banker.name];
                 if (itemInfo && itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
-                itemInfo.iLevel = item_properties(banker).level
+                itemInfo.iLevel = item_properties(banker).level;
                 compareEquip(itemInfo, packKey, false, Object.keys(character.user)[key]);
             }
         }
@@ -130,6 +130,17 @@ function withdrawGold(amount) {
         bank_withdraw(amount);
     }
 }
+
+//Pick Up Potions
+function getPotions() {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        if (amount > character.user['gold']) amount = character.user['gold'];
+        bank_withdraw(amount);
+    }
+}
 //UPGRADING and COMBINING
 function combineItems() {
 
@@ -166,8 +177,17 @@ function compareEquip(itemInfo, key, don = false, pack){
     } else {
         // Get currently slotted item
         let slottedItem = character.slots[itemSlot];
-        // If not a slottable item continue
-        if (slottedItem === undefined) return;
+        // If not a slottable item check if it's a potion
+        if (slottedItem === undefined) {
+            if (itemInfo.type === 'pot') {
+                if ((itemInfo.id === 'hpot1' && num_items('hpot1') < 50) || (itemInfo.id === 'mpot1' && num_items('mpot1')) {
+                    bankItemWithdraw(key, pack, 50);
+                    game_log('Grabbing 50 ' + itemInfo.name + ' from the bank.');
+                }
+            } else {
+                return;
+            }
+        }
         // If slot is empty equip
         if (slottedItem === null) {
             if (don) equip(key); else bankItemWithdraw(key, pack);
