@@ -1,7 +1,8 @@
 // Handle waiting for party members
 let waitNotify, waitMoveNotify, merchant, waitTime;
 function waitForParty(range = 400) {
-    if (parent.party_list.length > 0 && character.map !== 'bank') {
+    if (character.map === 'bank') return false;
+    if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
@@ -52,7 +53,8 @@ function waitForParty(range = 400) {
 let healerNotify;
 function waitForHealer(range = 300) {
     let healerFound = false;
-    if (parent.party_list.length > 0 && character.map !== 'bank') {
+    if (character.map === 'bank') return false;
+    if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
