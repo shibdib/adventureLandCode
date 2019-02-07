@@ -99,3 +99,12 @@ function sortEntitiesByXp(array) {
 function bankItemWithdraw(key, pack) {
     parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
 }
+
+function placeStand() {
+    let slot = getInventorySlot('stand0');
+    parent.socket.emit("merchant", {num: slot});
+}
+
+function closeStand() {
+    parent.socket.emit("merchant", {close: 1});
+}

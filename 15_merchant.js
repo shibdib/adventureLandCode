@@ -1,9 +1,6 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, theBook, currentCombination;
-let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
-    'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
-    'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
+let lastBankCheck, potionsNeeded, state, theBook, currentCombination, needsBookKeeping;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -87,6 +84,14 @@ function merchantStateController(state) {
     return state;
 }
 
+//ACTIVE SELLING
+function merch() {
+    if (needsBookKeeping) return bookKeeping();
+    if (!getItems.length && !currentCombination) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
+    sellExcessToNPC();
+    combineItems();
+}
+
 //UPGRADING and COMBINING
 function combineItems() {
     closeStand();
@@ -105,8 +110,7 @@ function combineItems() {
                 let scroll = getInventorySlot('cscroll0');
                 let components = getInventorySlot(currentCombination, true);
                 compound(components[0],components[1],components[2],scroll);
-                depositItems();
-                bookKeeping();
+                needsBookKeeping = true;
                 currentCombination = undefined;
             } else {
                 buyScroll('cscroll0');
@@ -115,22 +119,6 @@ function combineItems() {
             withdrawItem(currentCombination);
         }
     }
-}
-
-//ACTIVE SELLING
-function merch() {
-    if (!getItems.length && !currentCombination) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
-    sellExcessToNPC();
-    combineItems();
-}
-
-function placeStand() {
-    let slot = getInventorySlot('stand0');
-    parent.socket.emit("merchant", {num: slot});
-}
-
-function closeStand() {
-    parent.socket.emit("merchant", {close: 1});
 }
 
 function sellExcessToNPC() {
@@ -207,6 +195,7 @@ function bookKeeping() {
             }
         }
         bankDetails['gold'] = character.user['gold'];
+        needsBookKeeping = undefined;
         return bankDetails;
     }
 }
