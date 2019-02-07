@@ -36,7 +36,6 @@ function buy_potions() {
 function accounting() {
     if (character.map !== 'bank') {
         shibMove('bank');
-        return false;
     } else {
         depositItems();
         let accountingInfo = {};
@@ -46,12 +45,12 @@ function accounting() {
             for (let packKey in slot) {
                 let banker = slot[packKey];
                 if (!banker) continue;
-                let itemInfo = G.items[banker.name];
+                game_log(packKey)
                 let quantity = banker.q || 1;
-                if (accountingInfo[itemInfo.id]) {
-                    accountingInfo[itemInfo.id] += quantity;
+                if (accountingInfo[banker.name]) {
+                    accountingInfo[banker.name] += quantity;
                 } else {
-                    accountingInfo[itemInfo.id] = quantity;
+                    accountingInfo[banker.name] = quantity;
                 }
             }
         }
