@@ -1,23 +1,18 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state;
+let lastBankCheck, potionsNeeded, state, theBook;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
-let bankDetails = {};
 
 //State Controller
 setInterval(function () {
     state = merchantStateController(state);
-}, 5000);
+}, 150);
 
 //Primary Loop
 setInterval(function () {
-    if (character.rip) {
-        primary = undefined;
-        currentTarget = undefined;
-        state = 99;
-    }
+    if (character.rip) state = 99;
     if (!state) return;
     if (!merchantStateTasks(state)) sell();
 }, 100);
@@ -44,30 +39,31 @@ function merchantStateTasks(state) {
     }
     if (state === 9) { // MERCHANT SALES
         sell();
-        return false;
+        return;
     }
     if (state === 11) { // ACCOUNTING
-        accounting();
-        if (bankDetails && bankDetails.length) {
+        theBook = bookKeeping();
+        if (theBook) {
             lastBankCheck = Date.now();
-            return false;
+            return;
+        } else {
+            return true;
         }
-        return true;
     }
 }
 
 // State controller
 function merchantStateController(state) {
-    if (bankDetails && bankDetails.length) {
+    if (theBook) {
         if (num_items('mpot1') < 200 || num_items('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
-        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
+        if (theBook['gold'] < spendingAmount) spendingAmount = theBook['gold'];
     }
     let new_state = 9;
     //KIA
     if (character.rip) {
         new_state = 99;
     } //ACCOUNTING
-    else if (!bankDetails || !bankDetails.length || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
+    else if (!theBook || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
         new_state = 11;
     } //NO POORS
     else if (character.gold < spendingAmount * 0.25) {
@@ -86,6 +82,7 @@ function merchantStateController(state) {
     }
     return state;
 }
+
 //UPGRADING and COMBINING
 function combineItems() {
 
@@ -93,45 +90,50 @@ function combineItems() {
 
 //ACTIVE SELLING
 function sell() {
-    if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
+    if (!getItems.length) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
     sellExcessToNPC();
 }
 
 function placeStand() {
     let slot = checkInventoryForItem('stand0');
-    parent.socket.emit("merchant", { num: slot });
+    parent.socket.emit("merchant", {num: slot});
 }
 
 function closeStand() {
-    parent.socket.emit("merchant", {close:1});
+    parent.socket.emit("merchant", {close: 1});
 }
 
 function sellExcessToNPC() {
+    if (!theBook) return;
     // Set bank items for sale if overstocked
-    for (let key of Object.keys(bankDetails)) {
-        game_log(key)
-        if (G.items[key] && bankDetails[key] > 6) {
+    for (let key of Object.keys(theBook)) {
+        if (G.items[key] && theBook[key] > 6) {
             getItems.push(key);
         }
     }
     if (sellItems.length) {
+        placeStand();
         for (let item of sellItems) {
             if (checkInventoryForItem(item)) {
                 sell(checkInventoryForItem(item), 1);
             }
         }
     } else if (getItems.length) {
-        if (withdrawItem(getItems[0])) getItems.shift();
+        closeStand();
+        if (withdrawItem(getItems[0])) {
+            sellItems.push(getItems[0]);
+            getItems.shift();
+        }
     }
 }
 
 function sellItemsToPlayers() {
     let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name);
-    for(let buyers of merchants) {
+    for (let buyers of merchants) {
         let prefix = "trade";
-        for(let s=1;s<=16;s++) {
+        for (let s = 1; s <= 16; s++) {
             let slot = buyers.slots[prefix + s];
-            if (slot !== null && slot.b && (bankDetails[slot.name] || checkInventoryForItem(slot.name))) {
+            if (slot !== null && slot.b && (theBook[slot.name] || checkInventoryForItem(slot.name))) {
                 if (slot.price >= G.items[slot.name].g * 0.7) {
                     if (checkInventoryForItem(slot.name)) {
                         game_log("Item Bought: " + tradeSlot.name);
@@ -146,11 +148,12 @@ function sellItemsToPlayers() {
 }
 
 //Get bank information
-function accounting() {
+function bookKeeping() {
+    let bankDetails = {};
     if (character.map !== 'bank') {
+        closeStand();
         shibMove('bank');
     } else {
-        bankDetails = undefined;
         depositItems();
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
@@ -158,15 +161,17 @@ function accounting() {
             for (let packKey in slot) {
                 let banker = slot[packKey];
                 if (!banker) continue;
-                game_log(packKey)
+                let level = item_properties(banker).level;
+                if (!level) level = '';
                 let quantity = banker.q || 1;
-                if (bankDetails[banker.name]) {
-                    bankDetails[banker.name] += quantity;
+                if (bankDetails[banker.name + level]) {
+                    bankDetails[banker.name + level] += quantity;
                 } else {
-                    bankDetails[banker.name] = quantity;
+                    bankDetails[banker.name + level] = quantity;
                 }
             }
         }
         bankDetails['gold'] = character.user['gold'];
+        return bankDetails;
     }
 }

@@ -145,10 +145,10 @@ function withdrawItem(target) {
                 if (!item || item === null) continue;
                 if (item.name === target) {
                     bankItemWithdraw(packKey, Object.keys(character.user)[key]);
+                    return true;
                 }
             }
         }
-        return true;
     }
 }
 
