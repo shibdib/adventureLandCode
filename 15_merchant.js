@@ -106,6 +106,7 @@ function combineItems() {
                 let components = getInventorySlot(currentCombination, true);
                 compound(components[0],components[1],components[2],scroll);
                 depositItems();
+                bookKeeping();
                 currentCombination = undefined;
             } else {
                 buyScroll('cscroll0');

@@ -136,7 +136,6 @@ function depositItems(potions = false) {
             if (itemInfo.type === 'stand') continue;
             bank_store(key);
         }
-        if (character.ctype === 'merchant') bookKeeping();
     }
 }
 //Withdraw Item
