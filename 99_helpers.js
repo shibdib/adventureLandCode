@@ -14,7 +14,7 @@ function can_use(name, target = undefined) {
 function on_cm(name,data) {
     // Potion requests
     if (character.ctype === 'merchant') {
-        for (let key in Object.keys(data)) {
+        for (let key of Object.keys(data)) {
             let slot = checkInventoryForItem(key);
             if (slot) send_item(parent.entities[name], slot, data[key]);
             pm(name, data[key] + ' items sent.')
