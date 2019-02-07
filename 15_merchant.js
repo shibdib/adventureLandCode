@@ -2,6 +2,8 @@ game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, bankDetails, potionsNeeded, state;
 let spendingAmount = 1000000;
+let getItems = [];
+let sellItems = [];
 
 //State Controller
 setInterval(function () {
@@ -40,7 +42,7 @@ function merchantStateTasks(state) {
         return true;
     }
     if (state === 9) { // MERCHANT SALES
-        if (distanceToPoint(69, 12) && distanceToPoint(69, 12) < 15) placeStand(); else if (character.map === 'bank') smart_move('halloween'); else shibMove(69, 12);
+        sell();
         return false;
     }
     if (state === 11) { // ACCOUNTING
@@ -83,6 +85,16 @@ function merchantStateController(state) {
     }
     return state;
 }
+//UPGRADING and COMBINING
+function combineItems() {
+
+}
+
+//ACTIVE SELLING
+function sell() {
+    if (distanceToPoint(69, 12) && distanceToPoint(69, 12) < 15) placeStand(); else if (character.map === 'bank') return shibMove('main'); else return shibMove(69, 12);
+    sellExcessToNPC();
+}
 
 function placeStand() {
     let slot = checkInventoryForItem('stand0');
@@ -91,4 +103,42 @@ function placeStand() {
 
 function closeStand() {
     parent.socket.emit("merchant", {close:1});
+}
+
+function sellExcessToNPC() {
+    // Set bank items for sale if overstocked
+    for (let key of Object.keys(bankDetails)) {
+        if (G.items[key] && bankDetails[key] > 6) {
+            getItems.push(key);
+        }
+    }
+    if (sellItems.length) {
+        for (let item of sellItems) {
+            if (checkInventoryForItem(item)) {
+                sell(checkInventoryForItem(item), 1);
+            }
+        }
+    } else if (getItems.length) {
+        if (withdrawItem(getItems[0])) getItems.shift();
+    }
+}
+
+function sellItemsToPlayers() {
+    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name);
+    for(let buyers of merchants) {
+        let prefix = "trade";
+            for(let s=1;s<=16;s++) {
+                let slot = buyers.slots[prefix + s];
+                if (slot !== null && slot.b && (bankDetails[slot.name] || checkInventoryForItem(slot.name))) {
+                    if (slot.price >= G.items[slot.name].g * 0.7) {
+                        if (checkInventoryForItem(slot.name)) {
+                            game_log("Item Bought: " + tradeSlot.name);
+                            game_log("From: " + current.name);
+                            game_log("Price: " + tradeSlot.price);
+                            trade(current, slotPrefix + s);
+                        }
+                    }
+                }
+            }
+    }
 }

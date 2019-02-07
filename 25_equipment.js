@@ -131,6 +131,27 @@ function withdrawGold(amount) {
     }
 }
 
+//Withdraw Item
+function withdrawItem(target) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        for (let key in Object.values(character.user)) {
+            let slot = Object.values(character.user)[key];
+            if (!slot || !slot.length) continue;
+            for (let packKey in slot) {
+                let item = slot[packKey];
+                if (!item || item === null) continue;
+                if (item.name === target) {
+                    bankItemWithdraw(packKey, Object.keys(character.user)[key]);
+                }
+            }
+        }
+        return true;
+    }
+}
+
 //Pick Up Potions
 let requestOnce;
 function getPotions() {
