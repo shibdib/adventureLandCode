@@ -84,5 +84,5 @@ function sortEntitiesByXp(array) {
 }
 
 function bankItemWithdraw(key, pack, q = 1) {
-    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack,quantity:q});
+    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack,amount:q});
 }

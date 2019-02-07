@@ -43,6 +43,40 @@ function moveToLeader(min = 5, max = 10) {
     if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), leader.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), parent.party[character.party].y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
 }
 
+// Handle moving to merchant
+function moveToMerchant(min = 5, max = 10) {
+    let merchant;
+    if (parent.party_list.length > 0) {
+        for (let id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (entity && entity.ctype === 'merchant') merchant = entity;
+        }
+    }
+    if (!merchant) {
+        shibMove('main');
+        return false;
+    }
+    let range = distanceToPoint(merchant.real_x, merchant.real_y) + 0.1;
+    // If range is good stay
+    if (range && (range <= max && range >= min)) {
+        stop();
+        return true;
+    }
+    // If smart moving past them stop
+    if (range && smart.moving && range <= character.range) {
+        stop();
+        return false;
+    }
+    // If moving continue
+    if (is_moving(character)) return false;
+    // Handle close
+    if (range > max || range < min || !range) {
+        moveToCoords(merchant.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), merchant.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
+        return false;
+    }
+}
+
 // Travel to an NPC
 function travelToNPC(name) {
     let targetNPC = get_npc(name);

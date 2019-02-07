@@ -133,12 +133,29 @@ function withdrawGold(amount) {
 
 //Pick Up Potions
 function getPotions() {
-    if (character.map !== 'bank') {
-        shibMove('bank');
-        return false;
-    } else {
-        if (amount > character.user['gold']) amount = character.user['gold'];
-        bank_withdraw(amount);
+    if (moveToMerchant()) {
+        let merchant;
+        if (parent.party_list.length > 0) {
+            for (let id in parent.party_list) {
+                let member = parent.party_list[id];
+                let entity = parent.entities[member];
+                if (entity && entity.ctype === 'merchant') merchant = entity;
+            }
+            if (merchant) {
+                let need = {};
+                for (let type_id in potion_types) {
+                    let type = potion_types[type_id];
+                    let item_def = parent.G.items[type];
+                    if (item_def != null) {
+                        if (num_items(type) < 5) {
+                            need[type] = 50 - num_items(type);
+                        }
+                    }
+                }
+                send_cm(merchant.name,need);
+                pm(merchant.name, 'Send potions please!');
+            }
+        }
     }
 }
 //UPGRADING and COMBINING

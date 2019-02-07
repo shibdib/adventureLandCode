@@ -2,29 +2,13 @@ let purchase_amount = 50;//How many potions to buy at once.
 let potion_types = ["hpot1", "mpot1"];//The types of potions to keep supplied.
 
 //This function contains our logic during resupply runs
-let returning;
 function resupply_potions() {
     let potion_merchant = get_npc("fancypots");
     let distance_to_merchant = null;
     if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
     if (!returning && !smart.moving && (distance_to_merchant == null || distance_to_merchant > 250 || character.map !== 'main')) smart_move({to: "potions"});
     if (distance_to_merchant != null && distance_to_merchant < 250) {
-        if (returning || buy_potions()) {
-            returning = true;
-            if (character.map !== 'bank') {
-                shibMove('bank');
-                return false;
-            } else {
-                for (let key in character.items) {
-                    let item = character.items[key];
-                    if (!item || item === null) continue;
-                    let itemInfo = G.items[item.name];
-                    if (itemInfo.type === 'pot') bank_store(key);
-                }
-                accounting();
-                return true;
-            }
-        }
+        if (buy_potions()) return true;
     }
 }
 

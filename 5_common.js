@@ -13,6 +13,9 @@ function stateController(state) {
     } //GEAR
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
         new_state = 4;
+    } //POTIONS
+    else if (potionCheck()) {
+        new_state = 3;
     }
     //If state changed set it and announce
     if (state !== new_state) {
@@ -33,6 +36,10 @@ function stateTasks(state, combat) {
         depositGold();
         depositItems();
         return true;
+    }
+    if (state === 3) { // POTION PICKUP
+        getPotions();
+        return false;
     }
     if (state === 4) { // GEAR
         if (gearIssue()) lastBankGearCheck = Date.now();
@@ -63,4 +70,19 @@ function potionController(priest = false) {
             heal(character);
         }
     }
+}
+
+//Potion Check
+function potionCheck() {
+    let needPots;
+    for (let type_id in potion_types) {
+        let type = potion_types[type_id];
+        let item_def = parent.G.items[type];
+        if (item_def != null) {
+            if (num_items(type) < 5) {
+                needPots = true;
+            }
+        }
+    }
+    if (needPots) return true;
 }
