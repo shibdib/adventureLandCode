@@ -219,7 +219,7 @@ function compareEquip(itemInfo, key, don = false, pack){
                 if (don) unequip(itemInfo.type);
                 if (don) equip(key); else bankItemWithdraw(key, pack);
                 if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-                return;
+                return true;
             }
         }
     } else {
@@ -231,7 +231,7 @@ function compareEquip(itemInfo, key, don = false, pack){
         if (slottedItem === null) {
             if (don) equip(key); else bankItemWithdraw(key, pack);
             if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + itemSlot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-            return;
+            return true;
         }
         slottedItem.iLevel = item_properties(slottedItem).level;
         // If slotted item is less valuable unequip and equip the new item
@@ -239,7 +239,7 @@ function compareEquip(itemInfo, key, don = false, pack){
             if (don) unequip(itemSlot);
             if (don) equip(key); else bankItemWithdraw(key, pack);
             if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-            return;
+            return true;
         }
     }
 }
