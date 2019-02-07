@@ -1,7 +1,9 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, currentCombination;
-let combineTargets = ['hpbelt'];
+let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
+    'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
+    'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -87,6 +89,7 @@ function merchantStateController(state) {
 
 //UPGRADING and COMBINING
 function combineItems() {
+    closeStand();
     if (!currentCombination) {
         for (let item of combineTargets) {
             if (theBook[item] >= 3) {
@@ -115,7 +118,7 @@ function combineItems() {
 
 //ACTIVE SELLING
 function merch() {
-    if (!getItems.length) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
+    if (!getItems.length && !currentCombination) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
     sellExcessToNPC();
     combineItems();
 }
@@ -144,10 +147,6 @@ function sellExcessToNPC() {
             case null:
                 getItems.shift();
                 break;
-        }
-        if (withdrawItem(getItems[0])) {
-            sellItems.push(getItems[0]);
-            getItems.shift();
         }
     } else if (sellItems.length) {
         let key = getInventorySlot(sellItems[0]);
