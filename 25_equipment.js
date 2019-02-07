@@ -20,7 +20,7 @@ function equipBIS() {
         let item = character.items[key];
         if (!item || item === null) continue;
         let itemInfo = G.items[item.name];
-        if (itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
+        if (itemInfo.wtype && !classItems[character.ctype].includes(itemInfo.wtype)) continue;
         compareEquip(itemInfo, key, true);
     }
 }
@@ -44,7 +44,7 @@ function gearIssue() {
                 let banker = slot[packKey];
                 if (!banker) continue;
                 let itemInfo = G.items[banker.name];
-                if (itemInfo && itemInfo.wtype && !classItems[character.class].includes(itemInfo.wtype)) continue;
+                if (itemInfo && itemInfo.wtype && !classItems[character.ctype].includes(itemInfo.wtype)) continue;
                 itemInfo.iLevel = item_properties(banker).level;
                 compareEquip(itemInfo, packKey, false, Object.keys(character.user)[key]);
             }
@@ -161,10 +161,6 @@ function getPotions() {
             }
         }
     }
-}
-//UPGRADING and COMBINING
-function combineItems() {
-
 }
 
 //Reused functions
