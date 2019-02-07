@@ -89,25 +89,24 @@ function merch() {
     if (needsBookKeeping) return bookKeeping();
     if (!getItems.length && !currentCombination) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
     sellExcessToNPC();
-    combineItems();
+    if (!currentCombination || (lastAttemptedCrafting && lastAttemptedCrafting + 25000 > Date.now())) combineItems();
 }
 
 //UPGRADING and COMBINING
-let lastAttempt;
+let lastAttemptedCrafting;
 function combineItems() {
-    if (lastAttempt && lastAttempt + 25000 > Date.now()) return;
-    lastAttempt =  Date.now();
     closeStand();
     if (!currentCombination) {
         for (let item of combineTargets) {
             if (theBook[item] >= 3) {
                 currentCombination = item;
-                lastAttempt = undefined;
+                lastAttemptedCrafting = undefined;
                 break;
             } else {
                 buyItems.push(item);
             }
         }
+        lastAttemptedCrafting =  Date.now();
     } else {
         if (itemCount(currentCombination) >= 3) {
             if (itemCount('cscroll0')) {
