@@ -11,6 +11,8 @@ let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearr
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
+let upgradeTargets = ['quiver', 'shield', 'bow'];
+
 let states = {
     1: 'farm',
     2: 'banking',
