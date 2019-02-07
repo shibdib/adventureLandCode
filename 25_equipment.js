@@ -132,6 +132,7 @@ function withdrawGold(amount) {
 }
 
 //Pick Up Potions
+let requestOnce;
 function getPotions() {
     if (moveToMerchant()) {
         let merchant;
@@ -152,8 +153,11 @@ function getPotions() {
                         }
                     }
                 }
-                send_cm(merchant.name,need);
-                pm(merchant.name, 'Send potions please!');
+                if (!requestOnce || requestOnce + 30000 < Date.now()) {
+                    send_cm(merchant.name,need);
+                    pm(merchant.name, 'Send potions please!');
+                    requestOnce = Date.now();
+                }
             }
         }
     }

@@ -10,6 +10,19 @@ function can_use(name, target = undefined) {
     return parent.can_use(name);  // checks the cooldown
 }
 
+// Handle CM cases
+function on_cm(name,data) {
+    // Potion requests
+    if (character.ctype === 'merchant') {
+        for (let key in Object.keys(data)) {
+            let slot = checkInventoryForItem(key);
+            if (slot) send_item(parent.entities[name], slot, data[key]);
+            pm(name, data[key] + ' items sent.')
+        }
+    }
+    game_log("Received a code message from: "+name);
+}
+
 // Fix party runners
 function on_party_request(name) {
     accept_party_request(name);
