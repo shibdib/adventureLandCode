@@ -144,7 +144,7 @@ function withdrawItem(target) {
                 let item = slot[packKey];
                 if (!item || item === null) continue;
                 if (item.name === target) {
-                    bankItemWithdraw(packKey, Object.keys(character.user)[key]);
+                    //bankItemWithdraw(packKey, Object.keys(character.user)[key]);
                     return true;
                 }
             }

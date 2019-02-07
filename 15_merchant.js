@@ -14,7 +14,7 @@ setInterval(function () {
 setInterval(function () {
     if (character.rip) state = 99;
     if (!state) return;
-    if (!merchantStateTasks(state)) sell();
+    if (!merchantStateTasks(state)) merch();
 }, 100);
 
 //State tasks
@@ -89,7 +89,7 @@ function combineItems() {
 }
 
 //ACTIVE SELLING
-function sell() {
+function merch() {
     if (!getItems.length) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
     sellExcessToNPC();
 }
@@ -106,23 +106,21 @@ function closeStand() {
 function sellExcessToNPC() {
     if (!theBook) return;
     // Set bank items for sale if overstocked
-    for (let key of Object.keys(theBook)) {
-        if (G.items[key] && theBook[key] > 6) {
-            getItems.push(key);
-        }
-    }
-    if (sellItems.length) {
-        placeStand();
-        for (let item of sellItems) {
-            if (checkInventoryForItem(item)) {
-                sell(checkInventoryForItem(item), 1);
-            }
-        }
-    } else if (getItems.length) {
+    if (getItems.length) {
         closeStand();
         if (withdrawItem(getItems[0])) {
             sellItems.push(getItems[0]);
             getItems.shift();
+        }
+    } else if (sellItems.length) {
+        let key = checkInventoryForItem(sellItems[0]);
+        if (key) sell(checkInventoryForItem(sellItems[0]), 1);
+        sellItems.shift();
+    } else {
+        for (let key of Object.keys(theBook)) {
+            if (G.items[key] && theBook[key] > 6 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem') {
+                if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
+            }
         }
     }
 }
