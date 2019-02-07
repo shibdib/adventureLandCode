@@ -1,9 +1,10 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, bankDetails, potionsNeeded, state;
+let lastBankCheck, potionsNeeded, state;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
+let bankDetails = {};
 
 //State Controller
 setInterval(function () {
@@ -46,7 +47,7 @@ function merchantStateTasks(state) {
         return false;
     }
     if (state === 11) { // ACCOUNTING
-        bankDetails = accounting();
+        accounting();
         if (bankDetails && bankDetails.length) {
             lastBankCheck = Date.now();
             return false;
@@ -141,5 +142,31 @@ function sellItemsToPlayers() {
                 }
             }
         }
+    }
+}
+
+//Get bank information
+function accounting() {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+    } else {
+        bankDetails = undefined;
+        depositItems();
+        for (let key in Object.values(character.user)) {
+            let slot = Object.values(character.user)[key];
+            if (!slot || !slot.length) continue;
+            for (let packKey in slot) {
+                let banker = slot[packKey];
+                if (!banker) continue;
+                game_log(packKey)
+                let quantity = banker.q || 1;
+                if (bankDetails[banker.name]) {
+                    bankDetails[banker.name] += quantity;
+                } else {
+                    bankDetails[banker.name] = quantity;
+                }
+            }
+        }
+        bankDetails['gold'] = character.user['gold'];
     }
 }

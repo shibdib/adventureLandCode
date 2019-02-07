@@ -32,33 +32,6 @@ function buy_potions() {
     }
 }
 
-//Get bank information
-function accounting() {
-    if (character.map !== 'bank') {
-        shibMove('bank');
-    } else {
-        depositItems();
-        let accountingInfo = {};
-        for (let key in Object.values(character.user)) {
-            let slot = Object.values(character.user)[key];
-            if (!slot || !slot.length) continue;
-            for (let packKey in slot) {
-                let banker = slot[packKey];
-                if (!banker) continue;
-                game_log(packKey)
-                let quantity = banker.q || 1;
-                if (accountingInfo[banker.name]) {
-                    accountingInfo[banker.name] += quantity;
-                } else {
-                    accountingInfo[banker.name] = quantity;
-                }
-            }
-        }
-        accountingInfo['gold'] = character.user['gold'];
-        return accountingInfo;
-    }
-}
-
 
 //Returns the number of items in your inventory for a given item name;
 function num_items(name) {
