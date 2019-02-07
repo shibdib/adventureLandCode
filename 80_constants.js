@@ -20,7 +20,7 @@ let states = {
     6: 'upgrading',
     7: 'combining',
     8: 'potionBuying',
-    9: 'sales',
+    9: 'merchantTasks',
     10: 'rest',
     11: 'accounting',
     99: 'dead'

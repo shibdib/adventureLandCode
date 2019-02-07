@@ -93,12 +93,16 @@ function merch() {
 }
 
 //UPGRADING and COMBINING
+let lastAttempt;
 function combineItems() {
+    if (lastAttempt && lastAttempt + 25000 > Date.now()) return;
+    lastAttempt =  Date.now();
     closeStand();
     if (!currentCombination) {
         for (let item of combineTargets) {
             if (theBook[item] >= 3) {
                 currentCombination = item;
+                lastAttempt = undefined;
                 break;
             } else {
                 buyItems.push(item);

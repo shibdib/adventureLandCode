@@ -151,7 +151,7 @@ function withdrawItem(target, level = undefined) {
                 let item = slot[packKey];
                 if (!item || item === null) continue;
                 let iLevel = item_properties(item).level;
-                if (item.name === target && (!level || iLevel === level)) {
+                if (item.name === target && (level === undefined || iLevel === level)) {
                     bankItemWithdraw(packKey, Object.keys(character.user)[key]);
                     return true;
                 }
