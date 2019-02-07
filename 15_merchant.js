@@ -116,7 +116,7 @@ function combineItems() {
                 buyScroll('cscroll0');
             }
         } else {
-            withdrawItem(currentCombination);
+            withdrawItem(currentCombination, 0);
         }
     }
 }

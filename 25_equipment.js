@@ -139,7 +139,7 @@ function depositItems(potions = false) {
     }
 }
 //Withdraw Item
-function withdrawItem(target) {
+function withdrawItem(target, level = undefined) {
     if (character.map !== 'bank') {
         shibMove('bank');
         return false;
@@ -150,7 +150,8 @@ function withdrawItem(target) {
             for (let packKey in slot) {
                 let item = slot[packKey];
                 if (!item || item === null) continue;
-                if (item.name === target) {
+                let iLevel = item_properties(item).level;
+                if (item.name === target && (!level || iLevel === level)) {
                     bankItemWithdraw(packKey, Object.keys(character.user)[key]);
                     return true;
                 }
