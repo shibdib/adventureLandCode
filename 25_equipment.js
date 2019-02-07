@@ -119,7 +119,22 @@ function depositItems(potions = false) {
         }
     }
 }
-
+//BANKING
+//Drop off gold
+let goldNotify;
+function depositGold(amount = character.gold - 5000) {
+    if (!goldNotify) {
+        whisperParty('I have way too much gold, brb.');
+        goldNotify = true;
+    }
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        bank_deposit(amount);
+        goldNotify = undefined;
+    }
+}
 //Pick Up Gold
 function withdrawGold(amount) {
     if (character.map !== 'bank') {

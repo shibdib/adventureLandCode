@@ -6,7 +6,7 @@ function resupply_potions() {
     let potion_merchant = get_npc("fancypots");
     let distance_to_merchant = null;
     if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
-    if (!returning && !smart.moving && (distance_to_merchant == null || distance_to_merchant > 250 || character.map !== 'main')) smart_move({to: "potions"});
+    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250 || character.map !== 'main')) smart_move({to: "potions"});
     if (distance_to_merchant != null && distance_to_merchant < 250) {
         if (buy_potions()) return true;
     }
