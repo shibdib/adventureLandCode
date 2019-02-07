@@ -184,9 +184,8 @@ function compareEquip(itemInfo, key, don = false, pack){
                     bankItemWithdraw(key, pack, 50);
                     game_log('Grabbing 50 ' + itemInfo.name + ' from the bank.');
                 }
-            } else {
-                return;
             }
+            return;
         }
         // If slot is empty equip
         if (slottedItem === null) {
