@@ -29,7 +29,7 @@ function merchantStateTasks(state) {
         return true;
     }
     if (state === 8) { // POTION RESTOCK
-        resupply_potions(100);
+        resupply_potions(200);
         return true;
     }
     if (state === 2) { // Deposits

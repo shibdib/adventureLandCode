@@ -75,8 +75,8 @@ function potionController(priest = false) {
 //Potion Check
 function potionCheck() {
     let needPots;
-    for (let type_id in potion_types) {
-        let type = potion_types[type_id];
+    for (let type_id in buyThesePotions) {
+        let type = buyThesePotions[type_id];
         let item_def = parent.G.items[type];
         if (item_def != null) {
             if (num_items(type) < 5) {

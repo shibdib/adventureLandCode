@@ -15,7 +15,7 @@ let states = {
     5: 'crafting',
     6: 'upgrading',
     7: 'combining',
-    8: 'potionDeliver',
+    8: 'potionBuying',
     9: 'sales',
     10: 'rest',
     11: 'accounting',

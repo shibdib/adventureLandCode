@@ -1,13 +1,13 @@
 let purchase_amount = 50;//How many potions to buy at once.
-let potion_types = ["hpot1", "mpot1"];//The types of potions to keep supplied.
+let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied.
 
 //This function contains our logic during resupply runs
 function resupply_potions() {
     let potion_merchant = get_npc("fancypots");
     let distance_to_merchant = null;
     if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
-    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 250 || character.map !== 'main')) smart_move({to: "potions"});
-    if (distance_to_merchant != null && distance_to_merchant < 250) {
+    if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 50 || character.map !== 'main')) return smart_move({to: "potions"});
+    if (distance_to_merchant != null && distance_to_merchant < 55) {
         if (buy_potions()) return true;
     }
 }
@@ -15,13 +15,11 @@ function resupply_potions() {
 //Buys potions until the amount of each potion_type we defined in the start of the script is above the min_potions value.
 function buy_potions() {
     if (openInventorySpots() > 0) {
-        for (type_id in potion_types) {
-            let type = potion_types[type_id];
-            let item_def = parent.G.items[type];
-            if (item_def != null) {
-                let cost = item_def.g * purchase_amount;
-                if (character.gold >= cost && num_items(type) < purchase_amount) {
-                    buy(type, purchase_amount);
+        for (let typeId in buyThesePotions) {
+            if (parent.G.items[buyThesePotions[typeId]] != null) {
+                let cost = parent.G.items[buyThesePotions[typeId]].g * purchase_amount;
+                if (character.gold >= cost && num_items(buyThesePotions[typeId]) < purchase_amount) {
+                    buy(buyThesePotions[typeId], purchase_amount);
                 } else {
                     return true;
                 }
