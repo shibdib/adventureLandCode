@@ -1,6 +1,6 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, theBook, currentCombination, currentUpgrade, needsBookKeeping;
+let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, currentItem, currentTask, craftingLevel, needsBookKeeping;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -87,70 +87,67 @@ function merchantStateController(state) {
 //ACTIVE SELLING
 function merch() {
     if (needsBookKeeping) return bookKeeping();
-    if (!getItems.length && !currentCombination) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12); else placeStand();
-    if ((!currentCombination && !lastAttemptedCrafting) || (lastAttemptedCrafting && lastAttemptedCrafting + 25000 < Date.now())) {
+    if (!getItems.length && !currentItem) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
-    } else if (buyItems.length) {
-        buyFromList();
     } else {
-        sellExcessToNPC();
+        if (!sellExcessToNPC()) placeStand();
     }
 }
 
 //UPGRADING and COMBINING
-let lastAttemptedCrafting;
 function combineItems() {
     closeStand();
-    if (!currentCombination && !currentUpgrade) {
-        for (let item of combineTargets) {
-            if (theBook[item] >= 3) {
-                currentCombination = item;
-                lastAttemptedCrafting = undefined;
-                break;
-            } else {
-                if (!buyItems.includes(item)) buyItems.push(item);
+    if (!currentItem) {
+        for (let l=0; l<4; l++) {
+            for (let item of combineTargets) {
+                let append = l;
+                if (!l) append = '';
+                if (theBook[item+append] >= 3) {
+                    currentItem = item;
+                    currentTask = 'combine';
+                    craftingLevel = l;
+                    lastAttemptedCrafting = undefined;
+                    return;
+                }
+            }
+            for (let item of upgradeTargets) {
+                let append = l;
+                if (!l) append = '';
+                if (theBook[item+append]) {
+                    currentItem = item;
+                    currentTask = 'upgrade';
+                    craftingLevel = l;
+                    lastAttemptedCrafting = undefined;
+                    return;
+                } else {
+                    if (!buyItems.includes(item)) buyItems.push(item);
+                }
             }
         }
         lastAttemptedCrafting = Date.now();
     } else {
-        if (itemCount(currentCombination) >= 3) {
+        let needed = 1;
+        if (currentTask === 'combine') needed = 3;
+        if (itemCount(currentItem, craftingLevel) >= needed) {
             if (itemCount('cscroll0')) {
                 let scroll = getInventorySlot('cscroll0');
-                let components = getInventorySlot(currentCombination, true);
-                compound(components[0],components[1],components[2],scroll);
+                let components = getInventorySlot(currentItem, true, craftingLevel);
+                if (currentTask === 'combine') compound(components[0],components[1],components[2],scroll); else upgrade(components[0],scroll);
                 needsBookKeeping = true;
-                currentCombination = undefined;
+                currentItem = undefined;
+                currentTask = undefined;
+                craftingLevel = undefined;
             } else {
                 buyScroll('cscroll0');
             }
         } else {
-            withdrawItem(currentCombination, 0);
-        }
-    }
-    if (!currentUpgrade) {
-        for (let item of upgradeTargets) {
-            if (theBook[item]) {
-                currentUpgrade = item;
-                lastAttemptedCrafting = undefined;
-                break;
-            } else {
-                if (!buyItems.includes(item)) buyItems.push(item);
+            if (withdrawItem(currentItem, craftingLevel) && !itemCount(currentItem, craftingLevel)) {
+                currentItem = undefined;
+                currentTask = undefined;
+                craftingLevel = undefined;
+                lastAttemptedCrafting = Date.now();
             }
-        }
-        lastAttemptedCrafting = Date.now();
-    } else {
-        if (itemCount(currentUpgrade)) {
-            if (itemCount('scroll0')) {
-                let scroll = getInventorySlot('scroll0');
-                let component = getInventorySlot(currentUpgrade);
-                upgrade(component,scroll);
-                needsBookKeeping = true;
-                currentUpgrade = undefined;
-            } else {
-                buyScroll('scroll0');
-            }
-        } else {
-            withdrawItem(currentUpgrade, 0);
         }
     }
 }
@@ -184,6 +181,7 @@ function sellExcessToNPC() {
                 if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
             }
         }
+        if (!getItems.length) return false;
     }
 }
 
@@ -209,9 +207,9 @@ function sellItemsToPlayers() {
 
 //Get bank information
 function bookKeeping() {
+    closeStand();
     let bankDetails = {};
     if (character.map !== 'bank') {
-        closeStand();
         shibMove('bank');
     } else {
         depositItems();

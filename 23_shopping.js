@@ -40,8 +40,8 @@ function buyScroll(type) {
 
 
 //Returns the number of items in your inventory for a given item name;
-function itemCount(name) {
-    let count = character.items.filter(item => item != null && item.name === name).reduce(function (a, b) {
+function itemCount(name, level = undefined) {
+    let count = character.items.filter(item => item != null && item.name === name && (!level || item_properties(item).level === level)).reduce(function (a, b) {
         return a + (b["q"] || 1);
     }, 0);
     return count;

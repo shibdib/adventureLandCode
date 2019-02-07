@@ -63,10 +63,11 @@ function checkForWeaponType(type) {
 }
 
 //Looks for item in inventory
-function getInventorySlot(search, multiple = false) {
+function getInventorySlot(search, multiple = false, level) {
     if (!multiple) {
         for (let key in character.items) {
             let item = character.items[key];
+            if (level && item_properties(item).level !== level) continue;
             if (!item || item === null) continue;
             if (item.name === search || item.id === search) return key;
         }
@@ -74,6 +75,7 @@ function getInventorySlot(search, multiple = false) {
         let slots = [];
         for (let key in character.items) {
             let item = character.items[key];
+            if (level && item_properties(item).level !== level) continue;
             if (!item || item === null) continue;
             if (item.name === search || item.id === search) slots.push(key);
         }
