@@ -1,25 +1,25 @@
-let purchase_amount = 50;//How many potions to buy at once.
 let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied.
 
 //This function contains our logic during resupply runs
-function resupply_potions() {
+function restockPotions(amount) {
     let potion_merchant = getNpc("fancypots");
     let distance_to_merchant = null;
     if (potion_merchant != null) distance_to_merchant = distanceToPoint(potion_merchant.position[0], potion_merchant.position[1]);
     if (!smart.moving && (distance_to_merchant == null || distance_to_merchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
     if (distance_to_merchant != null && distance_to_merchant < 155) {
-        if (buy_potions()) return true;
+        if (buy_potions(amount)) return true;
     }
 }
 
 //Buys potions until the amount of each potion_type we defined in the start of the script is above the min_potions value.
-function buy_potions() {
+function buy_potions(amount) {
     if (openInventorySpots() > 0) {
         for (let typeId in buyThesePotions) {
             if (parent.G.items[buyThesePotions[typeId]]) {
-                let cost = parent.G.items[buyThesePotions[typeId]].g * purchase_amount;
-                if (character.gold >= cost && itemCount(buyThesePotions[typeId]) < purchase_amount) {
-                    buy(buyThesePotions[typeId], purchase_amount);
+                let buyAmount = amount - itemCount(buyThesePotions[typeId]);
+                let cost = parent.G.items[buyThesePotions[typeId]].g * buyAmount;
+                if (character.gold >= cost && buyAmount > 0) {
+                    buy(buyThesePotions[typeId], buyAmount);
                 }
             }
         }
