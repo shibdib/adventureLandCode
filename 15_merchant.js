@@ -142,7 +142,8 @@ function combineItems() {
                 buyScroll('cscroll0');
             }
         } else {
-            if (withdrawItem(currentItem, craftingLevel) && !itemCount(currentItem, craftingLevel)) {
+            let withdraw = withdrawItem(currentItem, craftingLevel);
+            if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
                 currentItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
