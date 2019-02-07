@@ -198,16 +198,8 @@ function compareEquip(itemInfo, key, don = false, pack){
     } else {
         // Get currently slotted item
         let slottedItem = character.slots[itemSlot];
-        // If not a slottable item check if it's a potion
-        if (slottedItem === undefined) {
-            if (itemInfo.type === 'pot') {
-                if ((itemInfo.id === 'hpot1' && num_items('hpot1') < 50) || (itemInfo.id === 'mpot1' && num_items('mpot1'))) {
-                    bankItemWithdraw(key, pack, 50);
-                    game_log('Grabbing 50 ' + itemInfo.name + ' from the bank.');
-                }
-            }
-            return;
-        }
+        // If not a slottable item return
+        if (slottedItem === undefined) return;
         // If slot is empty equip
         if (slottedItem === null) {
             if (don) equip(key); else bankItemWithdraw(key, pack);
