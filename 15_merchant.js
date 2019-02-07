@@ -108,6 +108,17 @@ function sellExcessToNPC() {
     // Set bank items for sale if overstocked
     if (getItems.length) {
         closeStand();
+        switch(withdrawItem(getItems[0])) {
+            case true:
+                sellItems.push(getItems[0]);
+                getItems.shift();
+                break;
+            case false:
+                break;
+            case null:
+                getItems.shift();
+                break;
+        }
         if (withdrawItem(getItems[0])) {
             sellItems.push(getItems[0]);
             getItems.shift();

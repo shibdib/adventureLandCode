@@ -148,6 +148,7 @@ function withdrawItem(target) {
                     return true;
                 }
             }
+            return null;
         }
     }
 }
