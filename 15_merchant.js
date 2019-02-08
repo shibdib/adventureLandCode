@@ -19,11 +19,6 @@ setInterval(function () {
     if (!merchantStateTasks(state)) merch();
 }, 1000);
 
-//Kite Loop
-setInterval(function () {
-    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-}, 75);
-
 //State tasks
 function merchantStateTasks(state) {
     if (state !== 9) closeStand();
