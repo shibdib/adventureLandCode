@@ -10,9 +10,14 @@ function stateController(state) {
     } //BANKING
     else if (character.gold >= 50000 || openInventorySpots() < 30) {
         new_state = 2;
-    } //GEAR
+    } //GEAR (Chance this is skipped on startup)
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
-        new_state = 4;
+        if (!lastBankGearCheck && Math.random() > 0.5) {
+            lastBankGearCheck = Date.now();
+            new_state = 1;
+        } else {
+            new_state = 4;
+        }
     } //POTIONS
     else if (potionCheck()) {
         new_state = 3;

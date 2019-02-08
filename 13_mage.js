@@ -11,7 +11,7 @@ setInterval(function () {
 setInterval(function () {
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
-}, ((1 / (character.frequency / 100)) * 1000) + 50);
+}, 500);
 
 //Kite Loop
 setInterval(function () {

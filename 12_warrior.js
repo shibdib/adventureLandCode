@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, drawAggro, state, primary, lastCombat;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat;
 let xpTarget = 1000;
 
 //State Controller
@@ -17,11 +17,11 @@ setInterval(function () {
     }
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
-}, ((1 / (character.frequency / 100)) * 1000) + 50);
+}, 500);
 
 //Kite Loop
 setInterval(function () {
-    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+    if (nearbyAggressors().length) moveToPosition(moveTackled(get_target(), nearbyAggressors()));
 }, 75);
 
 function farm() {
@@ -63,7 +63,7 @@ function farm() {
             if (can_attack(primary)) meleeCombat(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (waitForHealer()) {
+            if (!tackling && waitForHealer()) {
                 return stop();
             } else {
                 tackle(primary);
@@ -79,13 +79,14 @@ function farm() {
             if (can_attack(opportunisticTarget)) meleeCombat(opportunisticTarget);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (waitForHealer()) {
+            if (!tackling && waitForHealer()) {
                 return stop();
             } else {
                 tackle(opportunisticTarget);
             }
         }
     } else if (!party_aggro) {
+        tackling = undefined;
         if (currentTarget) {
             shibMove(currentTarget);
             refreshTarget();
@@ -151,6 +152,7 @@ function slowestMan() {
 
 //Tackle a target
 function tackle(target) {
+    tackling = true;
     if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else moveToTarget(target);
 }
 
