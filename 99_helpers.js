@@ -28,7 +28,12 @@ function on_cm(name,data) {
         stop('move');
         if (character.map !== data.map) return shibMove(map);
     }
+    // Map changes
+    if (data.type === 'requestMap') {
+        localStorage.setItem('leaderMap', character.map);
+    }
     game_log("Received a code message from: "+name);
+    game_log(JSON.stringify(data));
 }
 
 // Send CM to party

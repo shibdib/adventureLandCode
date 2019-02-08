@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, movingPull, lastMap;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, movingPull;
 let xpTarget = 750;
 let lastCombat = Date.now();
 
@@ -29,12 +29,6 @@ setInterval(function () {
     } else {
         movingPull = undefined;
     }
-    // Broadcast map change
-    if (lastMap && lastMap !== character.map) {
-        if (character.map !== 'bank') sendPartyCM({event: 'mapChange', map: character.map});
-        lastMap = character.map;
-    }
-    if (!lastMap) lastMap = character.map;
 }, 75);
 
 function farm() {
