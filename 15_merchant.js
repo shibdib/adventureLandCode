@@ -1,7 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc;
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc, playerSale, saleCooldown;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -87,13 +87,13 @@ function merchantStateController(state) {
 
 //ACTIVE SELLING
 function merch() {
-    if (!getItems.length && !currentItem && !exchangeTarget) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+    if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
     } else {
-        if (!sellExcessToNPC()) placeStand();
+        if (!sellItemsToPlayers()) if (!sellExcessToNPC()) placeStand();
     }
 }
 
@@ -166,24 +166,40 @@ function sellExcessToNPC() {
     }
 }
 
+// Sell to player buy orders that are better than 60% (the npc markdown)
 function sellItemsToPlayers() {
+    if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
+    if (character.map === 'bank') return shibMove('main');
     let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name);
+    if (saleCooldown + 2500 > Date.now()) return false;
     for (let buyers of merchants) {
-        let prefix = "trade";
         for (let s = 1; s <= 16; s++) {
-            let slot = buyers.slots[prefix + s];
-            if (slot !== null && slot.b && (theBook[slot.name] || getInventorySlot(slot.name))) {
-                if (slot.price >= G.items[slot.name].g * 0.7) {
-                    if (getInventorySlot(slot.name)) {
-                        game_log("Item Bought: " + tradeSlot.name);
-                        game_log("From: " + current.name);
-                        game_log("Price: " + tradeSlot.price);
-                        trade(current, slotPrefix + s);
-                    }
+            let slot = buyers.slots['trade' + s];
+            let theBookName;
+            if (slot && slot.b) {
+                if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
+                if (slot.level === 0) theBookName = slot.name; else theBookName = slot.name + slot.level;
+                if (!theBook[theBookName] && getInventorySlot(slot.name, false, slot.level) !== true) continue;
+                if (getInventorySlot(slot.name, false, slot.level)) {
+                    currentTask = undefined;
+                    playerSale = undefined;
+                    saleCooldown = Date.now();
+                    game_log("Item Sold: " + slot.name);
+                    game_log("To: " + buyers.name);
+                    game_log("Price: " + slot.price);
+                    pm(buyers.name, 'Enjoy the ' + slot.name + ' ~This is an automated message~');
+                    parent.socket.emit("trade_sell", {slot: 'trade' + s, id: buyers.id, rid: slot.rid, q: 1});
+                } else {
+                    game_log("Grabbing to sell - " + slot.name);
+                    playerSale = {item: slot.name, level: slot.level, rid: slot.rid};
+                    currentTask = 'getItem';
+                    withdrawItem(slot.name, slot.level)
                 }
+                return true;
             }
         }
     }
+    return false;
 }
 
 //UPGRADING and COMBINING
@@ -221,13 +237,16 @@ function combineItems() {
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
         if (itemCount(currentItem, craftingLevel) >= needed) {
+            game_log(22)
+            game_log(currentItem)
+            game_log(theBook[currentItem])
             let scroll;
             let componentSlot = getInventorySlot(currentItem, true, craftingLevel);
-            let grade = item_grade(character.items[componentSlot]);
+            let grade = item_grade(character.items[componentSlot[0]]);
             if (currentTask === 'combine') {
-                if (!grade) scroll = 'cscroll0'; else if (grade === 1) scroll = 'cscroll1'; else scroll = 'cscroll2';
+                if (grade === 0) scroll = 'cscroll0'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
             } else {
-                if (!grade) scroll = 'scroll0'; else if (grade === 1) scroll = 'scroll1'; else scroll = 'scroll2';
+                if (grade === 0) scroll = 'scroll0'; else if (grade === 1) scroll = 'scroll1'; else if (grade === 2) scroll = 'scroll2';
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
@@ -241,7 +260,11 @@ function combineItems() {
                 buyScroll(scroll);
             }
         } else {
+            game_log(12)
+            game_log(currentItem)
+            game_log(theBook[currentItem])
             let withdraw = withdrawItem(currentItem, craftingLevel);
+            game_log(withdraw)
             if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
                 theBook[currentItem] = undefined;
                 currentItem = undefined;

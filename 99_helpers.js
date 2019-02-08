@@ -101,6 +101,7 @@ function bankItemWithdraw(key, pack) {
 }
 
 function placeStand() {
+    if (is_moving(character)) return;
     let slot = getInventorySlot('stand0');
     parent.socket.emit("merchant", {num: slot});
 }
