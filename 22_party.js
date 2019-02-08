@@ -1,5 +1,5 @@
 // Handle waiting for party members
-let waitNotify, waitMoveNotify, merchant, waitTime;
+let waitNotify, waitMoveNotify, merchant, waitTime, partyTracker;
 function waitForParty(range = 400) {
     if (character.map === 'bank') return false;
     if (parent.party_list.length > 0) {
@@ -103,6 +103,7 @@ function whisperParty(message) {
 // Restarts lost party members
 function refreshCharacters(force = false) {
     let count = Object.keys(get_active_characters()).length;
+    // If we're missing people refresh
     if (count < 3 || force) {
         stop();
         whisperParty('Going to refresh the party, one second...');
@@ -123,5 +124,22 @@ function refreshCharacters(force = false) {
         //Merchant
         let merchant = shuffle(pveCharacters.filter((c) => c.role === 'merchant'))[0];
         if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
+    } else {
+        // Handle cases where party members go AWOL
+        if (parent.party_list.length > 0) {
+            for (let key in parent.party_list) {
+                let member = parent.party_list[key];
+                let acceptedStated = ["starting","loading","code"];
+                if (!acceptedStated.includes(get_active_characters()[member])) continue;
+                if (!partyTracker[member]) {
+                    partyTracker[member] = Date.now();
+                } else if (partyTracker[member] + ((1000 * 60) * 5) < Date.now()) {
+                    let loginData = pveCharacters.filter((c) => c.name === member);
+                    start_character(member, loginData.slot);
+                    partyTracker[member] = Date.now();
+                    game_log('Rebooting ' + member + ' as he has not been seen in over 5 minutes.');
+                }
+            }
+        }
     }
 }
