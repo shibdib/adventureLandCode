@@ -1,5 +1,5 @@
 // Handle waiting for party members
-let waitNotify, waitMoveNotify, merchant, waitTime, partyTracker;
+let waitNotify, waitMoveNotify, merchant, waitTime;
 function waitForParty(range = 400) {
     if (character.map === 'bank') return false;
     if (parent.party_list.length > 0) {
@@ -100,6 +100,7 @@ function whisperParty(message) {
     }
 }
 
+let partyTracker = {};
 // Restarts lost party members
 function refreshCharacters(force = false) {
     let count = Object.keys(get_active_characters()).length;
