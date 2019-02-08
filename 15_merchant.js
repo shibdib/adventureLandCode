@@ -255,9 +255,6 @@ function combineItems() {
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
         if (itemCount(currentItem, craftingLevel) >= needed) {
-            game_log(22)
-            game_log(currentItem)
-            game_log(theBook[currentItem])
             let scroll;
             let componentSlot = getInventorySlot(currentItem, true, craftingLevel);
             let grade = item_grade(character.items[componentSlot[0]]);
@@ -278,11 +275,7 @@ function combineItems() {
                 buyScroll(scroll);
             }
         } else {
-            game_log(12)
-            game_log(currentItem)
-            game_log(theBook[currentItem])
             let withdraw = withdrawItem(currentItem, craftingLevel);
-            game_log(withdraw)
             if (withdraw === null) {
                 theBook[currentItem] = undefined;
                 currentItem = undefined;
