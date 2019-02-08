@@ -53,13 +53,15 @@ function farm() {
     let mainTarget = findLocalMonsters(currentTarget);
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
-    if (!primary) if (getMonstersTargeting()[0]) {
-        stop('move');
-        primary = getMonstersTargeting()[0];
-    } else if (mainTarget) {
-        primary = mainTarget;
+    if (!primary) {
+        if (getMonstersTargeting()[0]) {
+            stop('move');
+            primary = getMonstersTargeting()[0];
+        } else if (mainTarget && state === 1) {
+            primary = mainTarget;
+        }
     }
-    if (party_aggro && (party_aggro.target !== character.name)) {
+    if (party_aggro && (party_aggro.target !== character.name && character.target !== party_aggro.name)) {
         stop('move');
         primary = party_aggro;
     } else if (primary) {
@@ -72,7 +74,7 @@ function farm() {
             if (can_attack(primary)) attack(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (!tackling && waitForHealer() && !primary.target !== character.name) {
+            if (!tackling && waitForHealer() && primary.target !== character.name) {
                 return stop();
             } else {
                 if (!movingPull) tackle(primary);
@@ -91,14 +93,14 @@ function farm() {
 }
 
 // Pull additional monsters
-function pullAdds () {
+function pullAdds() {
     let currentThreats = getMonstersTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if ((possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.11) || currentThreats.length > 2) return;
+    if (state !== 1 || (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.11) || currentThreats.length > 2) return;
     if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 90) {
         tackle(possibleAdds[0], false);
         return true;
@@ -107,7 +109,8 @@ function pullAdds () {
 
 // Refresh your target if the spawn is empty
 let farmWait, lastPos;
-function refreshTarget () {
+
+function refreshTarget() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // If range doesn't change much start counter
@@ -127,6 +130,7 @@ function refreshTarget () {
 
 //Move as fast as the slowest man
 let combatSet;
+
 function slowestMan() {
     let speed = character.speed;
     if (parent.party_list.length) {
@@ -184,7 +188,7 @@ setInterval(function () {
     // Update and reboot
     updateCode();
     if (!combat) refreshCharacters(true); else pendingReboot = true;
-}, 3600000 );
+}, 3600000);
 
 // Farm target refreshes every 10 minutes
 setInterval(function () {
