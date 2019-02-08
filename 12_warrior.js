@@ -1,7 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat, movingPull;
-let xpTarget = 1000;
+let xpTarget = 750;
 
 //State Controller
 setInterval(function () {
@@ -40,7 +40,6 @@ function farm() {
         if (target) {
             farmWait = undefined;
             currentTarget = target;
-            whisperParty('New target is a ' + target);
             game_log('New target is a ' + target);
             stop();
         }
@@ -61,7 +60,7 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
-        if (primary.attack < character.max_hp * 0.15) pullAdds();
+        pullAdds();
         if (in_attack_range(primary)) {
             lastCombat = Date.now();
             if (can_attack(primary)) attack(primary);
@@ -93,9 +92,9 @@ function pullAdds () {
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if ((possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.1) || currentThreats.length > 2) return;
+    if ((possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.15) || currentThreats.length > 4) return;
     if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 90) {
-        tackle(possibleAdds[0]);
+        tackle(possibleAdds[0], false);
         return true;
     }
 }
@@ -142,9 +141,9 @@ function slowestMan() {
 }
 
 //Tackle a target
-function tackle(target) {
+function tackle(target, slowMove = true) {
     tackling = true;
-    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) attack(target); else moveToTarget(target);
+    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) attack(target); else if (slowMove) moveToTarget(target);
 }
 
 ///
@@ -172,7 +171,7 @@ setInterval(function () {
 // Party Move Speed Management
 setInterval(function () {
     slowestMan();
-}, 1500);
+}, 500);
 
 //Force reboot of character (1h)
 setInterval(function () {

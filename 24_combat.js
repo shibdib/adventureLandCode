@@ -120,7 +120,7 @@ function getMonstersTargeting(target = character) {
 
 // Attack easy to kill things
 function getEasyKills() {
-    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack);
+    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.hp <= character.attack);
     //Order monsters by distance.
     return sortEntitiesByDistance(easyKill);
 }
@@ -164,11 +164,13 @@ function cdCounter() {
 
 //Returns the party member with the lowest hp -> max_hp ratio.
 function lowHealth() {
-    var party = [];
+    let party = [];
+    let member;
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
-            var member = parent.party_list[id];
-            var entity = parent.entities[member];
+            member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (entity.rip) continue;
             if (member == character.name) {
                 entity = character;
             }
@@ -185,7 +187,7 @@ function lowHealth() {
     }
     //Populate health percentages
     for (let id in party) {
-        var member = party[id];
+        member = party[id];
         if (member.entity != null) {
             member.entity.health_ratio = member.entity.hp / member.entity.max_hp;
         } else {
