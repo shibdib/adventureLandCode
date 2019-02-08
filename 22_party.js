@@ -130,12 +130,14 @@ function refreshCharacters(force = false) {
         if (parent.party_list.length > 0) {
             for (let key in parent.party_list) {
                 let member = parent.party_list[key];
-                let acceptedStated = ["starting","loading","code"];
-                if (!acceptedStated.includes(get_active_characters()[member])) continue;
+                let acceptedStates = ["starting","loading","code"];
+                if (!acceptedStates.includes(get_active_characters()[member])) continue;
                 if (!partyTracker[member]) {
                     partyTracker[member] = Date.now();
                 } else {
-                    if (partyTracker[member] + ((1000 * 60) * 5) < Date.now()) {
+                    let coolDown = ((1000 * 60) * 5);
+                    if (parent.party[member].type === 'merchant') coolDown = ((1000 * 60) * 15);
+                    if (partyTracker[member] + coolDown < Date.now()) {
                         let loginData = pveCharacters.filter((c) => c.name === member);
                         start_character(member, loginData.slot);
                         partyTracker[member] = Date.now();

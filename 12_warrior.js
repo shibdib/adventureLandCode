@@ -16,6 +16,7 @@ setInterval(function () {
         currentTarget = undefined;
         state = 99;
     }
+    if (!localStorage.getItem('leaderMap') || localStorage.getItem('leaderMap') !== character.map) localStorage.setItem('leaderMap', character.map);
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);

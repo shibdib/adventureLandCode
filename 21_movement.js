@@ -10,12 +10,10 @@ function moveToTarget(target, min = 0, max = 0) {
     // If moving continue
     if (is_moving(character)) return;
     // Handle different map
-    if (parent.party[character.party] && parent.party[character.party].map !== character.map) {
-        if (localStorage.getItem('leaderMap')) {
-            let goTo = localStorage.getItem('leaderMap');
-            localStorage.removeItem('leaderMap');
-            return shibMove(goTo);
-        }
+    if (localStorage.getItem('leaderMap') && localStorage.getItem('leaderMap') !== character.map) {
+        let leaderMap = localStorage.getItem('leaderMap');
+        return shibMove(leaderMap);
+    } else if (!localStorage.getItem('leaderMap')) {
         return send_cm(character.party, {type: 'requestMap'});
     }
     // Handle same map but far away
@@ -41,12 +39,10 @@ function moveToLeader(min = 5, max = 10) {
     // Handle bank
     if (parent.party[character.party].map === 'bank') return shibMove('main');
     // Handle different map
-    if (parent.party[character.party] && parent.party[character.party].map !== character.map) {
-        if (localStorage.getItem('leaderMap')) {
-            let goTo = localStorage.getItem('leaderMap');
-            localStorage.removeItem('leaderMap');
-            return shibMove(goTo);
-        }
+    if (localStorage.getItem('leaderMap') && localStorage.getItem('leaderMap') !== character.map) {
+        let leaderMap = localStorage.getItem('leaderMap');
+        return shibMove(leaderMap);
+    } else if (!localStorage.getItem('leaderMap')) {
         return send_cm(character.party, {type: 'requestMap'});
     }
     // Handle same map but far away
@@ -133,8 +129,8 @@ function shibMove(destination, second = undefined) {
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y);
-    for (let x = 0; x < 500; x++) {
-        let xChange = getRndInteger(-character.range, character.range);
+    for (let x = 0; x < 1500; x++) {
+        let xChange = getRndInteger(-150, 150);
         let yChange = getRndInteger(-character.range, character.range);
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
             let newRange;
