@@ -224,7 +224,7 @@ function sellItemsToPlayers() {
 function combineItems() {
     closeStand();
     if (!currentItem) {
-        for (let l=0; l<4; l++) {
+        for (let l=0; l<combineUpgradeTarget; l++) {
             for (let item of combineTargets) {
                 let append = l;
                 if (!l) append = '';

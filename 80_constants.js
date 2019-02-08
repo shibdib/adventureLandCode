@@ -7,6 +7,8 @@ let pveCharacters = [
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
 
+let combineUpgradeTarget = 6;
+
 // The merchant will attempt to combine these
 let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
