@@ -29,7 +29,10 @@ setInterval(function () {
         movingPull = undefined;
     }
     // Broadcast map change
-    if (lastMap && lastMap !== character.map) sendPartyCM({event: 'mapChange', map: character.map});
+    if (lastMap && lastMap !== character.map) {
+        if (character.map !== 'bank') sendPartyCM({event: 'mapChange', map: character.map});
+        lastMap = character.map;
+    }
     if (!lastMap) lastMap = character.map;
 }, 75);
 
