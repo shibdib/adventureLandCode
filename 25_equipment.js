@@ -158,8 +158,8 @@ function withdrawItem(target, level = undefined) {
                     return true;
                 }
             }
-            return null;
         }
+        return null;
     }
 }
 //Pick Up Potions
