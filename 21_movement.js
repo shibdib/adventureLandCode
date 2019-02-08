@@ -114,7 +114,7 @@ function shibMove(destination, y = undefined) {
 
 // Kite from your current target and also take into account an avoid array
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
-    let range = distanceToPoint(target.real_x, target.real_y);
+    let range = distanceToPoint(target.real_x, target.real_y);    
     main:
     for (let x = 0; x < 500; x++) {
         let xChange = getRndInteger(-character.range, character.range);
@@ -122,15 +122,19 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
         if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
             let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
             // Handle avoiding others
-            let closestAvoid, maxRange;
+            let closestAvoid, currentClosestAvoid, maxRange;
             if (avoidArray && avoidArray.length) {
                 for (let avoid of avoidArray) {
                     if (avoid.id === target.id) continue;
                     let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
+                    let currentAvoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
                     if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
+                    if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = avoidRange;
                     if (!maxRange || maxRange < avoid.range) maxRange = avoid.range;
                 }
             }
+            // Return original if still good otherwise check a new one
+            if (range && range >= rangeToTarget * 0.5 && range <= rangeToTarget && (!currentClosestAvoid || currentClosestAvoid > maxRange)) return {x: character.real_x, y: character.real_y};
             if (newRange > range && newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > maxRange)) return {x: character.real_x + xChange, y: character.real_y + yChange};
         }
     }

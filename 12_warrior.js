@@ -1,6 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target, combat, pendingReboot, drawAggro, state, primary, lastCombat;
+let xpTarget = 1000;
 
 //State Controller
 setInterval(function () {
@@ -25,7 +26,7 @@ function farm() {
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget && !party_aggro) {
-        target = findBestMonster(1000);
+        target = findBestMonster(xpTarget);
         if (target) {
             farmWait = undefined;
             currentTarget = target;
@@ -37,63 +38,57 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget = findLocalMonsters(currentTarget);
-    let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(1000, true));
+    let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
     if (mainTarget && !primary) primary = mainTarget;
+    let aggressiveMonsters = nearbyAggressors();
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget || !mainTarget)) {
-        let range = distanceToPoint(party_aggro.real_x, party_aggro.real_y);
-        if (range <= character.range) {
+        let kiteLocation = getKitePosition(party_aggro, aggressiveMonsters);
+        if (in_attack_range(party_aggro)) {
+            lastCombat = Date.now();
+            if (kiteLocation) moveToPosition(kiteLocation);
             if (can_attack(party_aggro)) meleeCombat(party_aggro);
         } else {
             tackle(party_aggro);
         }
     } else if (primary) {
-        // Pull more if we can handle it
-        if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
-        let aggressiveMonsters = nearbyAggressors();
-        let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
         if (can_use('warcry')) use('warcry');
-        drawAggro = undefined;
-        let range = distanceToPoint(primary.real_x, primary.real_y);
-        if (range <= character.range) {
+        // Pull more if we can handle it
+        if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
+        let kiteLocation = getKitePosition(primary, aggressiveMonsters);
+        if (in_attack_range(primary)) {
             lastCombat = Date.now();
+            if (kiteLocation) moveToPosition(kiteLocation);
             if (can_attack(primary)) meleeCombat(primary);
-            // Pull him to a safer location if needed
-            if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition)
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (waitForHealer()) {
-                if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition); else return stop();
+                if (kiteLocation) moveToPosition(kiteLocation); else return stop();
             } else {
                 tackle(primary);
             }
         }
     } else if (opportunisticTarget && (!lastCombat || lastCombat + 30000 < Date.now())) {
-        whisperParty('Switching targets to ' + opportunisticTarget.mtype + ' because we havent killed anything in awhile');
-        // Pull more if we can handle it
-        if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
-        let aggressiveMonsters = nearbyAggressors();
-        let kitePosition = getKitePosition(target, aggressiveMonsters, 190);
         // Warcry
         if (can_use('warcry')) use('warcry');
-        drawAggro = undefined;
-        let range = distanceToPoint(primary.real_x, primary.real_y);
-        if (range <= character.range) {
+        whisperParty('Switching targets to ' + opportunisticTarget.mtype + ' because we havent killed anything in awhile');
+        // Pull more if we can handle it
+        if (opportunisticTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
+        let kiteLocation = getKitePosition(opportunisticTarget, aggressiveMonsters);
+        if (in_attack_range(opportunisticTarget)) {
             lastCombat = Date.now();
-            if (can_attack(primary)) meleeCombat(primary);
-            // Pull him to a safer location if needed
-            if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition)
+            if (kiteLocation) moveToPosition(kiteLocation);
+            if (can_attack(opportunisticTarget)) meleeCombat(opportunisticTarget);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (waitForHealer()) {
-                if (aggressiveMonsters.length && kitePosition) return moveToPosition(kitePosition); else return stop();
+                if (kiteLocation) moveToPosition(kiteLocation); else return stop();
             } else {
-                tackle(primary);
+                tackle(opportunisticTarget);
             }
         }
     } else if (!party_aggro) {
-        drawAggro = undefined;
         if (currentTarget) {
             shibMove(currentTarget);
             refreshTarget();

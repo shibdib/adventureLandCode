@@ -10,7 +10,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (combat || !stateTasks(state, combat)) farm();
+    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 100);
 
 function farm() {
@@ -26,7 +26,9 @@ function farm() {
     let kiteLocation;
     let aggressiveMonsters = nearbyAggressors();
     if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
-    if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
+    if (target && aggressiveMonsters.length) kiteLocation = getKitePosition(target, aggressiveMonsters);
+    // Kite if needed
+    if (kiteLocation) moveToPosition(kiteLocation);
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
@@ -38,8 +40,6 @@ function farm() {
             if (character.mp >= character.max_mp * 0.8 && can_use('burst', target)) {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
-            // Kite if needed
-            if (kiteLocation) moveToPosition(kiteLocation);
             // Attack
             if (can_attack(target))  attack(target);
         } else {

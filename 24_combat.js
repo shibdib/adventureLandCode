@@ -1,23 +1,23 @@
 // Find in view range monsters base off type
-function findLocalMonsters(type, array = false) {
+function findLocalMonsters(type, returnArray = false) {
     let monsters;
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);
-    if (!array) return monsters[0]; else return monsters;
+    if (!returnArray) return monsters[0]; else return monsters;
 }
 
 // Find in view range monsters base off an array of types
-function findLocalMonstersFromArray(type, array = false) {
+function findLocalMonstersFromArray(type, returnArray = false) {
     let monsters;
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => type.includes(mob.mtype));
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);
-    if (!array) return monsters[0]; else return monsters;
+    if (!returnArray) return monsters[0]; else return monsters;
 }
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different

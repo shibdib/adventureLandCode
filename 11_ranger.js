@@ -10,7 +10,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (combat || !stateTasks(state, combat)) farm();
+    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 100);
 
 function farm() {
@@ -22,11 +22,9 @@ function farm() {
     // Handle kiting
     let kiteLocation;
     let aggressiveMonsters = nearbyAggressors();
-    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
-    if (target && aggressiveMonsters.length && distanceToEntity(aggressiveMonsters[0]) < 65) kiteLocation = getKitePosition(target, aggressiveMonsters);
+    if (target) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target) {
-        let range = distanceToPoint(target.real_x, target.real_y);
-        if (range <= character.range && checkTankAggro()) {
+        if (in_attack_range(target) && checkTankAggro()) {
             // Poison arrow
             if (can_use('poisonarrow', target)) use('poisonarrow', target);
             // If you need to kite do so

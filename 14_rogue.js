@@ -1,6 +1,6 @@
 game_log("---Rogue Script Start---");
 load_code(2);
-let combat, state;
+let combat, state, kiteLocation;
 
 //State Controller
 setInterval(function () {
@@ -10,7 +10,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (combat || !stateTasks(state, combat)) farm();
+    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 100);
 
 function farm() {
@@ -19,11 +19,14 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let target = findLeaderTarget() || checkPartyAggro();
+    let aggressiveMonsters = nearbyAggressors();
+    if (target && aggressiveMonsters.length) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target && checkTankAggro()) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range) {
             // Killy rogue
             if (can_use('quickstab', target)) use('quickstab', target); else if (can_use('quickpunch', target)) use('quickpunch', target);
+            if (kiteLocation) moveToPosition(kiteLocation);
             if (can_attack(target))  meleeCombat(target);
         } else {
             // Poison

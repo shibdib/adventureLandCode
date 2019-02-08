@@ -10,7 +10,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (combat || !stateTasks(state, combat)) farm();
+    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 100);
 
 function farm() {
@@ -24,8 +24,7 @@ function farm() {
     // Handle kiting
     let kiteLocation;
     let aggressiveMonsters = nearbyAggressors();
-    if (curseTarget && distanceToPoint(curseTarget.real_x, curseTarget.real_y) <= character.range * 0.4) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
-    if (curseTarget && aggressiveMonsters.length && distanceToPoint(aggressiveMonsters[0].real_x, aggressiveMonsters[0].real_y) < 65) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
+    if (lowest_health && aggressiveMonsters.length) kiteLocation = getKitePosition(lowest_health, aggressiveMonsters); else if (curseTarget && aggressiveMonsters.length) kiteLocation = getKitePosition(curseTarget, aggressiveMonsters);
     if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
