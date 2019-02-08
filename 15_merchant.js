@@ -86,6 +86,7 @@ function merchantStateController(state) {
 
 //ACTIVE SELLING
 function merch() {
+    useSkills();
     if (standCheck()) return;
     if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
@@ -96,6 +97,17 @@ function merch() {
         if (!sellItemsToPlayers()) if (!sellExcessToNPC()) {
             placeStand();
             buyBaseItems();
+        }
+    }
+}
+
+function useSkills() {
+    if (parent.party_list.length > 0) {
+        for (let key in parent.party_list) {
+            let member = parent.party_list[key];
+            let entity = parent.entities[member]
+            if (!entity) continue;
+            if (can_use('mluck', entity)) use('mluck', entity);
         }
     }
 }

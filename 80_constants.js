@@ -28,7 +28,7 @@ let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}];
 let trashItems = ['firecrackers'];
 
 // Don't sell these
-let noSell = ['stand0', 'dragon'];
+let noSell = ['stand0', 'stand1', 'dragon'];
 
 let states = {
     1: 'farm',
