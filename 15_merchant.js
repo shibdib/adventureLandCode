@@ -145,10 +145,17 @@ function exchangeStuff() {
 function buyBaseItems() {
     if (lastRestock + 90000 > Date.now()) return;
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
+    items:
     for (let item of baseItems) {
-        if (!itemCount(item) && !theBook[item]) {
-            buy(item, 2);
+        let need = true;
+        for (let l = 0; l < combineUpgradeTarget - 1; l++) {
+            if (l === 0) l = '';
+            if (itemCount(item + l) || theBook[item + l]) {
+                need = false;
+                continue items;
+            }
         }
+        if (need) buy(item, 1);
     }
     lastRestock = Date.now();
 }
@@ -159,7 +166,7 @@ function sellExcessToNPC() {
     // Set bank items for sale if overstocked
     if (getItems.length) {
         closeStand();
-        switch(withdrawItem(getItems[0])) {
+        switch (withdrawItem(getItems[0])) {
             case true:
                 sellItems.push(getItems[0]);
                 getItems.shift();
@@ -176,7 +183,7 @@ function sellExcessToNPC() {
         sellItems.shift();
     } else {
         for (let key of Object.keys(theBook)) {
-            if (G.items[key] && theBook[key] > 8 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem') {
+            if (G.items[key] && theBook[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem') {
                 if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
             }
         }
@@ -224,11 +231,11 @@ function sellItemsToPlayers() {
 function combineItems() {
     closeStand();
     if (!currentItem) {
-        for (let l=0; l<combineUpgradeTarget; l++) {
+        for (let l = 0; l < combineUpgradeTarget; l++) {
             for (let item of combineTargets) {
                 let append = l;
                 if (!l) append = '';
-                if (theBook[item+append] >= 3) {
+                if (theBook[item + append] >= 3) {
                     currentItem = item;
                     currentTask = 'combine';
                     craftingLevel = l;
@@ -239,7 +246,7 @@ function combineItems() {
             for (let item of upgradeTargets) {
                 let append = l;
                 if (!l) append = '';
-                if (theBook[item+append]) {
+                if (theBook[item + append]) {
                     currentItem = item;
                     currentTask = 'upgrade';
                     craftingLevel = l;
@@ -265,7 +272,7 @@ function combineItems() {
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
-                if (currentTask === 'combine') compound(componentSlot[0],componentSlot[1],componentSlot[2],scrollSlot); else upgrade(componentSlot[0],scrollSlot);
+                if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
                 if (theBook[currentItem] - 1 === 0) theBook[currentItem] = undefined; else theBook[currentItem] -= 1;
                 currentItem = undefined;
                 currentTask = undefined;
