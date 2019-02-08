@@ -120,7 +120,7 @@ function getMonstersTargeting(target = character) {
 
 // Attack easy to kill things
 function getEasyKills() {
-    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack * 2);
+    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack);
     //Order monsters by distance.
     return sortEntitiesByDistance(easyKill);
 }

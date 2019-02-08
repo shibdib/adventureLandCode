@@ -21,7 +21,7 @@ setInterval(function () {
 
 //Kite Loop
 setInterval(function () {
-    if (nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
+    if (combat && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
         movingPull = true;
         moveToPosition(moveTackled(get_target(), nearbyAggressors()));
     } else {

@@ -15,7 +15,7 @@ setInterval(function () {
 
 //Kite Loop
 setInterval(function () {
-    if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
+    if (combat && nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
         kiting = true;
         moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
     } else {
