@@ -180,7 +180,9 @@ function getPotions() {
                     let item_def = parent.G.items[type];
                     if (item_def != null) {
                         if (itemCount(type) < 5) {
-                            need[type] = targetPotionAmount - itemCount(type);
+                            need['typr'] = 'potionRequest';
+                            need['potion'] = type;
+                            need['amount'] = targetPotionAmount - itemCount(type);
                         }
                     }
                 }

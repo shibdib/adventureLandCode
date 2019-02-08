@@ -15,13 +15,10 @@ function on_cm(name,data) {
     // Ignore CM's from yourself
     if (name === character.name) return;
     // Merchant Stuff
-    if (character.ctype === 'merchant') {
-        for (let key of Object.keys(data)) {
-            let slot = getInventorySlot(key);
-            if (slot) send_item(parent.entities[name], slot, data[key]);
-            pm(name, data[key] + ' items sent.')
-        }
-        return
+    if (data.type === 'potionRequest' && character.ctype === 'merchant') {
+        let slot = getInventorySlot(data['potion']);
+        if (slot) send_item(parent.entities[name], slot, data['amount']);
+        pm(name, data['amount'] + ' ' + data['potion'] + ' sent.')
     }
     // Map changes
     if (data.type === 'mapChange') {

@@ -82,7 +82,7 @@ function farm() {
             if (can_attack(primary)) attack(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (!tackling && waitForHealer() && primary.target !== character.name) {
+            if (waitForHealer() && primary.target !== character.name) {
                 primary = undefined;
                 if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
                     kiting = true;
@@ -90,8 +90,8 @@ function farm() {
                 } else {
                     return stop();
                 }
-            } else {
-                if (!movingPull) tackle(primary);
+            } else if (primary.target !== character.name) {
+                if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary);
             }
         }
     } else if (!party_aggro) {
