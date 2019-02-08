@@ -179,14 +179,14 @@ function getPotions() {
                     let type = buyThesePotions[type_id];
                     let item_def = parent.G.items[type];
                     if (item_def != null) {
-                        if (itemCount(type) < 5) {
-                            need['typr'] = 'potionRequest';
+                        if (itemCount(type) < targetPotionAmount) {
+                            need['type'] = 'potionRequest';
                             need['potion'] = type;
                             need['amount'] = targetPotionAmount - itemCount(type);
                         }
                     }
                 }
-                if (!requestOnce || requestOnce + 10000 < Date.now()) {
+                if (Object.keys(need).length && (!requestOnce || requestOnce + 10000 < Date.now())) {
                     send_cm(merchant.name,need);
                     pm(merchant.name, 'Send potions please!');
                     requestOnce = Date.now();
