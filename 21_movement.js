@@ -16,7 +16,7 @@ function moveToTarget(target, min = 0, max = 0) {
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
     }
     // Handle close
-    if (target && (range > max || range < min || !range)) moveToCoords(target.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), target.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
+    if (target && (range > max || range < min || !range)) moveToCoords(target.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), target.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
 }
 
 // Handle moving to party leader
@@ -40,7 +40,7 @@ function moveToLeader(min = 5, max = 10) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);
     }
     // Handle close
-    if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), leader.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), parent.party[character.party].y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
+    if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), leader.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), parent.party[character.party].y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
 }
 
 // Handle moving to merchant
@@ -72,7 +72,7 @@ function moveToMerchant(min = 5, max = 10) {
     if (is_moving(character)) return false;
     // Handle close
     if (range > max || range < min || !range) {
-        moveToCoords(merchant.real_x + getRndInteger(((min + max)/2) * -1, ((min + max)/2)), merchant.real_y + getRndInteger(((min + max)/2) * -1, ((min + max)/2)));
+        moveToCoords(merchant.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), merchant.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
         return false;
     }
 }
@@ -85,7 +85,8 @@ function travelToNPC(name) {
     if (!smart.moving && (!distance || !distance > 250)) {
         smart_move(name);
         return;
-    } if (distance && distance < 150) {
+    }
+    if (distance && distance < 150) {
         stop();
         return true;
     }
@@ -98,12 +99,12 @@ function moveToPosition(position) {
 
 // Checks if you can move via move then moves via smart_move if not
 function moveToCoords(x, y) {
-    if(can_move_to(x,y)) {
+    if (can_move_to(x, y)) {
         if (smart.moving) stop();
-        move(x,y);
+        move(x, y);
     }
     if (is_moving(character)) return;
-    else smart_move({x:x,y:y});
+    else smart_move({x: x, y: y});
 }
 
 // smart_move wrapper
@@ -133,34 +134,45 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
                 }
             }
             // Return original if still good otherwise check a new one
-            if (range && range >= rangeToTarget * 0.5 && range <= rangeToTarget && (!currentClosestAvoid || currentClosestAvoid > maxRange * 2)) return {x: character.real_x, y: character.real_y};
-            if (newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > maxRange * 2)) return {x: character.real_x + xChange, y: character.real_y + yChange};
+            if (range && range >= rangeToTarget * 0.5 && range <= rangeToTarget && (!currentClosestAvoid || currentClosestAvoid > maxRange * 2)) return {
+                x: character.real_x,
+                y: character.real_y
+            };
+            if (newRange >= rangeToTarget * 0.5 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > maxRange * 2)) return {
+                x: character.real_x + xChange,
+                y: character.real_y + yChange
+            };
         }
     }
 }
 
 // Try to move tackled away from other threats
 function moveTackled(target, avoidArray) {
-    let range = distanceToPoint(target.real_x, target.real_y);
-        for (let x = 0; x < 500; x++) {
-            let xChange = getRndInteger(-25, 25);
-            let yChange = getRndInteger(-25, 25);
-            if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-                // Handle avoiding others
-                let closestAvoid, currentClosestAvoid, maxRange;
-                if (avoidArray && avoidArray.length) {
-                    for (let avoid of avoidArray) {
-                        if (avoid.id === target.id) continue;
-                        let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                        let currentAvoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                        if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
-                        if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = avoidRange;
-                        if (!maxRange || maxRange < avoid.range) maxRange = avoid.range;
-                    }
+    for (let x = 0; x < 500; x++) {
+        let xChange = getRndInteger(-50, 50);
+        let yChange = getRndInteger(-50, 50);
+        if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
+            // Handle avoiding others
+            let closestAvoid, currentClosestAvoid, maxRange;
+            if (avoidArray && avoidArray.length) {
+                for (let avoid of avoidArray) {
+                    if (avoid.id === target.id) continue;
+                    let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
+                    let currentAvoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
+                    if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
+                    if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = avoidRange;
+                    if (!maxRange || maxRange < avoid.range) maxRange = avoid.range;
                 }
-                // Return original if still good otherwise check a new one
-                if (!currentClosestAvoid || currentClosestAvoid > maxRange * 2) return {x: character.real_x, y: character.real_y};
-                if (!closestAvoid || closestAvoid > maxRange * 2) return {x: character.real_x + xChange, y: character.real_y + yChange};
             }
+            // Return original if still good otherwise check a new one
+            if (!currentClosestAvoid || currentClosestAvoid > maxRange * 4) return {
+                x: character.real_x,
+                y: character.real_y
+            };
+            if (!closestAvoid || closestAvoid > maxRange * 4) return {
+                x: character.real_x + xChange,
+                y: character.real_y + yChange
+            };
         }
+    }
 }
