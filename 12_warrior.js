@@ -69,6 +69,9 @@ function farm() {
         (!primary || primary.name !== party_aggro.name) && (!getEasyKills().length || !getEasyKills().includes(party_aggro.mtype))) {
         stop('move');
         primary = party_aggro;
+    } else if (opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
+        //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
+        primary = opportunisticTarget;
     } else if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
@@ -80,6 +83,7 @@ function farm() {
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (!tackling && waitForHealer() && primary.target !== character.name) {
+                primary = undefined;
                 if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
                     kiting = true;
                     moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
@@ -90,9 +94,6 @@ function farm() {
                 if (!movingPull) tackle(primary);
             }
         }
-    } else if (opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
-        if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
-        primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
         if (getEasyKills().length) attack(getEasyKills()[0]);
