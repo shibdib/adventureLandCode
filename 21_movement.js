@@ -44,7 +44,7 @@ function moveToLeader(min = 5, max = 10) {
 }
 
 // Handle moving to merchant
-function moveToMerchant(min = 5, max = 10) {
+function moveToMerchant(min = 1, max = 125) {
     let merchant;
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {

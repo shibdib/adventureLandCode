@@ -234,8 +234,12 @@ function combineItems() {
         for (let l = 0; l < combineUpgradeTarget; l++) {
             for (let item of combineTargets) {
                 let append = l;
-                if (!l) append = '';
-                if (theBook[item + append] >= 3) {
+                let levelLookup = l;
+                if (!l) {
+                    levelLookup = undefined;
+                    append = '';
+                }
+                if (getInventorySlot(item, true, levelLookup).length >= 3 || theBook[item + append] >= 3) {
                     currentItem = item;
                     currentTask = 'combine';
                     craftingLevel = l;
@@ -245,8 +249,12 @@ function combineItems() {
             }
             for (let item of upgradeTargets) {
                 let append = l;
-                if (!l) append = '';
-                if (theBook[item + append]) {
+                let levelLookup = l;
+                if (!l) {
+                    levelLookup = undefined;
+                    append = '';
+                }
+                if (getInventorySlot(item, true, levelLookup).length || theBook[item + append]) {
                     currentItem = item;
                     currentTask = 'upgrade';
                     craftingLevel = l;

@@ -184,7 +184,7 @@ function getPotions() {
                         }
                     }
                 }
-                if (!requestOnce || requestOnce + 30000 < Date.now()) {
+                if (!requestOnce || requestOnce + 10000 < Date.now()) {
                     send_cm(merchant.name,need);
                     pm(merchant.name, 'Send potions please!');
                     requestOnce = Date.now();

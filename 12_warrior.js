@@ -51,45 +51,28 @@ function farm() {
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
     if (mainTarget && !primary) primary = mainTarget;
-    if (party_aggro && (party_aggro.target !== character.name || !currentTarget || !mainTarget)) {
-        if (in_attack_range(party_aggro)) {
-            lastCombat = Date.now();
-            if (can_attack(party_aggro)) attack(party_aggro);
-        } else {
-            if (!movingPull) tackle(party_aggro);
-        }
+    if (party_aggro && (party_aggro.target !== character.name)) {
+        primary = party_aggro;
+    } else if (!primary && getMonstersTargetingMe()[0]) {
+        primary = getMonstersTargetingMe()[0];
     } else if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
-        if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
+        if (primary.attack < character.max_hp * 0.15) pullAdds();
         if (in_attack_range(primary)) {
             lastCombat = Date.now();
             if (can_attack(primary)) attack(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (!tackling && waitForHealer()) {
+            if (!tackling && waitForHealer() && !primary.target !== character.name) {
                 return stop();
             } else {
                 if (!movingPull) tackle(primary);
             }
         }
-    } else if (opportunisticTarget && (!lastCombat || lastCombat + 30000 < Date.now())) {
-        // Warcry
-        if (can_use('warcry')) use('warcry');
-        // Pull more if we can handle it
-        if (opportunisticTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
-        if (in_attack_range(opportunisticTarget)) {
-            lastCombat = Date.now();
-            if (can_attack(opportunisticTarget)) attack(opportunisticTarget);
-        } else {
-            // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (!tackling && waitForHealer()) {
-                return stop();
-            } else {
-                if (!movingPull) tackle(opportunisticTarget);
-            }
-        }
+    } else if (opportunisticTarget && (!lastCombat || lastCombat + 10000 < Date.now())) {
+        primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
         if (currentTarget) {

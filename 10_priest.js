@@ -30,7 +30,12 @@ function farm() {
     if (character.party) combat = checkPartyAggro();
     let lowest_health = lowHealth();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
-    let curseTarget = findLeaderTarget();
+    let tankTarget = findLeaderTarget();
+    // Do Damage if possible
+    if (tankTarget && character.mp > character.max_mp * 0.5 && checkTankAggro()) {
+        if (can_use('curse', tankTarget)) use('curse', tankTarget);
+        if (can_attack(tankTarget)) attack(tankTarget);
+    }
     if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
@@ -59,18 +64,7 @@ function farm() {
         } else {
             if (!kiting) moveToTarget(dead_party);
         }
-    } else if (!wounded && curseTarget && character.mp > character.max_mp * 0.85 && checkTankAggro()) { //ATTACK IF YOU HAVE MANA
-        alerted = undefined;
-            if (can_use('curse', curseTarget) && checkTankAggro()) {
-                use('curse', curseTarget);
-            } else {
-                if (in_attack_range(curseTarget)) {
-                    if (can_attack(target) && checkTankAggro())  attack(target);
-                } else {
-                    if (!kiting) moveToTarget(curseTarget, character.range * 0.425, character.range * 0.99);
-                }
-            }
-    } else if (!wounded) {
+    } else {
         alerted = undefined;
         if (lowest_health && lowest_health.health_ratio <= 0.99 && in_attack_range(lowest_health)) heal(lowest_health);
         if (!kiting) moveToLeader(character.range * 0.425, character.range * 0.5);
