@@ -51,6 +51,10 @@ function farm() {
             stop();
         }
     }
+    // Handle the healer disappearing
+    if (character.hp < character.max_hp * 0.5)
+    // Handle target refreshing
+    refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget = findLocalMonsters(currentTarget);
@@ -84,13 +88,13 @@ function farm() {
             }
         }
     } else if (opportunisticTarget && (!lastCombat || lastCombat + 25000 < Date.now())) {
+        whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
         if (getEasyKills().length) attack(getEasyKills()[0]);
         if (currentTarget) {
             shibMove(currentTarget);
-            refreshTarget();
         }
     }
 }
@@ -116,8 +120,17 @@ let farmWait, lastPos;
 function refreshTarget() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
+    // If it's been a REALLY long time we probably bugged out so refresh
+    if (lastCombat && lastCombat + 120000 < Date.now()) {
+        whisperParty('We have not been in combat for 2 minutes, going to head to town and figure this out.');
+        stop();
+        lastCombat = undefined;
+        primary = undefined;
+        currentTarget = undefined;
+        return shibMove('main');
+    }
     // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 5) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 5 || (lastCombat && lastCombat + 25000 < Date.now())) {
         if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded

@@ -126,6 +126,11 @@ function getEasyKills() {
     return sortEntitiesByDistance(easyKill);
 }
 
+// Check if the target can be killed in ~1 hit
+function canOneShot(target) {
+    return target.hp <= character.attack * 1.1 || G.monsters[target.mtype].max_hp <= character.attack * 1.1;
+}
+
 // WIP
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
     for (let x = 0; x < 100; x++) {

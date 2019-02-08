@@ -39,7 +39,7 @@ function farm() {
     if (character.party) combat = checkPartyAggro();
     let target = findLeaderTarget() || checkPartyAggro();
     if (target) {
-        if (in_attack_range(target) && checkTankAggro()) {
+        if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
             // Poison arrow
             if (can_use('poisonarrow', target)) use('poisonarrow', target);
             // Attack

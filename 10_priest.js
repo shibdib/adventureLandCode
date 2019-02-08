@@ -38,7 +38,7 @@ function farm() {
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
     let tankTarget = findLeaderTarget();
     // Do Damage if possible
-    if (tankTarget && character.mp > character.max_mp * 0.5 && checkTankAggro()) {
+    if (tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
     }

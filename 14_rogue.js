@@ -35,7 +35,7 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let target = findLeaderTarget() || checkPartyAggro();
-    if (target && checkTankAggro()) {
+    if (target && (checkTankAggro() || canOneShot(target))) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range) {
             // Killy rogue

@@ -44,7 +44,7 @@ function farm() {
         let range = distanceToPoint(target.real_x, target.real_y);
         // Energize the party
         if (can_use('energize')) randomEnergize();
-        if (range <= character.range && checkTankAggro()) {
+        if (range <= character.range && (checkTankAggro() || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.8 && can_use('burst', target)) {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
