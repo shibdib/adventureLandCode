@@ -109,32 +109,9 @@ function moveToCoords(x, y) {
 }
 
 // smart_move wrapper
-let storedDestination = {};
 function shibMove(destination, second = undefined) {
-    if (!storedDestination[character.name]) {
-        if (!second) {
-            storedDestination[character.name] = destination;
-        } else {
-            storedDestination[character.name] = {x: destination, y: second};
-        }
+    if (!is_moving(character)){
         smart_move(destination, second);
-    } else if (storedDestination[character.name]) {
-        if (!second && destination !== storedDestination[character.name]) {
-            storedDestination[character.name] = destination;
-            stop('move');
-            smart_move(destination, second);
-        } else if (second && (!storedDestination[character.name].y || !between(destination, storedDestination[character.name].x - 10, storedDestination[character.name].x + 10) || !between(second, storedDestination[character.name].y - 10, storedDestination[character.name].y + 10))) {
-            storedDestination[character.name] = {x: destination, y: second};
-            stop('move');
-            smart_move(destination, second);
-        } else if (!is_moving(character)) {
-            if (!second) {
-                storedDestination[character.name] = destination;
-            } else {
-                storedDestination[character.name] = {x: destination, y: second};
-            }
-            smart_move(destination, second);
-        }
     }
 }
 
