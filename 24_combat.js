@@ -112,17 +112,17 @@ function findAdds(attack = 0.07) {
 }
 
 // Return all monsters targeting you
-function getMonstersTargetingMe() {
-    let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === character.name);
+function getMonstersTargeting(target = character) {
+    let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === target.name);
     //Order monsters by distance.
     return sortEntitiesByDistance(all);
 }
 
 // Attack easy to kill things
 function getEasyKills() {
-    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack * 1.8);
+    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack * 2);
     //Order monsters by distance.
-    return sortEntitiesByDistance(easyKill)[0];
+    return sortEntitiesByDistance(easyKill);
 }
 
 // WIP

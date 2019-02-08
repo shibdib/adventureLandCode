@@ -50,7 +50,7 @@ function farm() {
     let mainTarget = findLocalMonsters(currentTarget);
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
-    if (!primary) if (getMonstersTargetingMe()[0]) primary = getMonstersTargetingMe()[0]; else if (mainTarget) primary = mainTarget;
+    if (!primary) if (getMonstersTargeting()[0]) primary = getMonstersTargeting()[0]; else if (mainTarget) primary = mainTarget;
     if (party_aggro && (party_aggro.target !== character.name)) {
         primary = party_aggro;
     } else if (primary) {
@@ -83,7 +83,7 @@ function farm() {
 
 // Pull additional monsters
 function pullAdds () {
-    let currentThreats = getMonstersTargetingMe();
+    let currentThreats = getMonstersTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);

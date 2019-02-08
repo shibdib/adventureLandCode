@@ -26,6 +26,15 @@ setInterval(function () {
 function farm() {
     loot();
     potionController();
+    let leader = get_player(character.party);
+    // Fleet if tank is gone
+    if (leader) {
+        let pulledMonsters = getMonstersTargeting(leader);
+        if (pulledMonsters.length >= 5 && can_use['5shot']) use('5shot', pulledMonsters); else if (pulledMonsters.length >= 3 && can_use['3shot']) use('3shot', pulledMonsters);
+    } else {
+        if (getEasyKills().length) attack(getEasyKills()[0]);
+        if (!kiting) return moveToLeader(character.range * 0.5, character.range * 0.7);
+    }
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let target = findLeaderTarget() || checkPartyAggro();

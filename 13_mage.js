@@ -26,6 +26,12 @@ setInterval(function () {
 function farm() {
     loot();
     potionController();
+    let leader = get_player(character.party);
+    // Fleet if tank is gone
+    if (!leader) {
+        if (getEasyKills().length) attack(getEasyKills()[0]);
+        if (!kiting) return moveToLeader(character.range * 0.5, character.range * 0.7);
+    }
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it
