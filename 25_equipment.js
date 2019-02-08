@@ -65,8 +65,6 @@ function checkForWeaponType(type) {
 //Looks for item in inventory
 function getInventorySlot(search, multiple = false, level) {
     if (!multiple) {
-        game_log('search' + search)
-        game_log('lvl' + level)
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
