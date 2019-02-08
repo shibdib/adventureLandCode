@@ -134,11 +134,16 @@ function refreshCharacters(force = false) {
                 if (!acceptedStated.includes(get_active_characters()[member])) continue;
                 if (!partyTracker[member]) {
                     partyTracker[member] = Date.now();
-                } else if (partyTracker[member] + ((1000 * 60) * 5) < Date.now()) {
-                    let loginData = pveCharacters.filter((c) => c.name === member);
-                    start_character(member, loginData.slot);
-                    partyTracker[member] = Date.now();
-                    game_log('Rebooting ' + member + ' as he has not been seen in over 5 minutes.');
+                } else {
+                    if (partyTracker[member] + ((1000 * 60) * 5) < Date.now()) {
+                        let loginData = pveCharacters.filter((c) => c.name === member);
+                        start_character(member, loginData.slot);
+                        partyTracker[member] = Date.now();
+                        game_log('Rebooting ' + member + ' as he has not been seen in over 5 minutes.');
+                    } else {
+                        // If you can find the entity you can "see" him
+                        if (parent.entities[member]) partyTracker[member] = Date.now();
+                    }
                 }
             }
         }
