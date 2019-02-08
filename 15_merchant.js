@@ -283,13 +283,13 @@ function combineItems() {
             game_log(theBook[currentItem])
             let withdraw = withdrawItem(currentItem, craftingLevel);
             game_log(withdraw)
-            if (withdraw === null && !itemCount(currentItem, craftingLevel)) {
+            if (withdraw === null) {
                 theBook[currentItem] = undefined;
                 currentItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
-                combineItems();
                 lastAttemptedCrafting = Date.now();
+                lastBankCheck = undefined;
             }
         }
     }
@@ -308,12 +308,12 @@ function bookKeeping() {
             if (!slot || !slot.length) continue;
             for (let packKey in slot) {
                 let banker = slot[packKey];
+                if (!banker) continue;
                 if (trashItems.includes(banker.name)) {
                     withdrawItem(packKey);
                     destroy_item(getInventorySlot(banker.name));
                     continue;
                 }
-                if (!banker) continue;
                 let level = item_properties(banker).level;
                 if (!level) level = '';
                 let quantity = banker.q || 1;

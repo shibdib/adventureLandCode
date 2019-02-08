@@ -29,7 +29,7 @@ function farm() {
         if (range <= character.range) {
             // Killy rogue
             if (can_use('quickstab', target)) use('quickstab', target); else if (can_use('quickpunch', target)) use('quickpunch', target);
-            if (can_attack(target))  meleeCombat(target);
+            if (can_attack(target))  attack(target);
         } else {
             // Poison
             if (can_use('pcoat')) use('pcoat');

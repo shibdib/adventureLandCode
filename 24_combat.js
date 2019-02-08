@@ -131,7 +131,8 @@ function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
 }
 
 // This tries to deal with combined damage;
-function meleeCombat(target) {
+function cdCounter() {
+    let target = get_target();
     if (character.range < 40) {
         for (let id in parent.party_list) {
             let member = parent.party_list[id];
@@ -148,6 +149,8 @@ function meleeCombat(target) {
                 }
             }
         }
+    } else {
+        move(character.real_x+5,character.real_y);
     }
     attack(target);
 }

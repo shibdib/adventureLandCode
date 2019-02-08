@@ -23,6 +23,12 @@ function on_cm(name,data) {
     game_log("Received a code message from: "+name);
 }
 
+// Handle CD
+function on_combined_damage() // When multiple characters stay in the same spot, they receive combined damage, this function gets called whenever a monster deals combined damage
+{
+    cdCounter();
+}
+
 // Fix party runners
 function on_party_request(name) {
     accept_party_request(name);

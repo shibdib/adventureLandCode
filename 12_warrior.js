@@ -49,7 +49,7 @@ function farm() {
     if (party_aggro && (party_aggro.target !== character.name || !currentTarget || !mainTarget)) {
         if (in_attack_range(party_aggro)) {
             lastCombat = Date.now();
-            if (can_attack(party_aggro)) meleeCombat(party_aggro);
+            if (can_attack(party_aggro)) attack(party_aggro);
         } else {
             tackle(party_aggro);
         }
@@ -60,7 +60,7 @@ function farm() {
         if (primary.attack < character.max_hp * 0.12 && pullAdds()) return;
         if (in_attack_range(primary)) {
             lastCombat = Date.now();
-            if (can_attack(primary)) meleeCombat(primary);
+            if (can_attack(primary)) attack(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (!tackling && waitForHealer()) {
@@ -76,7 +76,7 @@ function farm() {
         if (opportunisticTarget.attack < character.max_hp * 0.12 && pullAdds()) return;
         if (in_attack_range(opportunisticTarget)) {
             lastCombat = Date.now();
-            if (can_attack(opportunisticTarget)) meleeCombat(opportunisticTarget);
+            if (can_attack(opportunisticTarget)) attack(opportunisticTarget);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (!tackling && waitForHealer()) {
@@ -153,7 +153,7 @@ function slowestMan() {
 //Tackle a target
 function tackle(target) {
     tackling = true;
-    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) meleeCombat(target); else moveToTarget(target);
+    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) attack(target); else moveToTarget(target);
 }
 
 ///
