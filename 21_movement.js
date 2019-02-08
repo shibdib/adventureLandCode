@@ -119,11 +119,11 @@ function shibMove(destination, second = undefined) {
         }
         smart_move(destination, second);
     } else if (storedDestination[character.name]) {
-        if (!second && destination !== storedDestination) {
+        if (!second && destination !== storedDestination[character.name]) {
             storedDestination[character.name] = destination;
             stop('move');
             smart_move(destination, second);
-        } else if (second && (!storedDestination.y || !between(destination, storedDestination.x - 10, storedDestination.x + 10) || !between(second, storedDestination.y - 10, storedDestination.y + 10))) {
+        } else if (second && (!storedDestination[character.name].y || !between(destination, storedDestination[character.name].x - 10, storedDestination[character.name].x + 10) || !between(second, storedDestination[character.name].y - 10, storedDestination[character.name].y + 10))) {
             storedDestination[character.name] = {x: destination, y: second};
             stop('move');
             smart_move(destination, second);

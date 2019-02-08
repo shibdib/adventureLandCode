@@ -2,7 +2,7 @@
 function findLocalMonsters(type, returnArray = false) {
     let monsters;
     // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
+    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && parent.distance(character, mob) <= 175);
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);
@@ -13,7 +13,7 @@ function findLocalMonsters(type, returnArray = false) {
 function findLocalMonstersFromArray(type, returnArray = false) {
     let monsters;
     // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => type.includes(mob.mtype));
+    monsters = Object.values(parent.entities).filter(mob => type.includes(mob.mtype) && parent.distance(character, mob) <= 175);
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);
@@ -106,7 +106,8 @@ function nearbyAggressors() {
 // Find possible targets to pull with your main target
 function findAdds(attack = 0.07) {
     let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
-        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80));
+        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
+        && parent.distance(character, mob) <= 175);
     //Order monsters by distance.
     return sortEntitiesByDistance(adds);
 }
