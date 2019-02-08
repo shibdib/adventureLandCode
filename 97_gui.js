@@ -39,12 +39,13 @@ function init_dpsmeter() {
 }
 function updateTimerList() {
     let $ = parent.$;
-    var listString = '<table style="border-style: solid;" border="5px" bgcolor="black" align="right" cellpadding="5"><tr align="center"><td colspan="2">Damage Meter</td></tr><tr align="center"><td>Name</td><td>DPS</td></tr>';
+    var listString = '<table style="border-style: solid;" border="5px" bgcolor="black" align="right" cellpadding="5"><tr align="center"><td colspan="3">Damage Meter</td></tr><tr align="center"><td>Name</td><td>DPS</td><td>Max Dam.</td></tr>';
     if (parent.party_list != null && character.party != null) {
         for (id in parent.party_list) {
             var partyMember = parent.party_list[id];
             var dps = getDPS(partyMember);
-            listString = listString + '<tr align="left"><td align="center">' + partyMember + '</td><td>' + dps + '</td></tr>';
+            let peak = maxAttack[partyMember] || 0;
+            if (dps > 0) listString = listString + '<tr align="left"><td align="center">' + partyMember + '</td><td>' + dps + '</td><td>' + peak + '</td></tr>';
         }
     }
     else {
@@ -53,7 +54,8 @@ function updateTimerList() {
     }
     if (parent.party_list != null && character.party != null) {
         var dps = getTotalDPS();
-        listString = listString + '<tr align="left"><td>' + "Total" + '</td><td>' + dps + '</td></tr>';
+        let peak = maxAttack[partyMember] || 0;
+        listString = listString + '<tr align="left"><td>' + "Total" + '</td><td>' + dps + '</td><td>' + peak + '</td></tr>';
     }
     $('#' + "dpsmetercontent").html(listString);
 }
@@ -96,6 +98,7 @@ function register_dpsmeterhandler(event, handler) {
     parent.prev_handlersdpsmeter.push([event, handler]);
     parent.socket.on(event, handler);
 };
+let maxAttack = {};
 function dpsmeterHitHandler(event) {
     if (parent != null) {
         var attacker = event.hid;
@@ -115,6 +118,7 @@ function dpsmeterHitHandler(event) {
                 attackerEntry.sumDamage += event.damage;
 
                 damageSums[attacker] = attackerEntry;
+                if (!maxAttack[attacker] || event.damage > maxAttack[attacker]) maxAttack[attacker] = event.damage
             }
         }
     }
