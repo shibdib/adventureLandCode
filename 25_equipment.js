@@ -216,7 +216,7 @@ function compareEquip(itemInfo, key, don = false, pack){
             slottedItem.iLevel = item_properties(slottedItem).level;
             // If slotted item is less valuable unequip and equip the new item
             if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
-                if (don) unequip(itemInfo.type);
+                if (don) unequip(slot);
                 if (don) equip(key); else bankItemWithdraw(key, pack);
                 if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 return true;
