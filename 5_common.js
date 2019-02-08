@@ -7,6 +7,7 @@ function stateController(state) {
     //KIA
     if (character.rip) {
         new_state = 99;
+        respawn();
     } //BANKING
     else if (character.gold >= 50000 || openInventorySpots() < 30) {
         new_state = 2;

@@ -9,6 +9,7 @@ const allFiles = [
     "2_requires.js",
     "5_common.js",
     "80_constants.js",
+    "96_moveStuff.js",
     "97_gui.js",
     "99_helpers.js",
     "21_movement.js",

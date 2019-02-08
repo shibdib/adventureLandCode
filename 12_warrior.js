@@ -64,7 +64,8 @@ function farm() {
             primary = mainTarget;
         }
     }
-    if (party_aggro && (party_aggro.target !== character.name && character.target !== party_aggro.name)) {
+    if (party_aggro && (party_aggro.target !== character.name || character.target !== party_aggro.name) &&
+        (!primary || primary.name !== party_aggro.name) && (!getEasyKills().length || !getEasyKills().includes(party_aggro.mtype))) {
         stop('move');
         primary = party_aggro;
     } else if (primary) {
@@ -88,8 +89,8 @@ function farm() {
                 if (!movingPull) tackle(primary);
             }
         }
-    } else if (opportunisticTarget && (!lastCombat || lastCombat + 25000 < Date.now())) {
-        whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
+    } else if (opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
+        if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;

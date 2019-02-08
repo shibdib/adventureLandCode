@@ -8,7 +8,7 @@ let pveCharacters = [
 ];
 
 // Potion count
-let targetPotionAmount = 100;
+let targetPotionAmount = 250;
 
 // Target for upgrades
 let combineUpgradeTarget = 6;
@@ -26,6 +26,9 @@ let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}];
 
 // The merchant will attempt to destroy these
 let trashItems = ['firecrackers'];
+
+// Don't sell these
+let noSell = ['stand0'];
 
 let states = {
     1: 'farm',

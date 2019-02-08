@@ -87,6 +87,7 @@ function merchantStateController(state) {
 
 //ACTIVE SELLING
 function merch() {
+    if (standCheck()) return;
     if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
@@ -178,7 +179,7 @@ function sellExcessToNPC() {
         sellItems.shift();
     } else {
         for (let key of Object.keys(theBook)) {
-            if (G.items[key] && theBook[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem') {
+            if (G.items[key] && theBook[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && !noSell.includes(key)) {
                 if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
             }
         }
@@ -198,6 +199,7 @@ function sellItemsToPlayers() {
             let theBookName;
             if (slot && slot.b) {
                 if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
+                if (noSell.includes(slot.name)) continue;
                 if (slot.level === 0) theBookName = slot.name; else theBookName = slot.name + slot.level;
                 if (!theBook[theBookName] && getInventorySlot(slot.name, false, slot.level) !== true) continue;
                 if (getInventorySlot(slot.name, false, slot.level)) {
@@ -330,5 +332,19 @@ function bookKeeping() {
         bankDetails['gold'] = character.user['gold'];
         lastBankCheck = Date.now();
         return bankDetails;
+    }
+}
+
+// Go buy a stand
+function standCheck() {
+    if (!getInventorySlot('stand0') && !theBook['stand0']) {
+        let standsMerchant = getNpc("standmerchant");
+        let distanceToMerchant = null;
+        if (standsMerchant != null) distanceToMerchant = distanceToPoint(standsMerchant.position[0], standsMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "stands"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            buy('stand0', 1);
+        }
+        return true;
     }
 }
