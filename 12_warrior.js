@@ -72,6 +72,7 @@ function farm() {
     } else if (opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
         //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = opportunisticTarget;
+        lastCombat = Date.now();
     } else if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
@@ -91,7 +92,7 @@ function farm() {
                     return stop();
                 }
             } else if (primary.target !== character.name) {
-                if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary);
+                if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
             }
         }
     } else if (!party_aggro) {
