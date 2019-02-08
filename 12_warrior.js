@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat, movingPull;
 let xpTarget = 1000;
 
 //State Controller
@@ -21,7 +21,12 @@ setInterval(function () {
 
 //Kite Loop
 setInterval(function () {
-    if (nearbyAggressors().length) moveToPosition(moveTackled(get_target(), nearbyAggressors()));
+    if (nearbyAggressors().length) {
+        movingPull = true;
+        moveToPosition(moveTackled(get_target(), nearbyAggressors()));
+    } else {
+        movingPull = undefined;
+    }
 }, 75);
 
 function farm() {
@@ -51,7 +56,7 @@ function farm() {
             lastCombat = Date.now();
             if (can_attack(party_aggro)) attack(party_aggro);
         } else {
-            tackle(party_aggro);
+            if (!movingPull) tackle(party_aggro);
         }
     } else if (primary) {
         // Warcry
@@ -66,7 +71,7 @@ function farm() {
             if (!tackling && waitForHealer()) {
                 return stop();
             } else {
-                tackle(primary);
+                if (!movingPull) tackle(primary);
             }
         }
     } else if (opportunisticTarget && (!lastCombat || lastCombat + 30000 < Date.now())) {
@@ -82,7 +87,7 @@ function farm() {
             if (!tackling && waitForHealer()) {
                 return stop();
             } else {
-                tackle(opportunisticTarget);
+                if (!movingPull) tackle(opportunisticTarget);
             }
         }
     } else if (!party_aggro) {

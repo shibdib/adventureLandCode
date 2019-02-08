@@ -134,11 +134,11 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
                 }
             }
             // Return original if still good otherwise check a new one
-            if (range && range >= rangeToTarget * 0.8 && range <= rangeToTarget && (!currentClosestAvoid || currentClosestAvoid > maxRange * 2)) return {
+            if (range && range >= rangeToTarget * 0.8 && range <= rangeToTarget && (!currentClosestAvoid || currentClosestAvoid > maxRange * 4)) return {
                 x: character.real_x,
                 y: character.real_y
             };
-            if (newRange >= rangeToTarget * 0.8 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > maxRange * 2)) return {
+            if (newRange >= rangeToTarget * 0.8 && newRange <= rangeToTarget && (!closestAvoid || closestAvoid > maxRange * 4)) return {
                 x: character.real_x + xChange,
                 y: character.real_y + yChange
             };
@@ -165,11 +165,11 @@ function moveTackled(target, avoidArray) {
                 }
             }
             // Return original if still good otherwise check a new one
-            if (!currentClosestAvoid || currentClosestAvoid > maxRange * 4) return {
+            if (!currentClosestAvoid || currentClosestAvoid > maxRange * 8) return {
                 x: character.real_x,
                 y: character.real_y
             };
-            if (!closestAvoid || closestAvoid > maxRange * 4) return {
+            if (!closestAvoid || closestAvoid > maxRange * 8) return {
                 x: character.real_x + xChange,
                 y: character.real_y + yChange
             };

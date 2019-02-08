@@ -7,6 +7,10 @@ let pveCharacters = [
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
 
+// Potion count
+let targetPotionAmount = 100;
+
+// Target for upgrades
 let combineUpgradeTarget = 6;
 
 // The merchant will attempt to combine these

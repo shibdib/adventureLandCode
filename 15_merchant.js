@@ -36,7 +36,7 @@ function merchantStateTasks(state) {
         return true;
     }
     if (state === 8) { // POTION RESTOCK
-        restockPotions(200);
+        restockPotions(targetPotionAmount * 4);
         return true;
     }
     if (state === 2) { // Deposits

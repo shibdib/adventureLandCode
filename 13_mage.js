@@ -1,6 +1,6 @@
 game_log("---Mage Script Start---");
 load_code(2);
-let combat, state;
+let combat, state, kiting;
 
 //State Controller
 setInterval(function () {
@@ -15,7 +15,12 @@ setInterval(function () {
 
 //Kite Loop
 setInterval(function () {
-    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+    if (nearbyAggressors().length) {
+        kiting = true;
+        moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+    } else {
+        kiting = undefined;
+    }
 }, 75);
 
 function farm() {
@@ -42,10 +47,10 @@ function farm() {
             if (can_attack(target))  attack(target);
         } else {
             // If you need to kite do so, otherwise get in range
-            moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            if (!kiting) moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        moveToLeader(character.range * 0.5, character.range * 0.7);
+        if (!kiting) moveToLeader(character.range * 0.5, character.range * 0.7);
     }
 }
 
