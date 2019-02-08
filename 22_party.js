@@ -92,10 +92,10 @@ function waitForHealer(range = 300) {
 }
 
 // Whisper the party
-function whisperParty(message) {
+function whisperParty(message, public = false) {
     if (parent.party_list.length > 0) {
         say('/p ' + message);
-    } else {
+    } else if (public) {
         say(message);
     }
 }
