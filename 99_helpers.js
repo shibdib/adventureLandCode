@@ -12,15 +12,30 @@ function can_use(name, target = undefined) {
 
 // Handle CM cases
 function on_cm(name,data) {
-    // Potion requests
+    // Merchant Stuff
     if (character.ctype === 'merchant') {
         for (let key of Object.keys(data)) {
             let slot = getInventorySlot(key);
             if (slot) send_item(parent.entities[name], slot, data[key]);
             pm(name, data[key] + ' items sent.')
         }
+        return
+    }
+    // Map changes
+    if (data.type === 'mapChange') {
+        if (character.map !== data.map) return shibMove(map);
     }
     game_log("Received a code message from: "+name);
+}
+
+// Send CM to party
+function sendPartyCM(data) {
+    if (parent.party_list.length > 0) {
+        for (let key in parent.party_list) {
+            let member = parent.party_list[key];
+            send_cm(member, data);
+        }
+    }
 }
 
 // Handle CD

@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat, movingPull;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat, movingPull, lastMap;
 let xpTarget = 750;
 
 //State Controller
@@ -19,14 +19,18 @@ setInterval(function () {
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
-//Kite Loop
+//Fast Loop
 setInterval(function () {
+    // Kiting
     if ((combat || !is_moving(character)) && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
         movingPull = true;
         moveToPosition(moveTackled(get_target(), nearbyAggressors()));
     } else {
         movingPull = undefined;
     }
+    // Broadcast map change
+    if (lastMap && lastMap !== character.map) sendPartyCM({event: 'mapChange', map: character.map});
+    if (!lastMap) lastMap = character.map;
 }, 75);
 
 function farm() {
@@ -50,11 +54,13 @@ function farm() {
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
     if (!primary) if (getMonstersTargeting()[0]) {
+        stop('move');
         primary = getMonstersTargeting()[0];
     } else if (mainTarget) {
         primary = mainTarget;
     }
     if (party_aggro && (party_aggro.target !== character.name)) {
+        stop('move');
         primary = party_aggro;
     } else if (primary) {
         // Warcry
