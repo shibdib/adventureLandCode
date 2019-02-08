@@ -1,7 +1,8 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastCombat, movingPull, lastMap;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, movingPull, lastMap;
 let xpTarget = 750;
+let lastCombat = Date.now();
 
 //State Controller
 setInterval(function () {
@@ -55,7 +56,7 @@ function farm() {
     // Handle the healer disappearing
     if (character.hp < character.max_hp * 0.5)
     // Handle target refreshing
-    refreshTarget();
+    if (waitForHealer()) refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget = findLocalMonsters(currentTarget);
@@ -128,27 +129,30 @@ function refreshTarget() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // Spot is crowded
-    if (lastCombat && getNearbyCharacters(200, true).length > 4) {
+    if (lastCombat && lastCombat + 5000 < Date.now() && getNearbyCharacters(200, true).length > 4) {
         whisperParty('There is too many people farming here, so I will look for a new target.');
+        lastCombat = Date.now();
+        primary = undefined;
         currentTarget = undefined;
-        farmWait = undefined;
         return;
     }
     // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + 120000 < Date.now()) {
-        whisperParty('We have not been in combat for 2 minutes, going to head to town and figure this out.');
+    if (lastCombat && lastCombat + 180000 < Date.now()) {
+        whisperParty('We have not been in combat for 3 minutes, going to head to town and figure this out.');
         stop();
-        lastCombat = undefined;
+        lastCombat = Date.now();
         primary = undefined;
         currentTarget = undefined;
         return shibMove('main');
     }
     // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 5 || (lastCombat && lastCombat + 25000 < Date.now())) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && lastCombat && lastCombat + 25000 < Date.now()) {
         if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (farmWait + cutoff < Date.now()) {
-            whisperParty('There are no ' + currentTarget + ' here, so time for a new target.');
+            whisperParty('There are no ' + currentTarget + "'s here, so time for a new target.");
+            lastCombat = Date.now();
+            primary = undefined;
             currentTarget = undefined;
         }
     } else {
