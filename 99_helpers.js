@@ -12,6 +12,8 @@ function can_use(name, target = undefined) {
 
 // Handle CM cases
 function on_cm(name,data) {
+    // Ignore CM's from yourself
+    if (name === character.name) return;
     // Merchant Stuff
     if (character.ctype === 'merchant') {
         for (let key of Object.keys(data)) {
@@ -23,6 +25,7 @@ function on_cm(name,data) {
     }
     // Map changes
     if (data.type === 'mapChange') {
+        stop('move');
         if (character.map !== data.map) return shibMove(map);
     }
     game_log("Received a code message from: "+name);
