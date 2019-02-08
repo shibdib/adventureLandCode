@@ -97,8 +97,7 @@ function checkPartyAggro() {
 
 // Check for monsters nearby who will aggro
 function nearbyAggressors() {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro
-        && parent.distance(character, mob) <= mob.range * 3);
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && G.monsters[mob.mtype].aggro);
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
 }

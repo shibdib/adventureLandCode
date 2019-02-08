@@ -50,18 +50,27 @@ function farm() {
     let mainTarget = findLocalMonsters(currentTarget);
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
-    if (!primary) if (getMonstersTargeting()[0]) primary = getMonstersTargeting()[0]; else if (mainTarget) primary = mainTarget;
+    if (!primary) if (getMonstersTargeting()[0]) {
+        game_log(33)
+        primary = getMonstersTargeting()[0];
+    } else if (mainTarget) {
+        game_log(22)
+        primary = mainTarget;
+    }
     if (party_aggro && (party_aggro.target !== character.name)) {
         primary = party_aggro;
     } else if (primary) {
+        game_log(1)
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
         if (primary.attack < character.max_hp * 0.15) pullAdds();
         if (in_attack_range(primary)) {
+            game_log(2)
             lastCombat = Date.now();
             if (can_attack(primary)) attack(primary);
         } else {
+            game_log(3)
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (!tackling && waitForHealer() && !primary.target !== character.name) {
                 return stop();
@@ -69,7 +78,7 @@ function farm() {
                 if (!movingPull) tackle(primary);
             }
         }
-    } else if (opportunisticTarget && (!lastCombat || lastCombat + 10000 < Date.now())) {
+    } else if (opportunisticTarget && (!lastCombat || lastCombat + 25000 < Date.now())) {
         primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
