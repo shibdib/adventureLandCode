@@ -145,7 +145,7 @@ function buyBaseItems() {
         let need = true;
         for (let l = 0; l < combineUpgradeTarget - 1; l++) {
             if (l === 0) l = '';
-            if (itemCount(item + l) || theBook[item + l]) {
+            if (itemCount(item + l) < 2 || theBook[item + l] < 2) {
                 need = false;
                 continue items;
             }
