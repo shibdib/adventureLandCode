@@ -21,7 +21,7 @@ setInterval(function () {
 
 //Kite Loop
 setInterval(function () {
-    if (combat && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
+    if ((combat || !is_moving(character)) && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
         movingPull = true;
         moveToPosition(moveTackled(get_target(), nearbyAggressors()));
     } else {
@@ -92,7 +92,7 @@ function pullAdds () {
     currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if ((possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.15) || currentThreats.length > 4) return;
+    if ((possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.11) || currentThreats.length > 2) return;
     if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 90) {
         tackle(possibleAdds[0], false);
         return true;

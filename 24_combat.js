@@ -170,11 +170,11 @@ function lowHealth() {
         for (let id in parent.party_list) {
             member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (entity.rip) continue;
             if (member == character.name) {
                 entity = character;
             }
-            if (entity != null) {
+            if (entity) {
+                if (entity.rip) continue;
                 party.push({name: member, entity: entity});
             }
         }
