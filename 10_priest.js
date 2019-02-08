@@ -37,6 +37,8 @@ function farm() {
     let lowest_health = lowHealth();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
     let tankTarget = findLeaderTarget();
+    // Alert when OOM
+    if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible
     if (tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
@@ -44,7 +46,7 @@ function farm() {
     }
     if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
-            if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
+            //if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
             // Use revive as a mega heal
             use('revive', lowest_health);
@@ -52,10 +54,11 @@ function farm() {
             if (!kiting) moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
+        whisperParty('Mass heal for everyone!');
         use('partyheal');
     } else if (wounded) { //HEAL WOUNDED
         if (in_attack_range(lowest_health)) {
-            if (!alerted) pm(lowest_health.name, 'Healing You!!');
+            //if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
             // Heal
             heal(lowest_health);
