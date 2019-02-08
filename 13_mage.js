@@ -11,7 +11,12 @@ setInterval(function () {
 setInterval(function () {
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
-}, 100);
+}, ((1 / (character.frequency / 100)) * 1000) + 50);
+
+//Kite Loop
+setInterval(function () {
+    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+}, 75);
 
 function farm() {
     loot();
@@ -22,13 +27,6 @@ function farm() {
     if (can_use('blink') && blink_to_leader()) return;
     let target = findLeaderTarget() || checkPartyAggro();
     let teleport_target = get_teleport_target();
-    // Handle kiting
-    let kiteLocation;
-    let aggressiveMonsters = nearbyAggressors();
-    if (target && distanceToEntity(target) <= character.range * 0.4) kiteLocation = getKitePosition(target, aggressiveMonsters);
-    if (target && aggressiveMonsters.length) kiteLocation = getKitePosition(target, aggressiveMonsters);
-    // Kite if needed
-    if (kiteLocation) moveToPosition(kiteLocation);
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
@@ -44,7 +42,7 @@ function farm() {
             if (can_attack(target))  attack(target);
         } else {
             // If you need to kite do so, otherwise get in range
-            if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         moveToLeader(character.range * 0.5, character.range * 0.7);

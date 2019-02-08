@@ -11,7 +11,12 @@ setInterval(function () {
 setInterval(function () {
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
-}, 100);
+}, ((1 / (character.frequency / 100)) * 1000) + 50);
+
+//Kite Loop
+setInterval(function () {
+    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+}, 75);
 
 function farm() {
     loot();
@@ -19,14 +24,11 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let target = findLeaderTarget() || checkPartyAggro();
-    let aggressiveMonsters = nearbyAggressors();
-    if (target && aggressiveMonsters.length) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target && checkTankAggro()) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range) {
             // Killy rogue
             if (can_use('quickstab', target)) use('quickstab', target); else if (can_use('quickpunch', target)) use('quickpunch', target);
-            if (kiteLocation) moveToPosition(kiteLocation);
             if (can_attack(target))  meleeCombat(target);
         } else {
             // Poison

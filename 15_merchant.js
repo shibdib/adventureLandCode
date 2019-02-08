@@ -10,14 +10,19 @@ let buyItems = [];
 //State Controller
 setInterval(function () {
     state = merchantStateController(state);
-}, 150);
+}, 1500);
 
 //Primary Loop
 setInterval(function () {
     if (character.rip) state = 99;
     if (!state) return;
     if (!merchantStateTasks(state)) merch();
-}, 100);
+}, 1000);
+
+//Kite Loop
+setInterval(function () {
+    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+}, 75);
 
 //State tasks
 function merchantStateTasks(state) {

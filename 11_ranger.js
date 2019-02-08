@@ -11,7 +11,12 @@ setInterval(function () {
 setInterval(function () {
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
-}, 100);
+}, ((1 / (character.frequency / 100)) * 1000) + 50);
+
+//Kite Loop
+setInterval(function () {
+    if (nearbyAggressors().length) moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+}, 75);
 
 function farm() {
     loot();
@@ -21,8 +26,6 @@ function farm() {
     let target = findLeaderTarget() || checkPartyAggro();
     // Handle kiting
     let kiteLocation;
-    let aggressiveMonsters = nearbyAggressors();
-    if (target) kiteLocation = getKitePosition(target, aggressiveMonsters);
     if (target) {
         if (in_attack_range(target) && checkTankAggro()) {
             // Poison arrow
@@ -35,7 +38,7 @@ function farm() {
             // Long range
             if (can_use('supershot', target)) use('supershot', target);
             // If you need to kite do so, otherwise get in range
-            if (kiteLocation) moveToPosition(kiteLocation); else moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
         moveToLeader(character.range * 0.5, character.range * 0.7);

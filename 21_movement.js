@@ -114,7 +114,7 @@ function shibMove(destination, y = undefined) {
 
 // Kite from your current target and also take into account an avoid array
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
-    let range = distanceToPoint(target.real_x, target.real_y);    
+    let range = distanceToPoint(target.real_x, target.real_y);
     main:
     for (let x = 0; x < 500; x++) {
         let xChange = getRndInteger(-character.range, character.range);
