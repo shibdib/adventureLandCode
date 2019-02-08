@@ -73,7 +73,7 @@ function farm() {
         primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
-        if (getEasyKills()) attack(getEasyKills()[0]);
+        if (getEasyKills().length) attack(getEasyKills()[0]);
         if (currentTarget) {
             shibMove(currentTarget);
             refreshTarget();

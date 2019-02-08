@@ -68,9 +68,7 @@ function farm() {
         alerted = undefined;
         if (lowest_health && lowest_health.health_ratio <= 0.99 && in_attack_range(lowest_health)) {
             heal(lowest_health);
-        } else if (getEasyKills()) {
-            attack(getEasyKills()[0])
-        }
+        } else if (getEasyKills().length) attack(getEasyKills()[0]);
         if (!kiting) moveToLeader(character.range * 0.425, character.range * 0.5);
     }
 }
