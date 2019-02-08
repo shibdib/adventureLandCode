@@ -50,11 +50,9 @@ function farm() {
     let mainTarget = findLocalMonsters(currentTarget);
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
-    if (mainTarget && !primary) primary = mainTarget;
+    if (!primary) if (getMonstersTargetingMe()[0]) primary = getMonstersTargetingMe()[0]; else if (mainTarget) primary = mainTarget;
     if (party_aggro && (party_aggro.target !== character.name)) {
         primary = party_aggro;
-    } else if (!primary && getMonstersTargetingMe()[0]) {
-        primary = getMonstersTargetingMe()[0];
     } else if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
@@ -75,6 +73,7 @@ function farm() {
         primary = opportunisticTarget;
     } else if (!party_aggro) {
         tackling = undefined;
+        if (getEasyKills()) attack(getEasyKills()[0]);
         if (currentTarget) {
             shibMove(currentTarget);
             refreshTarget();

@@ -118,6 +118,13 @@ function getMonstersTargetingMe() {
     return sortEntitiesByDistance(all);
 }
 
+// Attack easy to kill things
+function getEasyKills() {
+    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.max_hp <= character.attack * 1.8);
+    //Order monsters by distance.
+    return sortEntitiesByDistance(easyKill)[0];
+}
+
 // WIP
 function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
     for (let x = 0; x < 100; x++) {
