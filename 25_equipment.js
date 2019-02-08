@@ -69,7 +69,7 @@ function getInventorySlot(search, multiple = false, level) {
             let item = character.items[key];
             if (!item) continue;
             if (level && item_properties(item).level !== level) continue;
-            if (item.name === search || item.id === search) return key;
+            if (item.name === search) return key;
         }
     } else {
         let slots = [];
@@ -77,7 +77,7 @@ function getInventorySlot(search, multiple = false, level) {
             let item = character.items[key];
             if (!item) continue;
             if (level && item_properties(item).level !== level) continue;
-            if (item.name === search || item.id === search) slots.push(key);
+            if (item.name === search) slots.push(key);
         }
         return slots;
     }

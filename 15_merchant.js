@@ -2,10 +2,9 @@ game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
     currentTask, craftingLevel, exchangeTarget, exchangeNpc, playerSale, saleCooldown, lastRestock;
-let spendingAmount = 1000000;
+let spendingAmount = 10000000;
 let getItems = [];
 let sellItems = [];
-let buyItems = [];
 
 //State Controller
 setInterval(function () {
@@ -146,7 +145,7 @@ function buyBaseItems() {
         let need = true;
         for (let l = 0; l < combineUpgradeTarget - 1; l++) {
             if (l === 0) l = '';
-            if (itemCount(item + l) < 2 || theBook[item + l] < 2) {
+            if (itemCount(item + l) >= 2 || theBook[item + l] >= 2) {
                 need = false;
                 continue items;
             }
@@ -226,6 +225,14 @@ function sellItemsToPlayers() {
 
 //UPGRADING and COMBINING
 function combineItems() {
+    if (craftingLevel > combineUpgradeTarget){
+        currentItem = undefined;
+        currentTask = undefined;
+        craftingLevel = undefined;
+        lastAttemptedCrafting = Date.now();
+        lastBankCheck = undefined;
+        return
+    }
     closeStand();
     if (!currentItem) {
         for (let l = 0; l < combineUpgradeTarget; l++) {
@@ -233,8 +240,8 @@ function combineItems() {
                 let append = l;
                 let levelLookup = l;
                 if (!l) {
-                    levelLookup = undefined;
                     append = '';
+                    levelLookup = undefined;
                 }
                 if (getInventorySlot(item, true, levelLookup).length >= 3 || theBook[item + append] >= 3) {
                     currentItem = item;
@@ -257,8 +264,6 @@ function combineItems() {
                     craftingLevel = l;
                     lastAttemptedCrafting = undefined;
                     return;
-                } else {
-                    if (!buyItems.includes(item)) buyItems.push(item);
                 }
             }
         }
