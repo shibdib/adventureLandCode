@@ -1,17 +1,28 @@
 // Find in view range monsters base off type
-function findLocalMonsters(type) {
+function findLocalMonsters(type, array = false) {
     let monsters;
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);
-    return monsters[0];
+    if (!array) return monsters[0]; else return monsters;
+}
+
+// Find in view range monsters base off an array of types
+function findLocalMonstersFromArray(type, array = false) {
+    let monsters;
+    // Look for targets in range
+    monsters = Object.values(parent.entities).filter(mob => type.includes(mob.mtype));
+    if (!monsters.length) return false;
+    //Order monsters by distance.
+    monsters = sortEntitiesByDistance(monsters);
+    if (!array) return monsters[0]; else return monsters;
 }
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
-function findBestMonster(minXp) {
+function findBestMonster(minXp, array = false) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
     let maxAttack = character.attack * 0.9;
@@ -50,7 +61,7 @@ function findBestMonster(minXp) {
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
-    return sorted[getRndInteger(0, sorted.length / 2)];
+    if (!array) return sorted[getRndInteger(0, sorted.length / 2)]; else return sorted;
 }
 
 // Returns the target of the leader
