@@ -170,7 +170,7 @@ function sellExcessToNPC() {
 function sellItemsToPlayers() {
     if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
     if (character.map === 'bank') return shibMove('main');
-    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name);
+    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
     if (saleCooldown + 2500 > Date.now()) return false;
     for (let buyers of merchants) {
         for (let s = 1; s <= 16; s++) {
