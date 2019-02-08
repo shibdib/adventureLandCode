@@ -109,9 +109,33 @@ function moveToCoords(x, y) {
 }
 
 // smart_move wrapper
-function shibMove(destination, y = undefined) {
-    if (is_moving(character)) return;
-    smart_move(destination, y);
+let storedDestination = {};
+function shibMove(destination, second = undefined) {
+    if (!storedDestination[character.name]) {
+        if (!second) {
+            storedDestination[character.name] = destination;
+        } else {
+            storedDestination[character.name] = {x: destination, y: second};
+        }
+        smart_move(destination, second);
+    } else if (storedDestination[character.name]) {
+        if (!second && destination !== storedDestination) {
+            storedDestination[character.name] = destination;
+            stop('move');
+            smart_move(destination, second);
+        } else if (second && (!storedDestination.y || !between(destination, storedDestination.x - 10, storedDestination.x + 10) || !between(second, storedDestination.y - 10, storedDestination.y + 10))) {
+            storedDestination[character.name] = {x: destination, y: second};
+            stop('move');
+            smart_move(destination, second);
+        } else if (!is_moving(character)) {
+            if (!second) {
+                storedDestination[character.name] = destination;
+            } else {
+                storedDestination[character.name] = {x: destination, y: second};
+            }
+            smart_move(destination, second);
+        }
+    }
 }
 
 // Kite from your current target and also take into account an avoid array

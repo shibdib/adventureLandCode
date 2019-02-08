@@ -71,6 +71,11 @@ function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
+// Check if something is between a range
+function between(x, min, max) {
+    return x >= min && x <= max;
+}
+
 // Get distance to point
 // TODO: is this needed with parent.distance??
 function distanceToPoint(x, y) {
