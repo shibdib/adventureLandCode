@@ -48,6 +48,7 @@ function farm() {
             farmWait = undefined;
             currentTarget = target;
             game_log('New target is a ' + target);
+            whisperParty('Lets go kill ' + currentTarget + "'s.");
             stop();
         }
     }
@@ -123,8 +124,16 @@ function pullAdds() {
 let farmWait, lastPos;
 
 function refreshTarget() {
+    if (!currentTarget) return;
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
+    // Spot is crowded
+    if (lastCombat && getNearbyCharacters(200, true).length > 4) {
+        whisperParty('There is too many people farming here, so I will look for a new target.');
+        currentTarget = undefined;
+        farmWait = undefined;
+        return;
+    }
     // If it's been a REALLY long time we probably bugged out so refresh
     if (lastCombat && lastCombat + 120000 < Date.now()) {
         whisperParty('We have not been in combat for 2 minutes, going to head to town and figure this out.');
@@ -138,9 +147,8 @@ function refreshTarget() {
     if (distanceToPoint(lastPos.x, lastPos.y) < 5 || (lastCombat && lastCombat + 25000 < Date.now())) {
         if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
-        if (getNearbyCharacters().length > 4) cutoff = 3000; // Wait 3 seconds if the area is crowded
         if (farmWait + cutoff < Date.now()) {
-            if (cutoff === 20000) whisperParty('There are no ' + currentTarget + ' here, so time for a new target.'); else whisperParty('There is too many people farming here, so I will look for a new target.');
+            whisperParty('There are no ' + currentTarget + ' here, so time for a new target.');
             currentTarget = undefined;
         }
     } else {

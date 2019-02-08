@@ -64,8 +64,9 @@ function checkEntityForBuff(entity, buff) {
 }
 
 // Get all characters within range
-function getNearbyCharacters(range = 200) {
+function getNearbyCharacters(range = 200, filterParty = false) {
     let characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob));
+    if (filterParty) characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob) && !parent.party_list.includes(mob.name));
     if (characters.length) return characters; else return [];
 }
 
