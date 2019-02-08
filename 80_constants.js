@@ -7,13 +7,19 @@ let pveCharacters = [
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
 
+// The merchant will attempt to combine these
 let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
-let upgradeTargets = ['quiver', 'shield', 'bow'];
+// The merchant will attempt to upgrade these
+let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
 
+// The merchant will attempt to exchange these
 let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}];
+
+// The merchant will attempt to destroy these
+let trashItems = ['firecrackers'];
 
 let states = {
     1: 'farm',

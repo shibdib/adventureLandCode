@@ -1,7 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc, playerSale, saleCooldown;
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc, playerSale, saleCooldown, lastRestock;
 let spendingAmount = 1000000;
 let getItems = [];
 let sellItems = [];
@@ -98,7 +98,10 @@ function merch() {
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
     } else {
-        if (!sellItemsToPlayers()) if (!sellExcessToNPC()) placeStand();
+        if (!sellItemsToPlayers()) if (!sellExcessToNPC()) {
+            placeStand();
+            buyBaseItems();
+        }
     }
 }
 
@@ -139,6 +142,16 @@ function exchangeStuff() {
 }
 
 // Buy items for crafting
+function buyBaseItems() {
+    if (lastRestock + 90000 > Date.now()) return;
+    let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
+    for (let item of baseItems) {
+        if (!itemCount(item) && !theBook[item]) {
+            buy(item, 2);
+        }
+    }
+    lastRestock = Date.now();
+}
 
 // Sell overflow
 function sellExcessToNPC() {
@@ -295,6 +308,11 @@ function bookKeeping() {
             if (!slot || !slot.length) continue;
             for (let packKey in slot) {
                 let banker = slot[packKey];
+                if (trashItems.includes(banker.name)) {
+                    withdrawItem(packKey);
+                    destroy_item(getInventorySlot(banker.name));
+                    continue;
+                }
                 if (!banker) continue;
                 let level = item_properties(banker).level;
                 if (!level) level = '';
