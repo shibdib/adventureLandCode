@@ -82,7 +82,12 @@ function farm() {
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (!tackling && waitForHealer() && primary.target !== character.name) {
-                return stop();
+                if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
+                    kiting = true;
+                    moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+                } else {
+                    return stop();
+                }
             } else {
                 if (!movingPull) tackle(primary);
             }
