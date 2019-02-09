@@ -51,12 +51,16 @@ function on_combined_damage() // When multiple characters stay in the same spot,
 
 // Fix party runners
 function on_party_request(name) {
-    accept_party_request(name);
+    if (Object.keys(get_active_characters()).includes(name)) {
+        accept_party_request(name);
+    }
 }
 
 // Fix party runners
 function on_party_invite(name) {
-    if (name === 'Shibtank') accept_party_invite(name);
+    if (Object.keys(get_active_characters()).includes(name)) {
+        accept_party_invite(name);
+    }
 }
 
 // Check if entity has a buff

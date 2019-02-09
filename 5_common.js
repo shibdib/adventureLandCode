@@ -27,6 +27,7 @@ function stateController(state) {
     if (state !== new_state) {
         game_log("--- NEW STATE " + states[new_state] + " ---");
         state = new_state;
+        set_message(states[state]);
     }
     return state;
 }
