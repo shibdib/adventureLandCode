@@ -36,7 +36,7 @@ function farm() {
     if (character.party) combat = checkPartyAggro();
     let lowest_health = lowHealth();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
-    let tankTarget = findLeaderTarget();
+    let tankTarget = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible
@@ -44,7 +44,7 @@ function farm() {
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
     }
-    if (lowest_health && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
+    if (lowest_health && !lowest_health.rip && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
         if (in_attack_range(lowest_health)) {
             //if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
@@ -56,7 +56,7 @@ function farm() {
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
         use('partyheal');
-    } else if (wounded) { //HEAL WOUNDED
+    } else if (wounded && !lowest_health.rip) { //HEAL WOUNDED
         if (in_attack_range(lowest_health)) {
             //if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;

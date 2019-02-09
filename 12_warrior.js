@@ -80,7 +80,6 @@ function farm() {
         currentTarget.push(opportunisticTarget.mtype);
         lastCombat = Date.now();
     } else if (primary) {
-        draw_circle(primary.x, primary.y, 25, 1, 0xDFDC22);
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
@@ -100,11 +99,10 @@ function farm() {
                 }
             } else if (primary.target !== character.name) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
-            } else if (parent.distance(character, primary) <= 30) {
+            } else if (parent.distance(character, primary) <= G.monsters[primary.mtype].range * 2.75) {
                 tackle(primary);
             }
         }
-        clear_drawings();
     } else if (!party_aggro) {
         tackling = undefined;
         if (getEasyKills().length) attack(getEasyKills()[0]);

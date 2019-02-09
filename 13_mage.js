@@ -36,7 +36,7 @@ function farm() {
     if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it
     if (can_use('blink') && blink_to_leader()) return;
-    let target = findLeaderTarget() || checkPartyAggro();
+    let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
     let teleport_target = get_teleport_target();
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
@@ -46,7 +46,7 @@ function farm() {
         if (can_use('energize')) randomEnergize();
         if (range <= character.range && (checkTankAggro() || canOneShot(target))) {
             // Use burst when high mana
-            if (character.mp >= character.max_mp * 0.8 && can_use('burst', target)) {
+            if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
             // Attack

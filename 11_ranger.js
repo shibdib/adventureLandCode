@@ -37,7 +37,7 @@ function farm() {
     }
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
-    let target = findLeaderTarget() || checkPartyAggro();
+    let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     if (target) {
         if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
             // Poison arrow

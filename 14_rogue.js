@@ -34,7 +34,7 @@ function farm() {
     }
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
-    let target = findLeaderTarget() || checkPartyAggro();
+    let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
     if (target && (checkTankAggro() || canOneShot(target))) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range) {
