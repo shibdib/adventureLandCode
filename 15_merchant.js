@@ -1,7 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc, playerSale, saleCooldown, lastRestock;
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock;
 let spendingAmount = 10000000;
 let getItems = [];
 let sellItems = [];
@@ -119,24 +119,23 @@ function exchangeStuff() {
     if (!bankDetails) return;
     if (!exchangeTarget) {
         for (let item of exchangeItems) {
-            if (bankDetails[item.item]) {
+            let minimum = 1;
+            if (item.amount) minimum = item.amount;
+            if (bankDetails[item.item] >= minimum) {
                 exchangeTarget = item.item;
                 exchangeNpc = item.npc;
+                exchangeAmount = item.amount;
                 lastAttemptedExchange = undefined;
                 return;
             }
         }
         lastAttemptedExchange = Date.now();
     } else {
-        if (itemCount(exchangeTarget)) {
+        if (!exchangeAmount) exchangeAmount = 1;
+        if (itemCount(exchangeTarget) >= exchangeAmount) {
             exchangeItem(exchangeTarget, exchangeNpc);
-            if (!itemCount(exchangeTarget)) {
-                if (bankDetails[exchangeTarget] - 1 === 0) {
-                    bankDetails[exchangeTarget] = undefined;
-                } else {
-                    bankDetails[exchangeTarget] -= 1;
-                }
-                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+            if (itemCount(exchangeTarget) < exchangeAmount) {
+                lastBankCheck = undefined;
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
                 lastAttemptedExchange = undefined;

@@ -22,7 +22,7 @@ let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearr
 let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
 
 // The merchant will attempt to exchange these
-let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}];
+let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop', npc: 'exchange', amount: 10}];
 
 // The merchant will attempt to destroy these
 let trashItems = ['firecrackers'];
