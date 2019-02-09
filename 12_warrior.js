@@ -42,9 +42,9 @@ function farm() {
         target = findBestMonster(xpTarget);
         if (target) {
             farmWait = undefined;
-            currentTarget = target;
+            currentTarget = [target];
             game_log('New target is a ' + target);
-            whisperParty('Lets go kill ' + currentTarget + "'s.");
+            whisperParty('Lets go kill ' + currentTarget[0] + "'s.");
             stop();
         }
     }
@@ -69,18 +69,24 @@ function farm() {
         (!primary || primary.name !== party_aggro.name) && (!getEasyKills().length || !getEasyKills().includes(party_aggro.mtype))) {
         stop('move');
         primary = party_aggro;
-    } else if (opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
+    } else if (!primary && getMonstersTargeting()[0]) {
+        //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
+        primary = getMonstersTargeting()[0];
+        lastCombat = Date.now();
+    } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
         //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = opportunisticTarget;
+        currentTarget.push(opportunisticTarget.mtype);
         lastCombat = Date.now();
     } else if (primary) {
+        draw_circle(primary.x, primary.y, 25, 1, 0xDFDC22);
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
         pullAdds();
-        if (in_attack_range(primary)) {
+        if (can_attack(primary)) {
             lastCombat = Date.now();
-            if (can_attack(primary)) attack(primary);
+            attack(primary);
         } else {
             // If waiting on the healer don't pull and make sure you're not in range of aggro
             if (waitForHealer() && primary.target !== character.name) {
@@ -89,17 +95,20 @@ function farm() {
                     kiting = true;
                     moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
                 } else {
-                    return stop();
+                    stop();
                 }
             } else if (primary.target !== character.name) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
+            } else if (parent.distance(character, primary) <= 30) {
+                tackle(primary);
             }
         }
+        clear_drawings();
     } else if (!party_aggro) {
         tackling = undefined;
         if (getEasyKills().length) attack(getEasyKills()[0]);
-        if (currentTarget) {
-            shibMove(currentTarget);
+        if (currentTarget[0]) {
+            shibMove(currentTarget[0]);
         }
     }
 }
