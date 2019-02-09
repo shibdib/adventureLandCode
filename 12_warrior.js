@@ -99,7 +99,7 @@ function farm() {
                 }
             } else if (primary.target !== character.name) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
-            } else if (parent.distance(character, primary) <= G.monsters[primary.mtype].range * 2.75) {
+            } else if (parent.distance(character, primary) <= 100) {
                 tackle(primary);
             }
         }

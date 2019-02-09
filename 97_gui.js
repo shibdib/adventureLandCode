@@ -7,71 +7,9 @@ add_bottom_button(2, 'Refresh Party', function () {
 });
 // Interval stuff
 setInterval(function () {
-    if (character.ctype !== 'merchant' && !showBank) update_dpsmeter();
+    if (character.ctype !== 'merchant') update_dpsmeter();
     //if (character.ctype === 'merchant' || showBank) showBankInfo();
 }, 100);
-
-//Bank Details
-initBank()
-function initBank() {
-    let $ = parent.$;
-    let brc = $('#bottomrightcorner');
-    brc.find('#bankinfo').remove();
-    let bankContainer = $('<div id="bankinfo"></div>').css({
-        fontSize: '13px',
-        color: 'white',
-        textAlign: 'center',
-        display: 'table',
-        overflow: 'auto',
-        marginBottom: '-3px',
-        width: "100%"
-    });
-    let wrapper = "bankinfo.wrapper {
-        overflow:hidden;
-        overflow-y: scroll;
-        height: 100px; // change this to desired height
-    }"
-    //vertical centering in css is fun
-    let bankInfo = $('<div id="bankinfocontent"></div>')
-        .css({
-            //display: 'table-cell',
-            verticalAlign: 'middle'
-        })
-        .html("")
-        .appendTo(bankContainer);
-    brc.children().first().after(bankContainer);
-}
-function showBankInfo() {
-    let $ = parent.$;
-    var listString = '<table style="border-style: solid;" border="5px" bgcolor="black" align="right" cellpadding="5"><tr align="center"><td colspan="3">Bank Info</td></tr><tr align="center"><td>Item</td><td>Level</td><td>Quantity</td></tr>';
-    if (localStorage.getItem('bankDetails')) {
-        let parsed = JSON.parse(localStorage.getItem('bankDetails'));
-        let sorted = {};
-        Object.keys(parsed).sort().forEach(function(key) {
-            sorted[key] = parsed[key];
-        });
-        let count = 0;
-        for (let keys of Object.keys(sorted)) {
-            count++;
-            if (count > 10) break;
-            let cleanName = keys;
-            let level = 0;
-            if (stringEndsInNumberTest(keys)) {
-                level = keys[keys.length -1];
-                cleanName = keys.slice(0, -1);
-            }
-            let display = cleanName;
-            if (G.items[cleanName]) display = G.items[cleanName].name;
-            let amount = parsed[keys];
-            listString = listString + '<tr align="left"><td align="center">' + display + '</td><td>' + level + '</td><td>' + amount + '</td></tr>';
-        }
-    }
-    $('#' + "bankinfocontent").html(listString);
-}
-function stringEndsInNumberTest(string) {
-    let match = string.match(/[0-9]$/);
-    return match ? match[0] : '';
-}
 
 //Spadar DPS
 init_dpsmeter(5)
