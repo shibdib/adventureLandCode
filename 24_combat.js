@@ -114,6 +114,7 @@ function findAdds(attack = 0.07) {
 
 // Return all monsters targeting you
 function getMonstersTargeting(target = character) {
+    if (!target) target = character;
     let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === target.name);
     //Order monsters by distance.
     return sortEntitiesByDistance(all);

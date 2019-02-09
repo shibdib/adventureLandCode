@@ -2738,6 +2738,16 @@ let items_ref = {
         "type": "material",
         "id": "cscale"
     },
+    "emptyheart": {
+        "name": "Empty Heart",
+        "g": 12000,
+        "explanation": "A cold empty stone heart",
+        "s": true,
+        "skin": "emptyheart",
+        "type": "material",
+        "event": true,
+        "id": "emptyheart"
+    },
     "puppyer": {
         "name": "Licence to Adopt a Puppy",
         "g": 10000,
@@ -3753,14 +3763,21 @@ let items_ref = {
         "name": "Dagger of the Dead",
         "id": "daggerofthedead"
     },
-    "essenceofether": {
-        "name": "Ethereal Essence",
-        "g": 40000,
-        "explanation": "A ghostly essence, maybe it could allow you to shift from this world momentarily",
+    "candypop": {
+        "int": 6,
+        "explanation": "You can eat it. Gift it. Exchange 10 of them at Xyn for a small reward.",
+        "skin_a": "candypop",
+        "vit": 10,
+        "skin": "candypop",
+        "duration": 1,
+        "eat": true,
+        "e": 10,
+        "name": "Candy Pop",
+        "g": 120,
         "s": true,
-        "skin": "essenceofether",
-        "type": "material",
-        "id": "essenceofether"
+        "type": "elixir",
+        "luck": 12,
+        "id": "candypop"
     },
     "puppy1": {
         "a": true,
@@ -4315,14 +4332,14 @@ let items_ref = {
         "scroll": true,
         "id": "warpvest"
     },
-    "stonekey": {
-        "name": "The Stone Key",
-        "g": 50000,
-        "explanation": "A stone key, imbued with magical energy.",
-        "skin": "stonekey",
-        "type": "key",
-        "opens": "therush",
-        "id": "stonekey"
+    "essenceofether": {
+        "name": "Ethereal Essence",
+        "g": 40000,
+        "explanation": "A ghostly essence, maybe it could allow you to shift from this world momentarily",
+        "s": true,
+        "skin": "essenceofether",
+        "type": "material",
+        "id": "essenceofether"
     },
     "stramulet": {
         "name": "Amulet of Strength",
@@ -4422,6 +4439,15 @@ let items_ref = {
         "type": "gloves",
         "scroll": true,
         "id": "hgloves"
+    },
+    "stonekey": {
+        "name": "The Stone Key",
+        "g": 50000,
+        "explanation": "A stone key, imbued with magical energy.",
+        "skin": "stonekey",
+        "type": "key",
+        "opens": "therush",
+        "id": "stonekey"
     },
     "orbofhp": {
         "name": "Orb of Vitality",
@@ -5778,6 +5804,24 @@ let items_ref = {
         "type": "box",
         "event": true,
         "id": "apologybox"
+    },
+    "charmer": {
+        "attr0": 1,
+        "grades": [
+            0,
+            3
+        ],
+        "name": "Charmer",
+        "vit": 10,
+        "skin": "charmer",
+        "compound": {
+            "attr0": 1,
+            "vit": 10
+        },
+        "type": "orb",
+        "event": true,
+        "ability": "charm",
+        "id": "charmer"
     },
     "cake": {
         "hp": 1200,

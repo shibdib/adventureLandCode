@@ -63,21 +63,19 @@ function checkForWeaponType(type) {
 }
 
 //Looks for item in inventory
-function getInventorySlot(search, multiple = false, level) {
+function getInventorySlot(search, multiple = false, level = 0) {
     if (!multiple) {
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (level && item_properties(item).level !== level) continue;
-            if (item.name === search) return key;
+            if (item.name === search && item_properties(item).level === level) return key;
         }
     } else {
         let slots = [];
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (level && item_properties(item).level !== level) continue;
-            if (item.name === search) slots.push(key);
+            if (item.name === search && item_properties(item).level === level) slots.push(key);
         }
         return slots;
     }

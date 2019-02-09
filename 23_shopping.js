@@ -50,8 +50,8 @@ function exchangeItem(type, npc) {
 }
 
 //Returns the number of items in your inventory for a given item name;
-function itemCount(name, level = undefined) {
-    let count = character.items.filter(item => item != null && item.name === name && (!level || item_properties(item).level === level)).reduce(function (a, b) {
+function itemCount(name, level = 0) {
+    let count = character.items.filter(item => item != null && item.name === name && item_properties(item).level === level).reduce(function (a, b) {
         return a + (b["q"] || 1);
     }, 0);
     return count;

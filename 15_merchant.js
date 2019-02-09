@@ -43,8 +43,8 @@ function merchantStateTasks(state) {
         return;
     }
     if (state === 11) { // ACCOUNTING
-        theBook = bookKeeping();
-        if (theBook) {
+        bookKeeping();
+        if (localStorage.getItem('bankDetails') && lastBankCheck) {
             lastBankCheck = Date.now();
             return;
         } else {
@@ -55,16 +55,17 @@ function merchantStateTasks(state) {
 
 // State controller
 function merchantStateController(state) {
-    if (theBook) {
-        if (itemCount('mpot1') < 200 || itemCount('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
-        if (theBook['gold'] < spendingAmount) spendingAmount = theBook['gold'];
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (itemCount('mpot1') < 200 || itemCount('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
+    if (bankDetails) {
+        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
     }
     let new_state = 9;
     //KIA
     if (character.rip) {
         new_state = 99;
     } //ACCOUNTING
-    else if (!theBook || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
+    else if (!bankDetails || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
         new_state = 11;
     } //NO POORS
     else if (character.gold < spendingAmount * 0.25) {
@@ -88,12 +89,12 @@ function merchantStateController(state) {
 function merch() {
     useSkills();
     if (standCheck()) return;
-    if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
     if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
         combineItems();
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
     } else {
+        if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
         if (!sellItemsToPlayers()) if (!sellExcessToNPC()) {
             placeStand();
             buyBaseItems();
@@ -114,10 +115,11 @@ function useSkills() {
 // Exchange Items
 function exchangeStuff() {
     closeStand();
-    if (!theBook) return;
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (!bankDetails) return;
     if (!exchangeTarget) {
         for (let item of exchangeItems) {
-            if (theBook[item.item]) {
+            if (bankDetails[item.item]) {
                 exchangeTarget = item.item;
                 exchangeNpc = item.npc;
                 lastAttemptedExchange = undefined;
@@ -129,7 +131,12 @@ function exchangeStuff() {
         if (itemCount(exchangeTarget)) {
             exchangeItem(exchangeTarget, exchangeNpc);
             if (!itemCount(exchangeTarget)) {
-                if (theBook[exchangeTarget] - 1 === 0) theBook[exchangeTarget] = undefined; else theBook[exchangeTarget] -= 1;
+                if (bankDetails[exchangeTarget] - 1 === 0) {
+                    bankDetails[exchangeTarget] = undefined;
+                } else {
+                    bankDetails[exchangeTarget] -= 1;
+                }
+                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
                 lastAttemptedExchange = undefined;
@@ -137,11 +144,18 @@ function exchangeStuff() {
         } else {
             let withdraw = withdrawItem(exchangeTarget);
             if (withdraw === null && !itemCount(exchangeTarget)) {
-                theBook[exchangeTarget] = undefined;
+                bankDetails[exchangeTarget] = undefined;
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
                 exchangeStuff();
                 lastAttemptedExchange = Date.now();
+            } else if (withdraw) {
+                if (bankDetails[exchangeTarget] - 1 === 0) {
+                    bankDetails[exchangeTarget] = undefined;
+                } else {
+                    bankDetails[exchangeTarget] -= 1;
+                }
+                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
             }
         }
     }
@@ -150,13 +164,14 @@ function exchangeStuff() {
 // Buy items for crafting
 function buyBaseItems() {
     if (lastRestock + 90000 > Date.now()) return;
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
     items:
     for (let item of baseItems) {
         let need = true;
         for (let l = 0; l < combineUpgradeTarget - 1; l++) {
             if (l === 0) l = '';
-            if (itemCount(item + l) >= 2 || theBook[item + l] >= 2) {
+            if (itemCount(item + l) >= 2 || bankDetails[item + l] >= 2) {
                 need = false;
                 continue items;
             }
@@ -168,7 +183,8 @@ function buyBaseItems() {
 
 // Sell overflow
 function sellExcessToNPC() {
-    if (!theBook) return;
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (!bankDetails) return;
     // Set bank items for sale if overstocked
     if (getItems.length) {
         closeStand();
@@ -188,8 +204,8 @@ function sellExcessToNPC() {
         if (key) sell(getInventorySlot(sellItems[0]), 1);
         sellItems.shift();
     } else {
-        for (let key of Object.keys(theBook)) {
-            if (G.items[key] && theBook[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && !noSell.includes(key)) {
+        for (let key of Object.keys(bankDetails)) {
+            if (G.items[key] && bankDetails[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && !noSell.includes(key)) {
                 if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
             }
         }
@@ -199,6 +215,7 @@ function sellExcessToNPC() {
 
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function sellItemsToPlayers() {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
     if (character.map === 'bank') return shibMove('main');
     let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
@@ -211,9 +228,9 @@ function sellItemsToPlayers() {
                 if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
                 if (noSell.includes(slot.name)) continue;
                 if (slot.level === 0) theBookName = slot.name; else theBookName = slot.name + slot.level;
-                if (!theBook[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
-                if (combineTargets.includes(slot.name) && (theBook[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
-                if (upgradeTargets.includes(slot.name) && (theBook[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
+                if (!bankDetails[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
+                if (combineTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
+                if (upgradeTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
                 if (getInventorySlot(slot.name, false, slot.level)) {
                     currentTask = undefined;
                     playerSale = undefined;
@@ -239,14 +256,7 @@ function sellItemsToPlayers() {
 
 //UPGRADING and COMBINING
 function combineItems() {
-    if (craftingLevel > combineUpgradeTarget){
-        currentItem = undefined;
-        currentTask = undefined;
-        craftingLevel = undefined;
-        lastAttemptedCrafting = Date.now();
-        lastBankCheck = undefined;
-        return
-    }
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     closeStand();
     if (!currentItem) {
         for (let l = 0; l < combineUpgradeTarget; l++) {
@@ -257,7 +267,9 @@ function combineItems() {
                     append = '';
                     levelLookup = undefined;
                 }
-                if (getInventorySlot(item, true, levelLookup).length >= 3 || theBook[item + append] >= 3) {
+                let stock = 3;
+                if (l + 1 === combineUpgradeTarget) stock = 4;
+                if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
                     currentItem = item;
                     currentTask = 'combine';
                     craftingLevel = l;
@@ -272,7 +284,9 @@ function combineItems() {
                     levelLookup = undefined;
                     append = '';
                 }
-                if (getInventorySlot(item, true, levelLookup).length || theBook[item + append]) {
+                let stock = 1;
+                if (l + 1 === combineUpgradeTarget) stock = 2;
+                if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
                     currentItem = item;
                     currentTask = 'upgrade';
                     craftingLevel = l;
@@ -296,26 +310,53 @@ function combineItems() {
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
-                if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
-                if (theBook[currentItem] - 1 === 0) theBook[currentItem] = undefined; else theBook[currentItem] -= 1;
-                currentItem = undefined;
-                currentTask = undefined;
-                craftingLevel = undefined;
-                lastAttemptedCrafting = undefined;
-                combineItems();
+                if (crafting(currentTask, componentSlot, scrollSlot)) {
+                    currentItem = undefined;
+                    currentTask = undefined;
+                    craftingLevel = undefined;
+                    lastBankCheck = undefined;
+                    lastAttemptedCrafting = undefined;
+                }
             } else {
-                buyScroll(scroll);
+                if (bankDetails[scroll]) {
+                    withdrawItem(scroll);
+                } else {
+                    buyScroll(scroll);
+                }
             }
         } else {
             let withdraw = withdrawItem(currentItem, craftingLevel);
             if (withdraw === null) {
-                theBook[currentItem] = undefined;
+                bankDetails[currentItem] = undefined;
                 currentItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
-                lastAttemptedCrafting = Date.now();
                 lastBankCheck = undefined;
+                lastAttemptedCrafting = Date.now();
+            } else if (withdraw) {
+                let append = '';
+                if (craftingLevel) append = craftingLevel;
+                if (bankDetails[currentItem + append] - 1 === 0) {
+                    bankDetails[currentItem + append] = undefined;
+                } else {
+                    bankDetails[currentItem + append] -= 1;
+                }
             }
+            localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+        }
+    }
+}
+
+//Crafting
+function crafting(task, componentSlot, scrollSlot) {
+    if (currentTask === 'combine' || currentTask === 'upgrade') {
+        let scrollsMerchant = getNpc("newupgrade");
+        let distanceToMerchant = null;
+        if (scrollsMerchant != null) distanceToMerchant = distanceToPoint(scrollsMerchant.position[0], scrollsMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
+            return true;
         }
     }
 }
@@ -354,13 +395,15 @@ function bookKeeping() {
         }
         bankDetails['gold'] = character.user['gold'];
         lastBankCheck = Date.now();
+        localStorage.removeItem('bankDetails');
+        localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
         return bankDetails;
     }
 }
 
 // Go buy a stand
 function standCheck() {
-    if (!getInventorySlot('stand0') && !theBook['stand0']) {
+    if (!getInventorySlot('stand0') && !localStorage.getItem('bankDetails')['stand0']) {
         let standsMerchant = getNpc("standmerchant");
         let distanceToMerchant = null;
         if (standsMerchant != null) distanceToMerchant = distanceToPoint(standsMerchant.position[0], standsMerchant.position[1]);

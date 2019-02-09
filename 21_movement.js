@@ -150,14 +150,12 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
             }
             // Return original if still good otherwise check a new one
             if ((!target || (range >= rangeToTarget * 0.8 && range <= rangeToTarget)) && (!currentClosestAvoid || currentClosestAvoid > maxRange * 4)) {
-                if (character.name === 'Shibheal') game_log(1)
                 return undefined;
             } else if ((!target || (newRange >= rangeToTarget * 0.8 && newRange <= rangeToTarget)) && (!closestAvoid || closestAvoid > maxRange * 4)) {
                 let newPos = {
                     x: character.real_x + xChange,
                     y: character.real_y + yChange
                 };
-                if (character.name === 'Shibheal') game_log(2)
                 if (!alreadyStored[character.name]) {
                     alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
                 } else if (alreadyStored[character.name] && alreadyStored[character.name].t + 1200 < Date.now()) {
