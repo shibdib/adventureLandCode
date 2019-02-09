@@ -114,7 +114,6 @@ function useSkills() {
 
 // Exchange Items
 function exchangeStuff() {
-    game_log(2)
     closeStand();
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!bankDetails) return;
@@ -141,7 +140,7 @@ function exchangeStuff() {
                 exchangeNpc = undefined;
                 lastAttemptedExchange = undefined;
             }
-        } else {
+        } else if (bankDetails[exchangeTarget] >= exchangeAmount) {
             let withdraw = withdrawItem(exchangeTarget);
             if (withdraw === null && !itemCount(exchangeTarget)) {
                 bankDetails[exchangeTarget] = undefined;
@@ -163,7 +162,6 @@ function exchangeStuff() {
 
 // Buy items for crafting
 function buyBaseItems() {
-    game_log(3)
     if (lastRestock + 90000 > Date.now()) return;
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
@@ -184,7 +182,6 @@ function buyBaseItems() {
 
 // Sell overflow
 function sellExcessToNPC() {
-    game_log(4)
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!bankDetails) return;
     // Set bank items for sale if overstocked
@@ -217,7 +214,6 @@ function sellExcessToNPC() {
 
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function sellItemsToPlayers() {
-    game_log(5)
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
     if (character.map === 'bank') return shibMove('main');
@@ -259,7 +255,6 @@ function sellItemsToPlayers() {
 
 //UPGRADING and COMBINING
 function combineItems() {
-    game_log(6)
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     closeStand();
     if (!currentItem) {
