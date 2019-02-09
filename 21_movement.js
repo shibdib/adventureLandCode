@@ -126,6 +126,7 @@ function shibMove(destination, second = undefined) {
 }
 
 // Kite from your current target and also take into account an avoid array
+let alreadyStored = {};
 function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y);
@@ -150,21 +151,25 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
             // Return original if still good otherwise check a new one
             if ((!target || (range >= rangeToTarget * 0.8 && range <= rangeToTarget)) && (!currentClosestAvoid || currentClosestAvoid > maxRange * 4)) {
                 if (character.name === 'Shibheal') game_log(1)
-                return {
-                    x: character.real_x,
-                    y: character.real_y
-                };
+                return undefined;
             } else if ((!target || (newRange >= rangeToTarget * 0.8 && newRange <= rangeToTarget)) && (!closestAvoid || closestAvoid > maxRange * 4)) {
-                if (character.name === 'Shibheal') game_log(2)
-                return {
+                let newPos = {
                     x: character.real_x + xChange,
                     y: character.real_y + yChange
                 };
-            } else {
-                return undefined;
+                if (character.name === 'Shibheal') game_log(2)
+                if (!alreadyStored[character.name]) {
+                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
+                } else if (alreadyStored[character.name] && alreadyStored[character.name].t + 1200 < Date.now()) {
+                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
+                    return newPos;
+                } else {
+                    return alreadyStored[character.name];
+                }
             }
         }
     }
+    return undefined;
 }
 
 // Try to move tackled away from other threats
@@ -187,18 +192,22 @@ function moveTackled(target, avoidArray) {
             }
             // Return original if still good otherwise check a new one
             if (!currentClosestAvoid || currentClosestAvoid > maxRange * 8) {
-                return {
-                    x: character.real_x,
-                    y: character.real_y
-                };
+                return undefined;
             } else if (!closestAvoid || closestAvoid > maxRange * 8) {
-                return {
+                let newPos = {
                     x: character.real_x + xChange,
                     y: character.real_y + yChange
                 };
-            } else {
-                return undefined;
+                if (!alreadyStored[character.name]) {
+                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
+                } else if (alreadyStored[character.name] && alreadyStored[character.name].t + 1200 < Date.now()) {
+                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
+                    return newPos;
+                } else {
+                    return alreadyStored[character.name];
+                }
             }
         }
     }
+    return undefined;
 }

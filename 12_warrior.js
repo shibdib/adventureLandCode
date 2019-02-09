@@ -18,7 +18,7 @@ setInterval(function () {
     }
     if (!localStorage.getItem('leaderMap') || localStorage.getItem('leaderMap') !== character.map) localStorage.setItem('leaderMap', character.map);
     if (!state) return;
-    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
+    if (checkPartyAggro() || getMonstersTargeting()[0] || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
 //Fast Loop
@@ -54,7 +54,8 @@ function farm() {
     if (waitForHealer()) refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
-    let mainTarget = findLocalMonsters(currentTarget);
+    let mainTarget;
+    if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
     let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
