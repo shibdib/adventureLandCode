@@ -103,10 +103,9 @@ function merch() {
 
 function useSkills() {
     if (parent.party_list.length > 0) {
-        for (let key in parent.party_list) {
-            let member = parent.party_list[key];
-            let entity = parent.entities[member]
-            if (!entity) continue;
+        for (let key in Object.keys(parent.entities)) {
+            let entity = parent.entities[key]
+            if (!entity || !is_character(entity) || entity.ctype === 'merchant') continue;
             if (can_use('mluck', entity)) use('mluck', entity);
         }
     }
@@ -212,10 +211,13 @@ function sellItemsToPlayers() {
                 if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
                 if (noSell.includes(slot.name)) continue;
                 if (slot.level === 0) theBookName = slot.name; else theBookName = slot.name + slot.level;
-                if (!theBook[theBookName] && getInventorySlot(slot.name, false, slot.level) !== true) continue;
+                if (!theBook[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
+                if (combineTargets.includes(slot.name) && (theBook[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
+                if (upgradeTargets.includes(slot.name) && (theBook[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
                 if (getInventorySlot(slot.name, false, slot.level)) {
                     currentTask = undefined;
                     playerSale = undefined;
+                    lastBankCheck = undefined;
                     saleCooldown = Date.now();
                     game_log("Item Sold: " + slot.name);
                     game_log("To: " + buyers.name);
@@ -300,6 +302,7 @@ function combineItems() {
                 currentTask = undefined;
                 craftingLevel = undefined;
                 lastAttemptedCrafting = undefined;
+                combineItems();
             } else {
                 buyScroll(scroll);
             }
@@ -332,8 +335,11 @@ function bookKeeping() {
                 let banker = slot[packKey];
                 if (!banker) continue;
                 if (trashItems.includes(banker.name)) {
-                    withdrawItem(packKey);
-                    destroy_item(getInventorySlot(banker.name));
+                    withdrawItem(banker.name);
+                    getInventorySlot(banker.name);
+                    game_log(banker.name)
+                    game_log(getInventorySlot(banker.name))
+                    //destroy_item();
                     continue;
                 }
                 let level = item_properties(banker).level;
