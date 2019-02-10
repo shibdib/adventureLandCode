@@ -193,8 +193,10 @@ function kite() {
         }
     }
     if (!safePositions) return;
+    show_json(safePositions)
     let sorted = sortCoordsByDistance(safePositions);
-    if (smart.moving) stop('move');
+    show_json(sorted)
+    //if (smart.moving) stop('move');
     move(sorted[0].x, sorted[0].y);
 }
 

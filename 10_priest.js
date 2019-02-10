@@ -22,7 +22,6 @@ setInterval(function () {
 function farm() {
     loot();
     potionController(true);
-    kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);

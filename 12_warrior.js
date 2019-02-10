@@ -84,8 +84,6 @@ function farm() {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
             } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
-            } else {
-                kite();
             }
         }
     } else {
