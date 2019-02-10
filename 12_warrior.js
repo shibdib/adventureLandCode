@@ -52,7 +52,7 @@ function farm() {
     combat = party_aggro;
     let mainTarget;
     if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
-    let opportunisticTarget = findLocalMonstersFromArray(findBestMonster(xpTarget * 0.3, true));
+    let opportunisticTarget = getEasyKills(false);
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         if (getMonstersTargeting()[0]) {
@@ -84,6 +84,10 @@ function farm() {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
             } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
+            } else if (smart.moving) {
+                stop('move');
+            } else {
+                kite();
             }
         }
     } else {

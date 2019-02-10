@@ -43,18 +43,21 @@ function farm() {
             alerted = true;
             // Use revive as a mega heal
             use('revive', lowest_health);
+            kite();
         } else {
             moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
         use('partyheal');
+        kite();
     } else if (wounded && !lowest_health.rip) { //HEAL WOUNDED
         if (in_attack_range(lowest_health)) {
             //if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
             // Heal
             heal(lowest_health);
+            kite();
         } else {
             moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
@@ -63,6 +66,7 @@ function farm() {
         let dead_party = deadParty();
         if (can_use('revive', dead_party)) {
             use('revive', dead_party);
+            kite();
         } else {
             moveToTarget(dead_party);
         }

@@ -37,13 +37,14 @@ function farm() {
         let range = distanceToPoint(target.real_x, target.real_y);
         // Energize the party
         if (can_use('energize')) randomEnergize();
-        if (range <= character.range && (checkTankAggro() || canOneShot(target))) {
+        if (can_attack(target) && (checkTankAggro() || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
             // Attack
-            if (can_attack(target))  attack(target);
+            attack(target);
+            kite();
         } else {
             // If you need to kite do so, otherwise get in range
             moveToTarget(target, character.range * 0.5, character.range * 0.99);

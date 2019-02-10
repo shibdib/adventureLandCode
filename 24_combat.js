@@ -4,8 +4,9 @@ function findLocalMonsters(type, returnArray = false) {
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
     if (!monsters.length) return false;
-    //Order monsters by distance.
-    monsters = sortEntitiesByDistance(monsters);
+    //Order monsters by distance and xp.
+    monsters = sortEntitiesByDistance(monsters).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
+    ;
     if (!returnArray) return monsters[0]; else return monsters;
 }
 
@@ -25,16 +26,15 @@ function findLocalMonstersFromArray(type, returnArray = false) {
 function findBestMonster(minXp, array = false) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
-    let maxAttack = character.attack * 0.95;
+    let maxAttack = character.attack * 0.45;
     if (character.party) {
-        maxAttack = character.attack * 0.75;
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             if (member === character.name) continue;
             let entity = parent.entities[member];
             // Don't count merchants
             if (!entity || entity.ctype === 'merchant') continue;
-            maxAttack += entity.attack * 0.04;
+            maxAttack += entity.attack * 0.06;
         }
     }
         // Make G.maps an array
@@ -122,8 +122,11 @@ function getMonstersTargeting(target = character) {
 }
 
 // Attack easy to kill things
-function getEasyKills() {
+function getEasyKills(oneShot = true) {
     let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.hp <= character.attack * 0.8 && G.monsters[mob.mtype].xp);
+    if (!oneShot) easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * 0.1
+        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
+        && parent.distance(character, mob) <= 175);
     //Order monsters by distance.
     return sortEntitiesByDistance(easyKill);
 }

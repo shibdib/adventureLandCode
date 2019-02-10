@@ -183,20 +183,18 @@ function kite() {
         }
         if (G.monsters[avoid.mtype] && (!maxRange || maxRange < G.monsters[avoid.mtype].range)) maxRange = G.monsters[avoid.mtype].range;
     }
-    if (!nearest || currentClosestAvoid > maxRange * 1.5) return;
+    if (!nearest || currentClosestAvoid >= maxRange) return;
     let safePositions = [];
     for (let x = 0; x < 1500; x++) {
         let xChange = getRndInteger(-150, 150);
         let yChange = getRndInteger(-150, 150);
-        if (can_move_to(character.real_x + xChange, character.real_y + yChange) && distanceBetweenPoints(character.real_x, character.real_y, nearest.real_x, nearest.real_y) > maxRange * 4) {
+        if (can_move_to(character.real_x + xChange, character.real_y + yChange) && distanceBetweenPoints(character.real_x, character.real_y, nearest.real_x, nearest.real_y) >= maxRange * 1.05) {
             safePositions.push({x: character.real_x + xChange, y: character.real_y + yChange})
         }
     }
-    if (!safePositions) return;
-    show_json(safePositions)
+    if (!safePositions.length) return;
     let sorted = sortCoordsByDistance(safePositions);
-    show_json(sorted)
-    //if (smart.moving) stop('move');
+    if (smart.moving) stop('move');
     move(sorted[0].x, sorted[0].y);
 }
 

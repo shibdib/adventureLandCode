@@ -35,13 +35,16 @@ function farm() {
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     if (target) {
         if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
+            // Long range
+            if (can_use('supershot', target)) use('supershot', target);
             // Poison arrow
             if (can_use('poisonarrow', target)) use('poisonarrow', target);
             // Attack
             if (can_attack(target))  attack(target);
+            kite();
         } else {
             // Long range
-            if (can_use('supershot', target)) use('supershot', target);
+            if ((checkTankAggro() || canOneShot(target) && can_use('supershot', target))) use('supershot', target);
             // If you need to kite do so, otherwise get in range
             moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
