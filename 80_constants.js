@@ -11,7 +11,7 @@ let pveCharacters = [
 let targetPotionAmount = 250;
 
 // Target for upgrades
-let combineUpgradeTarget = 6;
+let combineUpgradeTarget = 8;
 
 // The merchant will attempt to combine these
 let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
