@@ -30,6 +30,9 @@ let trashItems = ['firecrackers'];
 // Don't sell these
 let noSell = ['stand0', 'stand1', 'dragon'];
 
+//GEARSCORE
+// These items are not equipped
+let ignoredItems = ['cupid'];
 // Change to force update of gear score
 let attributeVersion = 1;
 // Stat weights (1-10)

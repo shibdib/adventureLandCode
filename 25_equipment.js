@@ -11,14 +11,6 @@ let specialSlots = {
     'earring': ['earring1', 'earring2']
 };
 
-let classItems = {
-    'mage': ['great_staff', 'source', 'staff', 'wblade'],
-    'priest': ['great_staff', 'source', 'staff', 'shield', 'mace'],
-    'ranger': ['fist', 'bow', 'quiver'],
-    'rogue': ['short_sword', 'fist', 'dagger', 'stars', 'misc_offhand'],
-    'warrior': ['axe', 'basher', 'shield', 'short_sword', 'misc_offhand', 'fist', 'mace', 'spear', 'short_sword']
-};
-
 // Cycles thru inventory and equips bis
 function equipBIS() {
     let checked = [];
@@ -125,12 +117,17 @@ function getPotions() {
 
 // Grabs an item from the bank if it's potentially better;
 function bestItemEquip(item, bank = true) {
-    if (!item) return;
+    if (!item || ignoredItems.includes(item.name)) return;
     let itemInfo = G.items[item.name];
     // Check if slot doesn't match type
     let itemSlot = itemInfo.type;
     if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
-    if (itemInfo.type === 'weapon' && character.ctype !== 'rogue') itemSlot = 'mainhand';
+    // Handle disallowed mainhand
+    if (itemSlot === 'mainhand' && !G.class[character.ctype].mainhand.includes(itemInfo.wtype)) return;
+    // Handle holding a 2 hander
+    if (itemSlot === 'offhand' && character.slots['mainhand'] && G.class[character.ctype].doublehand && G.class[character.ctype].doublehand.includes(G.items[character.slots['mainhand'].name].wtype)) return;
+    // Handle disallowed offhand
+    if (itemSlot === 'offhand' && !G.class[character.ctype].offhand.includes(itemInfo.wtype)) return;
     // Handle ears and rings
     if (Array.isArray(itemSlot)) {
         for (let slot of itemSlot) {
