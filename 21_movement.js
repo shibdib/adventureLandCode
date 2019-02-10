@@ -173,7 +173,10 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
 
 // Stay safe
 function kite(target = undefined) {
+    let tankTarget;
     let nearbyHostiles = nearbyAggressors(character.range * 1.25, true);
+    if (get_player(character.party)) tankTarget = get_target_of(get_player(character.party));
+    nearbyHostiles.push(tankTarget);
     if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;

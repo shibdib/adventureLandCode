@@ -42,7 +42,6 @@ function farm() {
             // Attack
             if (can_attack(target))  attack(target);
             kite();
-            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         } else {
             // Long range
             if ((checkTankAggro() || canOneShot(target) && can_use('supershot', target))) use('supershot', target);
