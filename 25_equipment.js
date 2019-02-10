@@ -163,24 +163,6 @@ function depositItems(potions = false) {
     }
 }
 
-//Drop off all items
-function depositItem(item, level = undefined) {
-    if (character.map !== 'bank') {
-        shibMove('bank');
-        return false;
-    } else {
-        if (character.ctype !== 'merchant') equipBIS();
-        for (let key in character.items) {
-            let item = character.items[key];
-            if (!item || item === null) continue;
-            let itemInfo = G.items[item.name];
-            if (!potions && itemInfo.type === 'pot') continue;
-            if (itemInfo.type === 'stand') continue;
-            bank_store(key);
-        }
-    }
-}
-
 //Withdraw Item
 function withdrawItem(target, level = undefined) {
     if (character.map !== 'bank') {
@@ -241,7 +223,6 @@ function getPotions() {
 
 // Grabs an item from the bank if it's potentially better;
 function bestItemEquip(item, bank = true) {
-    game_log(1)
     if (!item) return;
     let itemInfo = G.items[item.name];
     // Check if slot doesn't match type
