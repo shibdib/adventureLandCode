@@ -51,7 +51,8 @@ function findBestMonster(minXp, array = false) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
         sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
-            && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80));
+            && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
+        && G.monsters[m].respawn < 5000);
         if (sorted.length > 2) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;

@@ -52,7 +52,7 @@ function farm() {
     // Handle the healer disappearing
     if (character.hp < character.max_hp * 0.5)
     // Handle target refreshing
-    if (!waitForHealer()) refreshTarget();
+    refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget;
@@ -74,7 +74,7 @@ function farm() {
         primary = getMonstersTargeting()[0];
     } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
         primary = opportunisticTarget;
-    } else if (primary && waitForHealer()) {
+    } else if (primary && !waitForHealer()) {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
@@ -111,11 +111,11 @@ function pullAdds() {
     let currentThreats = getMonstersTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
-    currentThreats.forEach((t) => totalAttack += t.attack * 1.2);
+    currentThreats.forEach((t) => totalAttack += t.attack * 1.25);
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if (state !== 1 || (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.11) || currentThreats.length > 2) return;
-    if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 90) {
+    if (state !== 1 || (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.125) || currentThreats.length > 2) return;
+    if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 200) {
         tackle(possibleAdds[0], false);
         return true;
     }
