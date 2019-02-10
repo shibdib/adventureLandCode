@@ -169,6 +169,33 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
     return undefined;
 }
 
+// Stay safe
+function kite() {
+    let nearbyHostiles = nearbyAggressors();
+    if (!nearbyHostiles.length) return;
+    // Check if we should move
+    let currentClosestAvoid, maxRange;
+    for (let avoid of nearbyHostiles) {
+        if (target && avoid.id === target.id) continue;
+        let currentAvoidRange = distanceBetweenPoints(character.real_x, character.real_y, avoid.real_x, avoid.real_y);
+        if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = currentAvoidRange;
+        if (G.monsters[avoid.mtype] && (!maxRange || maxRange < G.monsters[avoid.mtype].range)) maxRange = G.monsters[avoid.mtype].range;
+    }
+    if (!currentClosestAvoid || currentClosestAvoid > maxRange * 4) return;
+    let safePositions = [];
+    for (let x = 0; x < 1500; x++) {
+        let xChange = getRndInteger(-150, 150);
+        let yChange = getRndInteger(-150, 150);
+        if (can_move_to(character.real_x + xChange, character.real_y + yChange) && distanceBetweenPoints(character.real_x, character.real_y, currentClosestAvoid.real_x, currentClosestAvoid.real_y) > maxRange * 4) {
+            safePositions.push({x: character.real_x + xChange, y: character.real_y + yChange})
+        }
+    }
+    if (!safePositions) return;
+    let sorted = sortCoordsByDistance(safePositions);
+    if (smart.moving) stop('move');
+    move(sorted[0].x, sorted[0].y);
+}
+
 // Try to move tackled away from other threats
 function moveTackled(target, avoidArray) {
     for (let x = 0; x < 500; x++) {

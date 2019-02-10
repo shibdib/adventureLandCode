@@ -13,26 +13,19 @@ setInterval(function () {
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
-//Kite Loop
+//Fast Loop
 setInterval(function () {
     // Update your data
     updateCharacterData();
-    if ((combat || !is_moving(character)) && nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
-        kiting = true;
-        moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-    } else {
-        kiting = undefined;
-    }
 }, 75);
 
 function farm() {
     loot();
     potionController();
+    kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
-    if (!leader) {
-        if (!kiting) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    }
+    if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
@@ -54,6 +47,6 @@ function farm() {
         stop('invis');
         // Speedy rogue
         if (can_use('rspeed', character)) use('rspeed', character);
-        if (!kiting) moveToLeader();
+        moveToLeader();
     }
 }

@@ -2,7 +2,7 @@
 function findLocalMonsters(type, returnArray = false) {
     let monsters;
     // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && parent.distance(character, mob) <= 175);
+    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
     if (!monsters.length) return false;
     //Order monsters by distance.
     monsters = sortEntitiesByDistance(monsters);

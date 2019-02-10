@@ -13,26 +13,19 @@ setInterval(function () {
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
-//Kite Loop
+//Fast Loop
 setInterval(function () {
     // Update your data
     updateCharacterData();
-    if ((combat || !is_moving(character)) && nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
-        kiting = true;
-        moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-    } else {
-        kiting = undefined;
-    }
 }, 75);
 
 function farm() {
     loot();
     potionController(true);
+    kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
-    if (!leader) {
-        if (!kiting) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    }
+    if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     let lowest_health = lowHealth();
@@ -52,7 +45,7 @@ function farm() {
             // Use revive as a mega heal
             use('revive', lowest_health);
         } else {
-            if (!kiting) moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
+            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
@@ -64,7 +57,7 @@ function farm() {
             // Heal
             heal(lowest_health);
         } else {
-            if (!kiting) moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
+            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
     } else if (!wounded && deadParty()) { //REVIVE DEAD
         alerted = undefined;
@@ -72,13 +65,13 @@ function farm() {
         if (can_use('revive', dead_party)) {
             use('revive', dead_party);
         } else {
-            if (!kiting) moveToTarget(dead_party);
+            moveToTarget(dead_party);
         }
     } else {
         alerted = undefined;
         if (lowest_health && lowest_health.health_ratio <= 0.99 && in_attack_range(lowest_health)) {
             heal(lowest_health);
         }
-        if (!kiting) moveToLeader();
+        moveToLeader();
     }
 }

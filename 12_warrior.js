@@ -24,13 +24,6 @@ setInterval(function () {
 setInterval(function () {
     // Update your data
     updateCharacterData();
-    // Kiting
-    if ((combat || !is_moving(character)) && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
-        movingPull = true;
-        moveToPosition(moveTackled(get_target(), nearbyAggressors()));
-    } else {
-        movingPull = undefined;
-    }
 }, 75);
 
 function farm() {
@@ -67,27 +60,30 @@ function farm() {
             primary = mainTarget;
         }
     }
-    if (party_aggro && character.target !== party_aggro.name) {
-        stop('move');
+    if (party_aggro && character.name !== party_aggro.target) {
         primary = party_aggro;
     } else if (!primary && getMonstersTargeting()[0]) {
         primary = getMonstersTargeting()[0];
     } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
         primary = opportunisticTarget;
-    } else if (primary) {
+    }
+    // If you have a target deal with it
+    if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
-        pullAdds();
-        if (can_attack(primary)) {
+        if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
             lastCombat = Date.now();
             attack(primary);
+            pullAdds();
         } else {
             // Pull if he's attacking someone else
             if (primary.target !== character.name) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
-            } else if (parent.distance(character, primary) <= 100 && !waitForHealer()) {
+            } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
+            } else {
+                kite();
             }
         }
     } else {

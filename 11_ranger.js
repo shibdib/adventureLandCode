@@ -13,28 +13,23 @@ setInterval(function () {
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
-//Kite Loop
+//Fast Loop
 setInterval(function () {
     // Update your data
     updateCharacterData();
-    if ((combat || !is_moving(character)) && nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
-        kiting = true;
-        moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-    } else {
-        kiting = undefined;
-    }
 }, 75);
 
 function farm() {
     loot();
     potionController();
+    kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (leader) {
         let pulledMonsters = getMonstersTargeting(leader);
         if (pulledMonsters.length >= 5 && can_use['5shot']) use('5shot', pulledMonsters); else if (pulledMonsters.length >= 3 && can_use['3shot']) use('3shot', pulledMonsters);
     } else {
-        if (!kiting) return moveToLeader(character.range * 0.5, character.range * 0.7);
+        return moveToLeader(character.range * 0.5, character.range * 0.7);
     }
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
@@ -49,9 +44,9 @@ function farm() {
             // Long range
             if (can_use('supershot', target)) use('supershot', target);
             // If you need to kite do so, otherwise get in range
-            if (!kiting) moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        if (!kiting) moveToLeader();
+        moveToLeader();
     }
 }

@@ -40,6 +40,7 @@ function gearIssue() {
                 bestItemEquip(getHighestLevel(item.name));
             }
         }
+        depositItems();
         return true;
     }
 }
@@ -168,7 +169,6 @@ function bestItemEquip(item, bank = true) {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
-                if (bank) depositItems();
                 return true;
             }
         }
@@ -197,7 +197,6 @@ function bestItemEquip(item, bank = true) {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
              equip(getInventorySlot(item.name, false, item_properties(item).level));
-            if (bank) depositItems();
              return true;
         }
     }
