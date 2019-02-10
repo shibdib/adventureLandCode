@@ -109,9 +109,7 @@ function moveToPosition(position) {
 
 // Checks if you can move via move then moves via smart_move if not
 function moveToCoords(x, y) {
-    if (nearbyAggressors(60, true).length) {
-        kite();
-    } else if (can_move_to(x, y)) {
+    if (can_move_to(x, y)) {
         if (smart.moving) stop();
         move(x, y);
     } else if (is_moving(character)) {
@@ -123,9 +121,7 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, second = undefined) {
-    if (nearbyAggressors(60, true).length) {
-        kite();
-    } else if (!is_moving(character)){
+    if (!is_moving(character)){
         smart_move(destination, second);
     }
 }
