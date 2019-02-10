@@ -149,8 +149,8 @@ function bestItemEquip(item, bank = true) {
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
                 return;
             }
-            // If slotted item is less valuable unequip and equip the new item
-            if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && item_properties(slottedItem).level < item_properties(item).level)) {
+            // Compare gear score to slotted
+            if (getGearScore(character.ctype, item.name, item_properties(item).level) > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
                 if (bank) {
                     withdrawItem(item.name, item_properties(item).level);
                     game_log('Grabbing ' + itemInfo.name + ' from the bank.');
@@ -178,8 +178,8 @@ function bestItemEquip(item, bank = true) {
             equip(getInventorySlot(item.name, false, item_properties(item).level));
             return true;
         }
-        // If slotted item is less valuable unequip and equip the new item
-        if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === item.name && item_properties(slottedItem).level < item_properties(item).level)) {
+        // Compare gear score to slotted
+        if (getGearScore(character.ctype, item.name, item_properties(item).level) > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
             if (bank) {
                 withdrawItem(item.name, item_properties(item).level);
                 game_log('Grabbing ' + itemInfo.name + ' from the bank.');
@@ -191,4 +191,38 @@ function bestItemEquip(item, bank = true) {
             return true;
         }
     }
+}
+
+//Clear outdate scores
+if (localStorage.getItem('gearVersion') && localStorage.getItem('gearVersion') !== attributeVersion) localStorage.removeItem('gearVersion');
+
+//Gear Score
+function getGearScore(ctype, item, level = 0) {
+    if (!G.items[item] || !attributeWeights[ctype]) return;
+    if (!localStorage.getItem('gearScore')) return computeGearScore(ctype, item, level);
+    let stored = JSON.parse(localStorage.getItem('gearScore'));
+    let storedName = item + level;
+    if (stored[storedName]) return stored[storedName][ctype]; else return computeGearScore(ctype, item, level);
+}
+
+//Determine Gear Score
+function computeGearScore(ctype, item, level) {
+    let stored = {};
+    if (localStorage.getItem('gearScore')) stored = JSON.parse(localStorage.getItem('gearScore'));
+    let storedName = item + level;
+    let details = G.items[item];
+    stored[storedName] = {};
+    for (let key of Object.keys(attributeWeights)) {
+        let weights = attributeWeights[key];
+        let base = 0;
+        for (let atr of Object.keys(weights)) {
+            let itemAtr = details[atr] || 0;
+            let levelSteps = 0;
+            if (details['upgrade']) levelSteps = details['upgrade'][atr] || 0; else if (details['combine']) levelSteps = details['combine'][atr] || 0;
+            base += (weights[atr] * (itemAtr + (levelSteps * level)));
+        }
+        stored[storedName][key] = base
+    }
+    localStorage.setItem('gearScore', JSON.stringify(stored));
+    return stored[storedName][ctype];
 }

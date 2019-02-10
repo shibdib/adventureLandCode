@@ -30,6 +30,93 @@ let trashItems = ['firecrackers'];
 // Don't sell these
 let noSell = ['stand0', 'stand1', 'dragon'];
 
+// Change to force update of gear score
+let attributeVersion = 1;
+// Stat weights (1-10)
+let attributeWeights = {
+    'priest': {
+        "dex": 2,
+        "int": 10,
+        "vit": 5,
+        "str": 2,
+        "attack": 6,
+        "armor": 3,
+        "speed": 3,
+        "range": 7,
+        "crit": 2,
+        "evasion": 1,
+        "resistance": 5,
+        "rpiercing": 6,
+        "lifesteal": 1,
+        "stat": 2
+    },
+    'ranger': {
+        "dex": 10,
+        "int": 2,
+        "vit": 5,
+        "str": 3,
+        "attack": 9,
+        "armor": 3,
+        "speed": 6,
+        "range": 9,
+        "crit": 2,
+        "evasion": 1,
+        "resistance": 5,
+        "rpiercing": 1,
+        "lifesteal": 1,
+        "stat": 2
+    },
+    'warrior': {
+        "dex": 2,
+        "int": 2,
+        "vit": 8,
+        "str": 10,
+        "attack": 6,
+        "armor": 9,
+        "speed": 1,
+        "range": 2,
+        "crit": 2,
+        "evasion": 6,
+        "resistance": 5,
+        "rpiercing": 1,
+        "lifesteal": 6,
+        "stat": 2
+    },
+    'rogue': {
+        "dex": 10,
+        "int": 2,
+        "vit": 4,
+        "str": 3,
+        "attack": 9,
+        "armor": 4,
+        "speed": 8,
+        "range": 1,
+        "crit": 5,
+        "evasion": 5,
+        "resistance": 3,
+        "rpiercing": 1,
+        "lifesteal": 5,
+        "stat": 5
+    },
+    'overall': {
+        "dex": 5,
+        "int": 5,
+        "vit": 5,
+        "str": 5,
+        "attack": 5,
+        "armor": 5,
+        "speed": 5,
+        "range": 5,
+        "crit": 5,
+        "evasion": 5,
+        "resistance": 5,
+        "rpiercing": 5,
+        "lifesteal": 5,
+        "stat": 2
+    }
+};
+
+// Don't edit below this
 let states = {
     1: 'farm',
     2: 'banking',
