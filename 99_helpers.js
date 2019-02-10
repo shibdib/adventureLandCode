@@ -124,8 +124,8 @@ function sortEntitiesByDistance(array) {
 // Sort array of coord by distance
 function sortCoordsByDistance(array) {
     array.sort(function (current, next) {
-        let dist_current = distanceBetweenPoints(character.real_x, character.real_y, current.x, current.y);
-        let dist_next = distanceBetweenPoints(character.real_x, character.real_y, next.x, next.y);
+        let dist_current = distanceBetweenPoints(character.x, character.y, current.x, current.y);
+        let dist_next = distanceBetweenPoints(character.x, character.y, next.x, next.y);
         if (dist_current < dist_next) return -1; else if (dist_current > dist_next) return 1; else return 0;
     });
     return array;

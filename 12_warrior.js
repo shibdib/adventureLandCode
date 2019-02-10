@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, movingPull;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastPos;
 let xpTarget = 750;
 let lastCombat = Date.now();
 
@@ -27,6 +27,8 @@ setInterval(function () {
 }, 75);
 
 function farm() {
+    // Initial pos set
+    if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
     let party_aggro = checkPartyAggro();
@@ -64,7 +66,7 @@ function farm() {
         primary = party_aggro;
     } else if (!primary && getMonstersTargeting()[0]) {
         primary = getMonstersTargeting()[0];
-    } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
+    } else if (!primary && opportunisticTarget && distanceToPoint(lastPos.x, lastPos.y) < 5) {
         primary = opportunisticTarget;
     }
     // If you have a target deal with it
@@ -78,7 +80,7 @@ function farm() {
             pullAdds();
         } else {
             // Pull if he's attacking someone else
-            if (primary.target !== character.name) {
+            if (parent.party_list.includes(primary.target)) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
             } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
@@ -110,11 +112,9 @@ function pullAdds() {
 }
 
 // Refresh your target if the spawn is empty
-let farmWait, lastPos;
+let farmWait;
 function refreshTarget() {
     if (!currentTarget) return;
-    // Initial pos set
-    if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // Spot is crowded
     if (distanceToPoint(lastPos.x, lastPos.y) < 25 && getNearbyCharacters(200, true).length >= 4) {
         whisperParty('There is too many people farming here, so I will look for a new target.');
