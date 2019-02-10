@@ -21,6 +21,7 @@ function stateController(state) {
         }
     } //POTIONS
     else if (potionCheck()) {
+        whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
         new_state = 3;
     }
     //If state changed set it and announce
