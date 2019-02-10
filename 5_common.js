@@ -1,5 +1,5 @@
 // State controller
-let lastBankGearCheck, depositNeeded;
+let lastBankGearCheck;
 function stateController(state) {
     // Handle BIS
     let new_state = 1;
@@ -8,7 +8,7 @@ function stateController(state) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if (character.gold >= 50000 || openInventorySpots() < 30 || depositNeeded) {
+    else if (character.gold >= 50000 || openInventorySpots() < 30) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {

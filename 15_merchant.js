@@ -159,6 +159,11 @@ function exchangeStuff() {
                 }
                 localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
             }
+        } else {
+            lastBankCheck = undefined;
+            exchangeTarget = undefined;
+            exchangeNpc = undefined;
+            lastAttemptedExchange = Date.now();
         }
     }
 }
