@@ -26,7 +26,7 @@ function equipBIS() {
         if (!item || checked.includes(item.name)) continue;
         checked.push(item.name);
         if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
-        bestItemEquip(getHighestLevel(item.name));
+        bestItemEquip(item);
     }
 }
 
@@ -249,6 +249,7 @@ function bestItemEquip(item, bank = true) {
                 if (bank) withdrawItem(item.name, item_properties(item).level);
                 game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
+                depositItems();
                 return true;
             }
         }
@@ -269,6 +270,7 @@ function bestItemEquip(item, bank = true) {
             if (bank) withdrawItem(item.name, item_properties(item).level);
             game_log('Grabbing ' + itemInfo.name + ' from the bank.');
             equip(getInventorySlot(item.name, false, item_properties(item).level));
+            depositItems();
             return true;
         }
     }

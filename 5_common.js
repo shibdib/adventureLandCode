@@ -2,7 +2,6 @@
 let lastBankGearCheck, depositNeeded;
 function stateController(state) {
     // Handle BIS
-    equipBIS();
     let new_state = 1;
     //KIA
     if (character.rip) {
@@ -40,20 +39,18 @@ function stateTasks(state, combat) {
     } // DEAD
     if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
+        equipBIS();
         depositGold();
         depositItems();
-        depositNeeded = undefined;
         return true;
     }
     if (state === 3) { // POTION PICKUP
-        equipBIS();
         getPotions();
         return false;
     }
     if (state === 4) { // GEAR
         if (gearIssue()) {
             lastBankGearCheck = Date.now();
-            depositNeeded = true;
         }
         return true;
     }
