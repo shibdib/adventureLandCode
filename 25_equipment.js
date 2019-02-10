@@ -168,7 +168,7 @@ function bestItemEquip(item, bank = true) {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
-                depositItems();
+                if (bank) depositItems();
                 return true;
             }
         }
@@ -197,7 +197,7 @@ function bestItemEquip(item, bank = true) {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
              equip(getInventorySlot(item.name, false, item_properties(item).level));
-             depositItems();
+            if (bank) depositItems();
              return true;
         }
     }

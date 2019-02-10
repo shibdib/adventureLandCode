@@ -2,6 +2,7 @@
 let lastBankGearCheck;
 function stateController(state) {
     // Handle BIS
+    equipBIS();
     let new_state = 1;
     //KIA
     if (character.rip) {
