@@ -1,6 +1,6 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, theBook, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
+let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
     currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock;
 let spendingAmount = 10000000;
 let getItems = [];
@@ -131,6 +131,7 @@ function exchangeStuff() {
         }
         lastAttemptedExchange = Date.now();
     } else {
+        set_message('Exchanging');
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
             exchangeItem(exchangeTarget, exchangeNpc);
@@ -163,6 +164,7 @@ function exchangeStuff() {
 // Buy items for crafting
 function buyBaseItems() {
     if (lastRestock + 90000 > Date.now()) return;
+    set_message('Restocking');
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
     items:
@@ -199,6 +201,7 @@ function sellExcessToNPC() {
                 break;
         }
     } else if (sellItems.length) {
+        set_message('SellingNPC');
         let key = getInventorySlot(sellItems[0]);
         if (key) sell(getInventorySlot(sellItems[0]), 1);
         sellItems.shift();
@@ -230,6 +233,7 @@ function sellItemsToPlayers() {
                 if (!bankDetails[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
                 if (combineTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
                 if (upgradeTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
+                set_message('SellingPlayer');
                 if (getInventorySlot(slot.name, false, slot.level)) {
                     currentTask = undefined;
                     playerSale = undefined;
@@ -296,6 +300,7 @@ function combineItems() {
         }
         lastAttemptedCrafting = Date.now();
     } else {
+        set_message('Crafting');
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
         if (itemCount(currentItem, craftingLevel) >= needed) {
@@ -362,6 +367,7 @@ function crafting(task, componentSlot, scrollSlot) {
 
 //Get bank information
 function bookKeeping() {
+    set_message('Bookkeeping');
     closeStand();
     let bankDetails = {};
     if (character.map !== 'bank') {

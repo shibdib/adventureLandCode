@@ -1,4 +1,8 @@
+let equipTypes = ['weapon', 'shield', 'source', 'quiver', 'misc_offhand', 'ring', 'earring', 'belt', 'helmet', 'chest',
+    'pants', 'shoes', 'gloves', 'amulet', 'orb', 'elixir', 'cape'];
+
 let specialSlots = {
+    'weapon': ['mainhand', 'offhand'],
     'shield': 'offhand',
     'source': 'offhand',
     'quiver': 'offhand',
@@ -21,12 +25,13 @@ function equipBIS() {
         if (!item || item === null) continue;
         let itemInfo = G.items[item.name];
         if (itemInfo.wtype && !classItems[character.ctype].includes(itemInfo.wtype)) continue;
-        compareEquip(itemInfo, key, true);
+        bestItemEquip(item, true);
     }
 }
 
 //Get gear and make sure all slots are filled
 let gearNotify;
+
 function gearIssue() {
     if (!gearNotify) {
         whisperParty('Going to the bank to check if I can upgrade my gear and restock.');
@@ -36,21 +41,18 @@ function gearIssue() {
         shibMove('bank');
         return false;
     } else {
-        equipBIS();
+        let checked = [];
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
             for (let packKey in slot) {
-                let banker = slot[packKey];
-                if (!banker) continue;
-                let itemInfo = G.items[banker.name];
-                if (itemInfo && itemInfo.wtype && !classItems[character.ctype].includes(itemInfo.wtype)) continue;
-                itemInfo.iLevel = item_properties(banker).level;
-                compareEquip(itemInfo, packKey, false, Object.keys(character.user)[key]);
+                let item = slot[packKey];
+                if (!item || checked.includes(item.name)) continue;
+                checked.push(item.name);
+                if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
+                bestItemEquip(getHighestLevel(item.name));
             }
         }
-        equipBIS();
-        depositItems();
         return true;
     }
 }
@@ -81,6 +83,24 @@ function getInventorySlot(search, multiple = false, level = 0) {
     }
 }
 
+//Get the highest level of a certain item
+function getHighestLevel(itemName) {
+    let best, bestLevel;
+    for (let key in Object.values(character.user)) {
+        let bankTab = Object.values(character.user)[key];
+        if (!bankTab || !bankTab.length) continue;
+        for (let itemKey in bankTab) {
+            let item = bankTab[itemKey];
+            if (!item || item.name !== itemName || !G.items[itemName]) continue;
+            if (!best || item_properties(item).level > bestLevel) {
+                best = item;
+                bestLevel = item_properties(item).level;
+            }
+        }
+    }
+    return best;
+}
+
 //Count empty gear slots
 function countEmptyGear() {
     let count = 0;
@@ -93,6 +113,7 @@ function countEmptyGear() {
 //BANKING
 //Drop off gold
 let goldWithdrawNotify;
+
 function depositGold(amount = character.gold - 5000) {
     if (!goldWithdrawNotify) {
         whisperParty('I have way too much gold, brb.');
@@ -106,6 +127,7 @@ function depositGold(amount = character.gold - 5000) {
         goldWithdrawNotify = undefined;
     }
 }
+
 //Pick Up Gold
 function withdrawGold(amount) {
     if (character.map !== 'bank') {
@@ -116,8 +138,10 @@ function withdrawGold(amount) {
         bank_withdraw(amount);
     }
 }
-//Drop off items
+
+//Drop off all items
 let itemsNotify;
+
 function depositItems(potions = false) {
     if (!itemsNotify) {
         whisperParty('Running to the bank to drop off some loot, brb.');
@@ -138,6 +162,25 @@ function depositItems(potions = false) {
         }
     }
 }
+
+//Drop off all items
+function depositItem(item, level = undefined) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        if (character.ctype !== 'merchant') equipBIS();
+        for (let key in character.items) {
+            let item = character.items[key];
+            if (!item || item === null) continue;
+            let itemInfo = G.items[item.name];
+            if (!potions && itemInfo.type === 'pot') continue;
+            if (itemInfo.type === 'stand') continue;
+            bank_store(key);
+        }
+    }
+}
+
 //Withdraw Item
 function withdrawItem(target, level = undefined) {
     if (character.map !== 'bank') {
@@ -160,8 +203,10 @@ function withdrawItem(target, level = undefined) {
         return null;
     }
 }
+
 //Pick Up Potions
 let requestOnce;
+
 function getPotions() {
     if (moveToMerchant()) {
         let merchant;
@@ -185,7 +230,7 @@ function getPotions() {
                     }
                 }
                 if (Object.keys(need).length && (!requestOnce || requestOnce + 10000 < Date.now())) {
-                    send_cm(merchant.name,need);
+                    send_cm(merchant.name, need);
                     pm(merchant.name, 'Send potions please!');
                     requestOnce = Date.now();
                 }
@@ -194,12 +239,15 @@ function getPotions() {
     }
 }
 
-//Reused functions
-//Gear compare
-function compareEquip(itemInfo, key, don = false, pack){
+// Grabs an item from the bank if it's potentially better;
+function bestItemEquip(item, bank = true) {
+    game_log(1)
+    if (!item) return;
+    let itemInfo = G.items[item.name];
     // Check if slot doesn't match type
     let itemSlot = itemInfo.type;
     if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
+    if (itemInfo.type === 'weapon' && character.ctype !== 'rogue') itemSlot = 'mainhand';
     // Handle ears and rings
     if (Array.isArray(itemSlot)) {
         for (let slot of itemSlot) {
@@ -209,16 +257,16 @@ function compareEquip(itemInfo, key, don = false, pack){
             if (slottedItem === undefined) return;
             // If slot is empty equip
             if (slottedItem === null) {
-                if (don) equip(key); else bankItemWithdraw(key, pack);
-                if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + slot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                if (bank) withdrawItem(item.name, item_properties(item).level);
+                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                equip(getInventorySlot(item.name, false, item_properties(item).level));
                 return;
             }
-            slottedItem.iLevel = item_properties(slottedItem).level;
             // If slotted item is less valuable unequip and equip the new item
-            if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
-                if (don) unequip(slot);
-                if (don) equip(key); else bankItemWithdraw(key, pack);
-                if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && item_properties(slottedItem).level < item_properties(item).level)) {
+                if (bank) withdrawItem(item.name, item_properties(item).level);
+                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                equip(getInventorySlot(item.name, false, item_properties(item).level));
                 return true;
             }
         }
@@ -229,16 +277,17 @@ function compareEquip(itemInfo, key, don = false, pack){
         if (slottedItem === undefined) return;
         // If slot is empty equip
         if (slottedItem === null) {
-            if (don) equip(key); else bankItemWithdraw(key, pack);
-            if (don) game_log('Equipping ' + itemInfo.name + ' in the ' + itemSlot + ' position.'); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            if (bank) withdrawItem(item.name, item_properties(item).level);
+            game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            equip(getInventorySlot(item.name, false, item_properties(item).level));
             return true;
         }
-        slottedItem.iLevel = item_properties(slottedItem).level;
         // If slotted item is less valuable unequip and equip the new item
-        if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && slottedItem.iLevel < itemInfo.iLevel)) {
-            if (don) unequip(itemSlot);
-            if (don) equip(key); else bankItemWithdraw(key, pack);
-            if (don) game_log('Equipping ' + itemInfo.name + ' in place of ' + slottedItem.name); else game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+        if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === item.name && item_properties(slottedItem).level < item_properties(item).level)) {
+            if (bank) withdrawItem(item.name, item_properties(item).level);
+            game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            equip(getInventorySlot(item.name, false, item_properties(item).level));
+            deposit()
             return true;
         }
     }

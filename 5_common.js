@@ -1,5 +1,5 @@
 // State controller
-let lastBankGearCheck;
+let lastBankGearCheck, depositNeeded;
 function stateController(state) {
     // Handle BIS
     equipBIS();
@@ -9,7 +9,7 @@ function stateController(state) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if (character.gold >= 50000 || openInventorySpots() < 30) {
+    else if (character.gold >= 50000 || openInventorySpots() < 30 || depositNeeded) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
@@ -40,9 +40,9 @@ function stateTasks(state, combat) {
     } // DEAD
     if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
-        equipBIS();
         depositGold();
         depositItems();
+        depositNeeded = undefined;
         return true;
     }
     if (state === 3) { // POTION PICKUP
@@ -51,7 +51,10 @@ function stateTasks(state, combat) {
         return false;
     }
     if (state === 4) { // GEAR
-        if (gearIssue()) lastBankGearCheck = Date.now();
+        if (gearIssue()) {
+            lastBankGearCheck = Date.now();
+            depositNeeded = true;
+        }
         return true;
     }
 }
