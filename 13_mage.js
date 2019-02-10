@@ -57,7 +57,7 @@ function farm() {
 function blink_to_leader() {
     if (parent.party_list.length > 0 && character.max_mp > 1600) {
         let leader = get_player(character.party);
-        if (!leader || !distanceToPoint(target.real_x, target.real_y) || distanceToPoint(target.real_x, target.real_y) > 1000) {
+        if (!leader) {
             if (character.mp < 1600) {
                 use('use_mp');
             } else {
@@ -70,6 +70,9 @@ function blink_to_leader() {
 
 function get_teleport_target() {
     if (parent.party_list.length > 0) {
+        let leader = get_player(character.party);
+        // Don't teleport unless you're with the party;
+        if (!leader || parent.distance(character, leader) > 250) return;
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let entity = parent.entities[member];
