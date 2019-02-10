@@ -5,8 +5,13 @@ add_bottom_button(1, 'Update Code', function () {
 add_bottom_button(2, 'Refresh Party', function () {
     refreshCharacters(true)
 });
+// Clear Drawings
+setInterval(function () {
+    clear_drawings();
+}, 30);
 // Interval stuff
 setInterval(function () {
+    clear_drawings();
     if (character.ctype !== 'merchant') update_dpsmeter();
     //if (character.ctype === 'merchant' || showBank) showBankInfo();
 }, 100);

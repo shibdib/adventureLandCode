@@ -119,6 +119,10 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, second = undefined) {
+    if (nearbyAggressors(70, true).length) {
+        if (smart.moving) stop('move');
+        kite();
+    }
     if (!is_moving(character)){
         smart_move(destination, second);
     }
@@ -193,6 +197,7 @@ function kite() {
         }
     }
     if (!safePositions.length) return;
+    if (nearest) draw_circle(nearest.x, nearest.y, nearest.range, 3, '#b30000');
     let sorted = sortCoordsByDistance(safePositions);
     if (smart.moving) stop('move');
     move(sorted[0].x, sorted[0].y);

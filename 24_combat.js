@@ -97,9 +97,11 @@ function checkPartyAggro() {
 }
 
 // Check for monsters nearby who will aggro
-function nearbyAggressors() {
+function nearbyAggressors(range = 215, highRisk) {
+    let attackCutoff = 20;
+    if (highRisk) attackCutoff = character.hp * 0.1;
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
-        G.monsters[mob.mtype].aggro && parent.distance(character, mob) <= 215);
+        G.monsters[mob.mtype].aggro && G.monsters[mob.mtype].attack >= attackCutoff && parent.distance(character, mob) <= range);
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
 }

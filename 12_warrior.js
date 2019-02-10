@@ -52,7 +52,11 @@ function farm() {
     combat = party_aggro;
     let mainTarget;
     if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
+    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, mainTarget.range, 3, '#ffbf00');
     let opportunisticTarget = getEasyKills(false)[0];
+    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, opportunisticTarget.range, 3, '#00ffff');
+    let secondaryTarget = getSecondary();
+    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, secondaryTarget.range, 3, '#00e639');
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         if (getMonstersTargeting()[0]) {
@@ -76,25 +80,20 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
-            tackle(primary);
+            if (secondaryTarget && primary.target === character.name) tackle(secondaryTarget); else tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target)) {
-                game_log(21)
                 tackle(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
-                game_log(23)
                 tackle(primary);
             } else if (smart.moving) {
-                game_log(24)
                 stop('move');
             } else {
-                game_log(25)
                 kite();
             }
         }
     } else {
-        game_log(11)
         tackling = undefined;
         if (currentTarget) {
             shibMove(currentTarget);
@@ -103,7 +102,7 @@ function farm() {
 }
 
 // Pull additional monsters
-function pullAdds() {
+function getSecondary() {
     let currentThreats = getMonstersTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
@@ -111,9 +110,8 @@ function pullAdds() {
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
     if (state !== 1 || (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.125) || currentThreats.length > 2) return;
-    if (possibleAdds.length && distanceToEntity(possibleAdds[0]) < 200) {
-        tackle(possibleAdds[0], false);
-        return true;
+    if (possibleAdds.length) {
+        return possibleAdds[0];
     }
 }
 
@@ -139,7 +137,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 25) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && lastCombat && lastCombat + 5000 < Date.now()) {
         if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (farmWait + cutoff < Date.now()) {
@@ -179,7 +177,6 @@ function slowestMan() {
 //Tackle a target
 function tackle(target, slowMove = true) {
     lastCombat = Date.now();
-    pullAdds();
     tackling = true;
     if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
     if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
