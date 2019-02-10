@@ -1,6 +1,6 @@
 // Handle moving to a target
 // TODO: send_cm/on_cm stuff for map change
-function moveToTarget(target, min = 0, max = 0) {
+function moveToTarget(target, min = 0, max = character.range * 0.9) {
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
     // If range is good stay

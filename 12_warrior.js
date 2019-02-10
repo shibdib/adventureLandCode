@@ -52,7 +52,7 @@ function farm() {
     combat = party_aggro;
     let mainTarget;
     if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
-    let opportunisticTarget = getEasyKills(false);
+    let opportunisticTarget = getEasyKills(false)[0];
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         if (getMonstersTargeting()[0]) {
@@ -71,26 +71,30 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
+        game_log(primary.name)
+        game_log(22)
         // Warcry
         if (can_use('warcry')) use('warcry');
-        // Pull more if we can handle it
         if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
-            lastCombat = Date.now();
-            attack(primary);
-            pullAdds();
+            tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target)) {
-                if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
+                game_log(21)
+                tackle(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
+                game_log(23)
                 tackle(primary);
             } else if (smart.moving) {
+                game_log(24)
                 stop('move');
             } else {
+                game_log(25)
                 kite();
             }
         }
     } else {
+        game_log(11)
         tackling = undefined;
         if (currentTarget) {
             shibMove(currentTarget);
@@ -174,8 +178,13 @@ function slowestMan() {
 
 //Tackle a target
 function tackle(target, slowMove = true) {
+    lastCombat = Date.now();
+    pullAdds();
     tackling = true;
-    if (can_use('taunt', target)) use('taunt', target); else if (can_use('charge', target)) use('charge', target); else if (can_attack(target)) attack(target); else if (slowMove) moveToTarget(target);
+    if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
+    if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
+    if (can_attack(target)) attack(target);
+    if (slowMove) moveToTarget(target);
 }
 
 ///
