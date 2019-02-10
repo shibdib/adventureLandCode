@@ -137,19 +137,12 @@ function exchangeStuff() {
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
             exchangeItem(exchangeTarget, exchangeNpc);
-            if (itemCount(exchangeTarget) < exchangeAmount) {
-                lastBankCheck = undefined;
-                exchangeTarget = undefined;
-                exchangeNpc = undefined;
-                lastAttemptedExchange = undefined;
-            }
         } else if (bankDetails[exchangeTarget] >= exchangeAmount) {
             let withdraw = withdrawItem(exchangeTarget);
-            if (withdraw === null && !itemCount(exchangeTarget)) {
-                bankDetails[exchangeTarget] = undefined;
+            if (withdraw === null) {
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
-                exchangeStuff();
+                lastBankCheck = undefined;
                 lastAttemptedExchange = Date.now();
             } else if (withdraw) {
                 if (bankDetails[exchangeTarget] - 1 === 0) {
