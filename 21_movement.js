@@ -10,12 +10,7 @@ function moveToTarget(target, min = 0, max = 0) {
     // If moving continue
     if (is_moving(character)) return;
     // Handle different map
-    if (localStorage.getItem('leaderMap') && localStorage.getItem('leaderMap') !== character.map) {
-        let leaderMap = localStorage.getItem('leaderMap');
-        return shibMove(leaderMap);
-    } else if (!localStorage.getItem('leaderMap')) {
-        return send_cm(character.party, {type: 'requestMap'});
-    }
+    if (getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
@@ -39,12 +34,7 @@ function moveToLeader(min = 20, max = 25) {
     // Handle bank
     if (parent.party[character.party].map === 'bank') return shibMove('main');
     // Handle different map
-    if (localStorage.getItem('leaderMap') && localStorage.getItem('leaderMap') !== character.map) {
-        let leaderMap = localStorage.getItem('leaderMap');
-        return shibMove(leaderMap);
-    } else if (!localStorage.getItem('leaderMap')) {
-        return send_cm(character.party, {type: 'requestMap'});
-    }
+    if (getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);

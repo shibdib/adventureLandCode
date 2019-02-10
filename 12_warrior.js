@@ -11,12 +11,13 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
+    // Update your data
+    updateCharacterData();
     if (character.rip) {
         primary = undefined;
         currentTarget = undefined;
         state = 99;
     }
-    if (!localStorage.getItem('leaderMap') || localStorage.getItem('leaderMap') !== character.map) localStorage.setItem('leaderMap', character.map);
     if (!state) return;
     if (checkPartyAggro() || getMonstersTargeting()[0] || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);

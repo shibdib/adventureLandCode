@@ -9,6 +9,8 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
+    // Update your data
+    updateCharacterData();
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);

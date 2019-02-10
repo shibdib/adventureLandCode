@@ -151,3 +151,34 @@ function refreshCharacters(force = false) {
         }
     }
 }
+
+// Store my character data
+function updateCharacterData() {
+    // Get or create data
+    let currentData = {};
+    if (localStorage.getItem('myDetails')) currentData = JSON.parse(localStorage.getItem('myDetails'));
+    // Store data
+    let combat = getMonstersTargeting().length > 0;
+    currentData[character.name] = {
+        name: character.name,
+        hp: character.hp,
+        maxHp: character.max_hp,
+        mp: character.mp,
+        maxMp: character.max_mp,
+        xp: character.xp,
+        maxXp: character.max_xp,
+        map: character.map,
+        x: character.real_x,
+        y: character.real_y,
+        target: character.target,
+        combat: combat
+    };
+    localStorage.setItem('myDetails', JSON.stringify(currentData));
+}
+
+// Recall my character data
+function getCharacterData() {
+    let currentData = {};
+    if (localStorage.getItem('myDetails')) currentData = JSON.parse(localStorage.getItem('myDetails'));
+    return currentData;
+}

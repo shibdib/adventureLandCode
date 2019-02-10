@@ -13,6 +13,8 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
+    // Update your data
+    updateCharacterData();
     if (character.rip) state = 99;
     if (!state) return;
     if (!merchantStateTasks(state)) merch();
