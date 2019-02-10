@@ -54,6 +54,6 @@ function farm() {
         // Speedy rogue
         if (can_use('rspeed', character)) use('rspeed', character);
         if (getEasyKills().length) attack(getEasyKills()[0]);
-        if (!kiting) moveToLeader(character.range * 0.5, character.range * 0.7);
+        if (!kiting) moveToLeader();
     }
 }

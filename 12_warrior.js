@@ -79,7 +79,7 @@ function farm() {
         primary = opportunisticTarget;
         currentTarget.push(opportunisticTarget.mtype);
         lastCombat = Date.now();
-    } else if (primary) {
+    } else if (primary && waitForHealer()) {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
@@ -88,8 +88,8 @@ function farm() {
             lastCombat = Date.now();
             attack(primary);
         } else {
-            // If waiting on the healer don't pull and make sure you're not in range of aggro
-            if (waitForHealer() && primary.target !== character.name) {
+            // Pull if he's attacking someone else
+            if (primary.target !== character.name) {
                 primary = undefined;
                 if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
                     kiting = true;
