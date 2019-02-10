@@ -58,7 +58,6 @@ function farm() {
             if (!kiting) moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        if (getEasyKills().length) attack(getEasyKills()[0]);
         if (!kiting) moveToLeader();
     }
 }

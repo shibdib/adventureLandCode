@@ -43,16 +43,16 @@ function farm() {
         target = findBestMonster(1000 * (character.level / 2));
         if (target) {
             farmWait = undefined;
-            currentTarget = [target];
+            currentTarget = target;
             game_log('New target is a ' + target);
-            whisperParty('Lets go kill ' + currentTarget[0] + "'s.");
+            whisperParty('Lets go kill ' + currentTarget + "'s.");
             stop();
         }
     }
     // Handle the healer disappearing
     if (character.hp < character.max_hp * 0.5)
     // Handle target refreshing
-    if (waitForHealer()) refreshTarget();
+    if (!waitForHealer()) refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget;
@@ -67,19 +67,13 @@ function farm() {
             primary = mainTarget;
         }
     }
-    if (party_aggro && (party_aggro.target !== character.name || character.target !== party_aggro.name) &&
-        (!primary || primary.name !== party_aggro.name) && (!getEasyKills().length || !getEasyKills().includes(party_aggro.mtype))) {
+    if (party_aggro && character.target !== party_aggro.name) {
         stop('move');
         primary = party_aggro;
     } else if (!primary && getMonstersTargeting()[0]) {
-        //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = getMonstersTargeting()[0];
-        lastCombat = Date.now();
     } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
-        //if (Math.random() < 0.3) whisperParty('Time to kill something, targeting the ' + opportunisticTarget.mtype + ' over there.');
         primary = opportunisticTarget;
-        currentTarget.push(opportunisticTarget.mtype);
-        lastCombat = Date.now();
     } else if (primary && waitForHealer()) {
         // Warcry
         if (can_use('warcry')) use('warcry');
@@ -104,11 +98,10 @@ function farm() {
                 tackle(primary);
             }
         }
-    } else if (!party_aggro) {
+    } else {
         tackling = undefined;
-        if (getEasyKills().length) attack(getEasyKills()[0]);
-        if (currentTarget[0]) {
-            shibMove(currentTarget[0]);
+        if (currentTarget) {
+            shibMove(currentTarget);
         }
     }
 }
@@ -130,13 +123,12 @@ function pullAdds() {
 
 // Refresh your target if the spawn is empty
 let farmWait, lastPos;
-
 function refreshTarget() {
     if (!currentTarget) return;
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     // Spot is crowded
-    if (lastCombat && lastCombat + 5000 < Date.now() && getNearbyCharacters(200, true).length > 4) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && getNearbyCharacters(200, true).length >= 4) {
         whisperParty('There is too many people farming here, so I will look for a new target.');
         lastCombat = Date.now();
         primary = undefined;
@@ -153,7 +145,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && lastCombat && lastCombat + 25000 < Date.now()) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 25) {
         if (!farmWait) farmWait = Date.now();
         let cutoff = 20000; // Wait 20 seconds
         if (farmWait + cutoff < Date.now()) {
