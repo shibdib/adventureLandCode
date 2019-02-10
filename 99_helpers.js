@@ -55,7 +55,7 @@ function on_party_request(name) {
 
 // Fix party runners
 function on_party_invite(name) {
-    accept_party_request(name);
+    accept_party_invite(name);
 }
 
 // Check if entity has a buff

@@ -12,7 +12,7 @@ function stateController(state) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
-        if (!state && !lastBankGearCheck && Math.random() > 0.5) {
+        if (!state && !lastBankGearCheck && Math.random() > 0.2) {
             lastBankGearCheck = Date.now();
             new_state = 1;
         } else {
