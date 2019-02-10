@@ -8,7 +8,7 @@ function moveToTarget(target, min = 0, max = character.range * 0.9) {
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
     // If moving continue
-    if (is_moving(character)) return;
+    if (smart.moving) return;
     // Handle different map
     if (getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
@@ -36,7 +36,7 @@ function moveToLeader(min = 20, max = 25) {
         return stop();
     }
     // If moving continue
-    if (is_moving(character)) return;
+    if (smart.moving) return;
     // Handle bank
     if (parent.party[character.party].map === 'bank') return shibMove('main');
     // Handle different map
@@ -119,11 +119,9 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, second = undefined) {
-    if (nearbyAggressors(70, true).length) {
-        if (smart.moving) stop('move');
+    if (nearbyAggressors(75, true).length) {
         kite();
-    }
-    if (!is_moving(character)){
+    } else if (!is_moving(character)){
         smart_move(destination, second);
     }
 }
@@ -174,33 +172,35 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
 }
 
 // Stay safe
-function kite() {
-    let nearbyHostiles = nearbyAggressors();
+function kite(target = undefined) {
+    let nearbyHostiles = nearbyAggressors(character.range * 1.25, true);
     if (!nearbyHostiles.length) return;
     // Check if we should move
-    let currentClosestAvoid, maxRange, nearest;
+    let currentClosestAvoid, nearest;
     for (let avoid of nearbyHostiles) {
         let currentAvoidRange = distanceBetweenPoints(character.real_x, character.real_y, avoid.real_x, avoid.real_y);
         if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) {
             nearest = avoid;
             currentClosestAvoid = currentAvoidRange;
         }
-        if (G.monsters[avoid.mtype] && (!maxRange || maxRange < G.monsters[avoid.mtype].range)) maxRange = G.monsters[avoid.mtype].range;
     }
-    if (!nearest || currentClosestAvoid >= maxRange) return;
-    let safePositions = [];
-    for (let x = 0; x < 1500; x++) {
-        let xChange = getRndInteger(-150, 150);
-        let yChange = getRndInteger(-150, 150);
-        if (can_move_to(character.real_x + xChange, character.real_y + yChange) && distanceBetweenPoints(character.real_x, character.real_y, nearest.real_x, nearest.real_y) >= maxRange * 1.05) {
-            safePositions.push({x: character.real_x + xChange, y: character.real_y + yChange})
-        }
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 3) return;
+    draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 3, 1, '#b30000');
+    let angle = CalcAngle(character.real_x, character.real_y, nearest.real_x, nearest.real_y);
+    let x = Math.cos(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
+    let y = Math.sin(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
+    if (can_move_to(character.real_x + x, character.real_y + y)) {
+        return moveToCoords(character.real_x + x, character.real_y + y);
+    } else {
+        let randX = getRndInteger(-10, 10);
+        let randY = getRndInteger(-10, 10);
+        return moveToCoords(character.real_x + x + randX, character.real_y + y + randY);
     }
-    if (!safePositions.length) return;
-    if (nearest) draw_circle(nearest.x, nearest.y, nearest.range, 3, '#b30000');
-    let sorted = sortCoordsByDistance(safePositions);
-    if (smart.moving) stop('move');
-    move(sorted[0].x, sorted[0].y);
+}
+
+// Calc angle for kiting https://stackoverflow.com/a/53838484
+function CalcAngle(px, py, ax, ay) {
+    return Math.atan((ax-px)/(ay-py));
 }
 
 // Try to move tackled away from other threats

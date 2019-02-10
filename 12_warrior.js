@@ -75,8 +75,6 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
-        game_log(primary.name)
-        game_log(22)
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
@@ -87,8 +85,6 @@ function farm() {
                 tackle(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
-            } else if (smart.moving) {
-                stop('move');
             } else {
                 kite();
             }

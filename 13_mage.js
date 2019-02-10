@@ -34,7 +34,6 @@ function farm() {
     if (teleport_target && can_use('magiport')) {
         if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
     } else if (target) {
-        let range = distanceToPoint(target.real_x, target.real_y);
         // Energize the party
         if (can_use('energize')) randomEnergize();
         if (can_attack(target) && (checkTankAggro() || canOneShot(target))) {
@@ -44,7 +43,7 @@ function farm() {
             }
             // Attack
             attack(target);
-            kite();
+            kite(target);
         } else {
             // If you need to kite do so, otherwise get in range
             moveToTarget(target, character.range * 0.5, character.range * 0.99);

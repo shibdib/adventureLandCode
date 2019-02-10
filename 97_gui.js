@@ -8,13 +8,13 @@ add_bottom_button(2, 'Refresh Party', function () {
 // Clear Drawings
 setInterval(function () {
     clear_drawings();
-}, 30);
+}, 300);
 // Interval stuff
 setInterval(function () {
     clear_drawings();
     if (character.ctype !== 'merchant') update_dpsmeter();
     //if (character.ctype === 'merchant' || showBank) showBankInfo();
-}, 100);
+}, 110);
 
 //Spadar DPS
 init_dpsmeter(5)

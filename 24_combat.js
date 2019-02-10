@@ -34,7 +34,7 @@ function findBestMonster(minXp, array = false) {
             let entity = parent.entities[member];
             // Don't count merchants
             if (!entity || entity.ctype === 'merchant') continue;
-            maxAttack += entity.attack * 0.06;
+            maxAttack += entity.attack * 0.036;
         }
     }
         // Make G.maps an array
