@@ -20,12 +20,13 @@ let classItems = {
 
 // Cycles thru inventory and equips bis
 function equipBIS() {
+    let checked = [];
     for (let key in character.items) {
         let item = character.items[key];
-        if (!item || item === null) continue;
-        let itemInfo = G.items[item.name];
-        if (itemInfo.wtype && !classItems[character.ctype].includes(itemInfo.wtype)) continue;
-        bestItemEquip(item, true);
+        if (!item || checked.includes(item.name)) continue;
+        checked.push(item.name);
+        if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
+        bestItemEquip(getHighestLevel(item.name));
     }
 }
 
@@ -268,7 +269,6 @@ function bestItemEquip(item, bank = true) {
             if (bank) withdrawItem(item.name, item_properties(item).level);
             game_log('Grabbing ' + itemInfo.name + ' from the bank.');
             equip(getInventorySlot(item.name, false, item_properties(item).level));
-            deposit()
             return true;
         }
     }
