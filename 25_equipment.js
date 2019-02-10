@@ -2,7 +2,6 @@ let equipTypes = ['weapon', 'shield', 'source', 'quiver', 'misc_offhand', 'ring'
     'pants', 'shoes', 'gloves', 'amulet', 'orb', 'elixir', 'cape'];
 
 let specialSlots = {
-    'weapon': ['mainhand', 'offhand'],
     'shield': 'offhand',
     'source': 'offhand',
     'quiver': 'offhand',
@@ -18,7 +17,7 @@ function equipBIS() {
         let item = character.items[key];
         if (!item || checked.includes(item.name)) continue;
         checked.push(item.name);
-        if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
+        if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
         bestItemEquip(item, false);
     }
 }
@@ -37,7 +36,7 @@ function gearIssue() {
                 let item = slot[packKey];
                 if (!item || checked.includes(item.name)) continue;
                 checked.push(item.name);
-                if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
+                if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
                 bestItemEquip(getHighestLevel(item.name));
             }
         }
@@ -122,12 +121,26 @@ function bestItemEquip(item, bank = true) {
     // Check if slot doesn't match type
     let itemSlot = itemInfo.type;
     if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
-    // Handle disallowed mainhand
-    if (itemSlot === 'mainhand' && !G.class[character.ctype].mainhand.includes(itemInfo.wtype)) return;
+    // Handle weapons
+    if (itemInfo.type === 'weapon') {
+        // Not allowed
+        if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && !G.classes[character.ctype].doublehand.includes(itemInfo.wtype) && !G.classes[character.ctype].offhand.includes(itemInfo.wtype)) return;
+        // Either hand
+        if (G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)){
+            itemSlot = ['mainhand', 'offhand']
+        } // 2 hander
+        else if (G.classes[character.ctype].doublehand.includes(itemInfo.wtype)) {
+            itemSlot = 'mainhand'
+        } // Offhand only?
+        else if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)) {
+            itemSlot = 'offhand'
+        } // All other
+        else {
+            itemSlot = 'mainhand'
+        }
+    }
     // Handle holding a 2 hander
-    if (itemSlot === 'offhand' && character.slots['mainhand'] && G.class[character.ctype].doublehand && G.class[character.ctype].doublehand.includes(G.items[character.slots['mainhand'].name].wtype)) return;
-    // Handle disallowed offhand
-    if (itemSlot === 'offhand' && !G.class[character.ctype].offhand.includes(itemInfo.wtype)) return;
+    if ((itemSlot === 'offhand' || (Array.isArray(itemSlot) && itemSlot.includes('offhand'))) && character.slots['mainhand'] && G.classes[character.ctype].doublehand && G.classes[character.ctype].doublehand.includes(G.items[character.slots['mainhand'].name].wtype)) return;
     // Handle ears and rings
     if (Array.isArray(itemSlot)) {
         for (let slot of itemSlot) {
@@ -177,21 +190,24 @@ function bestItemEquip(item, bank = true) {
         }
         // Compare gear score to slotted
         if (getGearScore(character.ctype, item.name, item_properties(item).level) > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
-            if (bank) {
-                withdrawItem(item.name, item_properties(item).level);
-                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-            } else {
-                game_log('Equipping ' + itemInfo.name + '.');
-            }
-            equip(getInventorySlot(item.name, false, item_properties(item).level));
-            depositItems();
-            return true;
+             if (bank) {
+                    withdrawItem(item.name, item_properties(item).level);
+                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                } else {
+                    game_log('Equipping ' + itemInfo.name + '.');
+                }
+             equip(getInventorySlot(item.name, false, item_properties(item).level));
+             depositItems();
+             return true;
         }
     }
 }
 
 //Clear outdate scores
-if (localStorage.getItem('gearVersion') && localStorage.getItem('gearVersion') !== attributeVersion) localStorage.removeItem('gearVersion');
+if (localStorage.getItem('gearVersion') && localStorage.getItem('gearVersion') !== attributeVersion) {
+    localStorage.removeItem('gearVersion');
+    localStorage.setItem('gearVersion', attributeVersion);
+}
 
 //Gear Score
 function getGearScore(ctype, item, level = 0) {
