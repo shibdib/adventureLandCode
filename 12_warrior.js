@@ -99,9 +99,18 @@ function farm() {
             }
         }
     } else {
-        tackling = undefined;
-        if (currentTarget) {
-            shibMove(currentTarget);
+        // If we have a target but no healer
+        if (primary) {
+            if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
+                moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
+            } else {
+                stop();
+            }
+        } else {
+            tackling = undefined;
+            if (currentTarget) {
+                shibMove(currentTarget);
+            }
         }
     }
 }
