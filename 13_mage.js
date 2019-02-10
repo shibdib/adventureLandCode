@@ -44,6 +44,7 @@ function farm() {
             // Attack
             attack(target);
             kite(target);
+            moveToTarget(target, character.range * 0.5, character.range * 0.99);
         } else {
             // If you need to kite do so, otherwise get in range
             moveToTarget(target, character.range * 0.5, character.range * 0.99);

@@ -44,6 +44,7 @@ function farm() {
             // Use revive as a mega heal
             use('revive', lowest_health);
             kite();
+            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         } else {
             moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
@@ -58,6 +59,7 @@ function farm() {
             // Heal
             heal(lowest_health);
             kite();
+            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         } else {
             moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
         }
