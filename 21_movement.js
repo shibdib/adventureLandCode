@@ -177,10 +177,7 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
 
 // Stay safe
 function kite(target = undefined) {
-    let tankTarget;
     let nearbyHostiles = nearbyAggressors(character.range * 1.25, true);
-    if (get_player(character.party)) tankTarget = get_target_of(get_player(character.party));
-    nearbyHostiles.push(tankTarget);
     if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;
@@ -197,8 +194,10 @@ function kite(target = undefined) {
     let x = Math.cos(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
     let y = Math.sin(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
     if (can_move_to(character.real_x + x, character.real_y + y)) {
+        if (smart.moving) stop('move');
         return moveToCoords(character.real_x + x, character.real_y + y);
     } else {
+        if (smart.moving) stop('move');
         let randX = getRndInteger(-10, 10);
         let randY = getRndInteger(-10, 10);
         return moveToCoords(character.real_x + x + randX, character.real_y + y + randY);

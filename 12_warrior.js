@@ -50,11 +50,11 @@ function farm() {
     combat = party_aggro;
     let mainTarget;
     if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
-    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, mainTarget.range, 3, '#ffbf00');
+    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, mainTarget.range * 3, 3, '#ffbf00');
     let opportunisticTarget = getEasyKills(false)[0];
-    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, opportunisticTarget.range, 3, '#00ffff');
+    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, opportunisticTarget.range * 3, 3, '#00ffff');
     let secondaryTarget = getSecondary();
-    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, secondaryTarget.range, 3, '#00e639');
+    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, secondaryTarget.range * 3, 3, '#00e639');
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         if (getMonstersTargeting()[0]) {
@@ -76,7 +76,7 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
-            if (secondaryTarget && primary.target === character.name) tackle(secondaryTarget); else tackle(primary);
+            if (secondaryTarget && primary.target === character.name) tackle(secondaryTarget, false); else tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target)) {

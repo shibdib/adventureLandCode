@@ -49,6 +49,6 @@ function farm() {
             moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        moveToLeader();
+        if (!combat) moveToLeader(); else moveToLeader(character.range * 0.425, character.range * 0.99);
     }
 }
