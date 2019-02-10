@@ -46,8 +46,6 @@ function farm() {
     }
     // Handle the healer disappearing
     if (character.hp < character.max_hp * 0.5)
-    // Handle target refreshing
-    refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     let mainTarget;
@@ -90,6 +88,8 @@ function farm() {
             }
         }
     } else {
+        // Handle target refreshing
+        refreshTarget();
         tackling = undefined;
         if (currentTarget) {
             shibMove(currentTarget);
@@ -115,14 +115,6 @@ function getSecondary() {
 let farmWait;
 function refreshTarget() {
     if (!currentTarget) return;
-    // Spot is crowded
-    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && getNearbyCharacters(200, true).length >= 4) {
-        whisperParty('There is too many people farming here, so I will look for a new target.');
-        lastCombat = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        return;
-    }
     // If it's been a REALLY long time we probably bugged out so refresh
     if (lastCombat && lastCombat + 180000 < Date.now()) {
         whisperParty('We have not been in combat for 3 minutes, going to head to town and figure this out.');
@@ -133,14 +125,23 @@ function refreshTarget() {
         return shibMove('main');
     }
     // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 25 && lastCombat && lastCombat + 5000 < Date.now()) {
+    if (distanceToPoint(lastPos.x, lastPos.y) < 5) {
+        let cutoff = 10000; // Wait 10 seconds
+        let msg = 'There are no ' + currentTarget + "'s here, so time for a new target.";
+        // Spot is crowded
+        if (getNearbyCharacters(200, true).length >= 4) {
+            cutoff = 5000;
+            msg = 'There is too many people farming here, so I will look for a new target.';
+        }
         if (!farmWait) farmWait = Date.now();
-        let cutoff = 20000; // Wait 20 seconds
-        if (farmWait + cutoff < Date.now()) {
-            whisperParty('There are no ' + currentTarget + "'s here, so time for a new target.");
+        game_log('Target Reset Timeout In ' + (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) + ' Seconds.');
+        if ((farmWait + cutoff) - Date.now() <= 0) {
+            whisperParty(msg);
             lastCombat = Date.now();
             primary = undefined;
             currentTarget = undefined;
+            farmWait = undefined;
+            return;
         }
     } else {
         farmWait = undefined;

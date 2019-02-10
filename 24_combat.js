@@ -42,7 +42,7 @@ function findBestMonster(minXp, array = false) {
     let monsterTypes = [];
     // Get all monster types from G.maps
     for (let key of maps) {
-        if (key.monsters) monsterSpawns = key.monsters.forEach((s) => monsterTypes.push(s.type))
+        if (key.monsters) monsterSpawns = key.monsters.forEach((s) => !avoidMtypes.includes(s.type) && monsterTypes.push(s.type))
     }
     // Set your XP threshold
     let xpTarget = minXp;

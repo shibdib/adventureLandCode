@@ -7,6 +7,9 @@ let pveCharacters = [
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
 
+// Avoid attacking these
+let avoidMtypes = ['iceroamer'];
+
 // Potion count
 let targetPotionAmount = 250;
 
