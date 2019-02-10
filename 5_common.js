@@ -25,6 +25,7 @@ function stateController(state) {
     }
     //If state changed set it and announce
     if (state !== new_state) {
+        if (character.ctype === 'rogue') stop('invis');
         game_log("--- NEW STATE " + states[new_state] + " ---");
         state = new_state;
         set_message(states[state]);
