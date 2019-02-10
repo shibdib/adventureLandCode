@@ -44,8 +44,7 @@ function sendPartyCM(data) {
 }
 
 // Handle CD
-function on_combined_damage() // When multiple characters stay in the same spot, they receive combined damage, this function gets called whenever a monster deals combined damage
-{
+function on_combined_damage() {
     cdCounter();
 }
 

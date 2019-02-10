@@ -26,7 +26,7 @@ function equipBIS() {
         if (!item || checked.includes(item.name)) continue;
         checked.push(item.name);
         if (G.items[item.name] && ((G.items[item.name].wtype && !classItems[character.ctype].includes(G.items[item.name].wtype)) || !equipTypes.includes(G.items[item.name].type))) continue;
-        bestItemEquip(item);
+        bestItemEquip(item, false);
     }
 }
 
@@ -152,7 +152,6 @@ function depositItems(potions = false) {
         shibMove('bank');
         return false;
     } else {
-        if (character.ctype !== 'merchant') equipBIS();
         for (let key in character.items) {
             let item = character.items[key];
             if (!item || item === null) continue;
@@ -239,15 +238,23 @@ function bestItemEquip(item, bank = true) {
             if (slottedItem === undefined) return;
             // If slot is empty equip
             if (slottedItem === null) {
-                if (bank) withdrawItem(item.name, item_properties(item).level);
-                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                if (bank) {
+                    withdrawItem(item.name, item_properties(item).level);
+                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                } else {
+                    game_log('Equipping ' + itemInfo.name + '.');
+                }
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
                 return;
             }
             // If slotted item is less valuable unequip and equip the new item
             if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === itemInfo.id && item_properties(slottedItem).level < item_properties(item).level)) {
-                if (bank) withdrawItem(item.name, item_properties(item).level);
-                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                if (bank) {
+                    withdrawItem(item.name, item_properties(item).level);
+                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+                } else {
+                    game_log('Equipping ' + itemInfo.name + '.');
+                }
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
                 depositItems();
                 return true;
@@ -260,15 +267,23 @@ function bestItemEquip(item, bank = true) {
         if (slottedItem === undefined) return;
         // If slot is empty equip
         if (slottedItem === null) {
-            if (bank) withdrawItem(item.name, item_properties(item).level);
-            game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            if (bank) {
+                withdrawItem(item.name, item_properties(item).level);
+                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            } else {
+                game_log('Equipping ' + itemInfo.name + '.');
+            }
             equip(getInventorySlot(item.name, false, item_properties(item).level));
             return true;
         }
         // If slotted item is less valuable unequip and equip the new item
         if (G.items[slottedItem.name].g < itemInfo.g || (slottedItem.name === item.name && item_properties(slottedItem).level < item_properties(item).level)) {
-            if (bank) withdrawItem(item.name, item_properties(item).level);
-            game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            if (bank) {
+                withdrawItem(item.name, item_properties(item).level);
+                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            } else {
+                game_log('Equipping ' + itemInfo.name + '.');
+            }
             equip(getInventorySlot(item.name, false, item_properties(item).level));
             depositItems();
             return true;

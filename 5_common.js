@@ -39,7 +39,6 @@ function stateTasks(state, combat) {
     } // DEAD
     if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
-        equipBIS();
         depositGold();
         depositItems();
         return true;
