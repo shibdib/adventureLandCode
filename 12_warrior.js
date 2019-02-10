@@ -74,7 +74,7 @@ function farm() {
         primary = getMonstersTargeting()[0];
     } else if (!primary && opportunisticTarget && (!lastCombat || lastCombat + 11000 < Date.now())) {
         primary = opportunisticTarget;
-    } else if (primary && !waitForHealer()) {
+    } else if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
         // Pull more if we can handle it
@@ -85,32 +85,15 @@ function farm() {
         } else {
             // Pull if he's attacking someone else
             if (primary.target !== character.name) {
-                primary = undefined;
-                if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
-                    kiting = true;
-                    moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-                } else {
-                    stop();
-                }
-            } else if (primary.target !== character.name) {
                 if (can_use('taunt', primary)) use('taunt', primary); else tackle(primary, false);
-            } else if (parent.distance(character, primary) <= 100) {
+            } else if (parent.distance(character, primary) <= 100 && !waitForHealer()) {
                 tackle(primary);
             }
         }
     } else {
-        // If we have a target but no healer
-        if (primary) {
-            if (nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
-                moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
-            } else {
-                stop();
-            }
-        } else {
-            tackling = undefined;
-            if (currentTarget) {
-                shibMove(currentTarget);
-            }
+        tackling = undefined;
+        if (currentTarget) {
+            shibMove(currentTarget);
         }
     }
 }
