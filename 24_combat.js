@@ -25,18 +25,18 @@ function findLocalMonstersFromArray(type, returnArray = false) {
 function findBestMonster(minXp, array = false) {
     let sorted, monsterSpawns;
     // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
-    let maxAttack = character.attack * 0.9;
-    /**if (character.party) {
-        maxAttack = character.attack * 0.8;
+    let maxAttack = character.attack * 0.95;
+    if (character.party) {
+        maxAttack = character.attack * 0.75;
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             if (member === character.name) continue;
             let entity = parent.entities[member];
             // Don't count merchants
             if (!entity || entity.ctype === 'merchant') continue;
-            maxAttack += entity.attack * 0.8;
+            maxAttack += entity.attack * 0.15;
         }
-    }**/
+    }
         // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
@@ -51,7 +51,7 @@ function findBestMonster(minXp, array = false) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
         sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
-            && !G.monsters[m].dreturn && !G.monsters[m].rage && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80));
+            && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80));
         if (sorted.length > 2) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
