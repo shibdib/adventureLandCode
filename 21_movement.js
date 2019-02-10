@@ -21,6 +21,7 @@ function moveToTarget(target, min = 0, max = 0) {
 
 // Handle moving to party leader
 // TODO: send_cm/on_cm stuff for map change
+let mapSwap = {};
 function moveToLeader(min = 20, max = 25) {
     let leader = get_player(character.party);
     let range;
@@ -29,12 +30,20 @@ function moveToLeader(min = 20, max = 25) {
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
+    // Handle a map swap occuring
+    if (mapSwap[character.name] && mapSwap[character.name] === character.map) {
+        mapSwap[character.name] = undefined;
+        return stop();
+    }
     // If moving continue
     if (is_moving(character)) return;
     // Handle bank
     if (parent.party[character.party].map === 'bank') return shibMove('main');
     // Handle different map
-    if (getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
+    if (getCharacterData()[character.party].map !== character.map) {
+        mapSwap[character.name] = getCharacterData()[character.party].map;
+        return shibMove(getCharacterData()[character.party].map);
+    }
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);

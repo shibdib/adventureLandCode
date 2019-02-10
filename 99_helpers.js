@@ -43,15 +43,8 @@ function sendPartyCM(data) {
     }
 }
 
-registerHandler("transport", stopOnTransport);
-
 function registerHandler(event, handler) {
     parent.socket.on(event, handler);
-}
-
-// Stop movement on map change
-function stopOnTransport() {
-    stop('move');
 }
 
 // Handle CD

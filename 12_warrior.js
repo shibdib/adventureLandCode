@@ -11,8 +11,6 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
-    // Update your data
-    updateCharacterData();
     if (character.rip) {
         primary = undefined;
         currentTarget = undefined;
@@ -24,6 +22,8 @@ setInterval(function () {
 
 //Fast Loop
 setInterval(function () {
+    // Update your data
+    updateCharacterData();
     // Kiting
     if ((combat || !is_moving(character)) && nearbyAggressors().length && moveTackled(get_target(), nearbyAggressors())) {
         movingPull = true;

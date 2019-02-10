@@ -9,14 +9,14 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
-    // Update your data
-    updateCharacterData();
     if (!state) return;
     if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
 }, 500);
 
 //Kite Loop
 setInterval(function () {
+    // Update your data
+    updateCharacterData();
     if ((combat || !is_moving(character)) && nearbyAggressors().length && getKitePosition(get_target(), nearbyAggressors())) {
         kiting = true;
         moveToPosition(getKitePosition(get_target(), nearbyAggressors()));
