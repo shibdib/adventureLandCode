@@ -62,26 +62,61 @@ function on_party_invite(name) {
     accept_party_invite(name);
 }
 
-// Get monster DPS
-function getMonsterDPS(input) {
+// Get monster DPS from entity or mtype, mitigate damage type
+function getMonsterDPS(input, mitigate = false) {
     // Handle entity
     if (input.level) {
-        return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
+        if (!mitigate) {
+            if (G.monsters[input.mtype].damage_type === 'physical') {
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].apiercing || 0) * 0.95;
+            } else if (G.monsters[input.mtype].damage_type === 'magical') {
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
+            }
+        } else {
+            if (G.monsters[input.mtype].damage_type === 'physical') {
+                return (input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].apiercing || 0) * 0.95) * damage_multiplier(character.armor);
+            } else if (G.monsters[input.mtype].damage_type === 'magical') {
+                return (input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95) * damage_multiplier(character.resistance);
+            }
+        }
     } // Handle mtype
     else if (G.monsters[input]) {
-        return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
+        if (!mitigate) {
+            if (G.monsters[input].damage_type === 'physical') {
+                return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].apiercing || 0) * 0.95;
+            } else if (G.monsters[input].damage_type === 'magical') {
+                return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
+            }
+        } else {
+            if (G.monsters[input].damage_type === 'physical') {
+                return (G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].apiercing || 0) * 0.95) * damage_multiplier(character.armor);
+            } else if (G.monsters[input].damage_type === 'magical') {
+                return (G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95) * damage_multiplier(character.resistance);
+            }
+        }
     }
 }
 
 // Get defense rating
-function getDefenseRating(mtype, entity = undefined) {
+function getDefenseRating(input) {
+    (damage_multiplier(armor) + Evasion + damage_multiplier(resistance) + Reflection )/ 2
+    // Handle entity
+    if (input.level) {
+        if (!mitigate) return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
 
+    } // Handle mtype
+    else if (G.monsters[input]) {
+        if (!mitigate) return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
+
+    }
 }
 
 // Get party heal power
-function partyHealPower() {
-    let power = 0;
-    if (!character.party) return 0;
+function partyHPS() {
+    //Pots are ~200 HPS
+    let power = 200;
+    if (!character.party) return power;
+    //Add priest heals
     for (let key in parent.party_list) {
         let member = parent.party_list[key];
         let entity = parent.entities[member];
@@ -92,7 +127,7 @@ function partyHealPower() {
 }
 
 // Get party attack power
-function partyAttackPower() {
+function partyDPS() {
     let power = 0;
     if (!character.party) return 0;
     for (let key in parent.party_list) {
