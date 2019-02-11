@@ -1,6 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastPos, traveling;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling;
+let state = stateController();
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
 
@@ -17,7 +18,7 @@ setInterval(function () {
         state = 99;
     }
     if (!state) return;
-    if (checkPartyAggro() || getMonstersTargeting()[0] || !stateTasks(state)) farm();
+    if (!stateTasks(state)) farm();
 }, 500);
 
 //Fast Loop

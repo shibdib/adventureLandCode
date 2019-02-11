@@ -1,6 +1,7 @@
 // State controller
-let lastBankGearCheck;
-function stateController(state = 10) {
+let lastBankGearCheck, new_state;
+function stateController(state) {
+    if (!state) state = 10;
     //KIA
     if (character.rip) {
         new_state = 99;
@@ -22,7 +23,7 @@ function stateController(state = 10) {
         new_state = 3;
     }
     //If state changed set it and announce
-    if (state !== new_state && state !== 10) {
+    if (state !== new_state) {
         // Handle BIS
         equipBIS();
         if (character.ctype === 'rogue') stop('invis');
@@ -30,11 +31,13 @@ function stateController(state = 10) {
         state = new_state;
         set_message(states[state]);
     }
+    // return state
     return state;
 }
 
 //State tasks
 function stateTasks(state) {
+    let combat;
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getMonstersTargeting().length > 0;
     if (state === 99) {
         respawn();

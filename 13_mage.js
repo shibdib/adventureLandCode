@@ -1,6 +1,7 @@
 game_log("---Mage Script Start---");
 load_code(2);
-let combat, state, kiting;
+let combat;
+let state = stateController();
 
 //State Controller
 setInterval(function () {
@@ -10,7 +11,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (checkPartyAggro() || !stateTasks(state)) farm();
+    if (!stateTasks(state)) farm();
 }, 500);
 
 //Fast Loop
