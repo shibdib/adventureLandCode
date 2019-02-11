@@ -172,7 +172,7 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
 }
 
 // Stay safe
-function kite(target = undefined) {
+function kite() {
     let nearbyHostiles = nearbyAggressors(character.range * 1.25, true);
     if (!nearbyHostiles.length) return;
     // Check if we should move
@@ -184,11 +184,11 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 3) return;
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 4) return;
     draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 3, 1, '#b30000');
     let angle = CalcAngle(character.real_x, character.real_y, nearest.real_x, nearest.real_y);
-    let x = Math.cos(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
-    let y = Math.sin(angle)*(G.monsters[nearest.mtype].range * 5).toFixed(12);
+    let x = Math.cos(angle)*(G.monsters[nearest.mtype].range * 5.5).toFixed(12);
+    let y = Math.sin(angle)*(G.monsters[nearest.mtype].range * 5.5).toFixed(12);
     if (can_move_to(character.real_x + x, character.real_y + y)) {
         if (smart.moving) stop('move');
         return moveToCoords(character.real_x + x, character.real_y + y);

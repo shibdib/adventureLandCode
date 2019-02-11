@@ -128,8 +128,7 @@ function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
 }
 
 // This tries to deal with combined damage;
-function cdCounter() {
-    let target = get_target();
+function smartAttack(target = get_target()) {
     if (character.range < 40) {
         for (let id in parent.party_list) {
             let member = parent.party_list[id];

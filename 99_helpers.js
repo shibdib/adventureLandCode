@@ -47,11 +47,6 @@ function registerHandler(event, handler) {
     parent.socket.on(event, handler);
 }
 
-// Handle CD
-function on_combined_damage() {
-    cdCounter();
-}
-
 // Fix party runners
 function on_party_request(name) {
     accept_party_request(name);
