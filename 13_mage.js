@@ -28,11 +28,11 @@ function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it
-    if (can_use('blink') && blink_to_leader()) return;
+    if (can_use('blink') && blinkToLeader()) return;
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
-    let teleport_target = get_teleport_target();
-    if (teleport_target && can_use('magiport')) {
-        if (character.mp < 900) use('use_mp'); else use('magiport', teleport_target);
+    let magiPortTarget = getMagiPortTarget();
+    if (magiPortTarget && can_use('magiport')) {
+        if (character.mp < 900) use('use_mp'); else use('magiport', magiPortTarget);
     } else if (target) {
         // Energize the party
         if (can_use('energize')) randomEnergize();
@@ -53,7 +53,7 @@ function farm() {
     }
 }
 
-function blink_to_leader() {
+function blinkToLeader() {
     if (parent.party_list.length > 0 && character.max_mp > 1600) {
         let leader = get_player(character.party);
         if (!leader) {
@@ -67,7 +67,7 @@ function blink_to_leader() {
     }
 }
 
-function get_teleport_target() {
+function getMagiPortTarget() {
     if (parent.party_list.length > 0) {
         let leader = get_player(character.party);
         // Don't teleport unless you're with the party;
@@ -79,11 +79,8 @@ function get_teleport_target() {
             // Don't teleport the tank unless you're in combat
             if (member === character.party && !combat) continue;
             // Don't teleport the merchant
-            if (merchant === member || member === character.name) continue;
-            if ((entity && entity.ctype === 'merchant') || member.includes('merch')) {
-                merchant = member;
-                continue;
-            }
+            if (parent.party[member].type === 'merchant') continue;
+            // Don't teleport the dead
             if ((entity && entity.rip) || member.rip) continue;
             if (!entity || distanceToPoint(entity.real_x, entity.real_y) >= 1000) return member;
         }
