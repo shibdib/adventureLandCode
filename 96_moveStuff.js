@@ -195,6 +195,6 @@ function bfs()
         //if(optimal) game_log("Path found!","#C882D1");
         //else game_log("Path found~","#C882D1");
         // game_log(queue.length);
-        parent.d_text("Yes!",character,{color:"#58D685"});
+        //parent.d_text("Yes!",character,{color:"#58D685"});
     }
 }

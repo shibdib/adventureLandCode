@@ -34,6 +34,7 @@ function farm() {
     if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible
     if (!mostHurtMember && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
+        parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
     }
@@ -53,6 +54,7 @@ function farm() {
         kite();
     } else if (mostHurtMember && !mostHurtMember.rip) { //HEAL WOUNDED
         if (in_attack_range(mostHurtMember)) {
+            parent.d_text("HEALS COMING!",character,{color:"#36e80a"});
             //if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
             // Heal
@@ -65,6 +67,7 @@ function farm() {
         alerted = undefined;
         let dead_party = deadParty();
         if (can_use('revive', dead_party)) {
+            parent.d_text("REVIVING!",character,{color:"#27ffeb"});
             use('revive', dead_party);
             kite();
         }
