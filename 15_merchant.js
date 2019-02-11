@@ -24,10 +24,10 @@ setInterval(function () {
 //MERCHANT TASKS
 function merchantTaskManager() {
     if (standCheck()) return;
-    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 60000 < Date.now()) {
-        combineItems();
-    } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
+    if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
+    } else if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 60000 < Date.now()) {
+        combineItems();
     } else {
         if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
         if (!sellItemsToPlayers() && !buyFromPlayers()) if (!sellExcessToNPC()) {
@@ -47,7 +47,7 @@ function exchangeStuff() {
         for (let item of exchangeItems) {
             let minimum = 1;
             if (item.amount) minimum = item.amount;
-            if (bankDetails[item.item] >= minimum) {
+            if (bankDetails[item.item + 0] >= minimum) {
                 exchangeTarget = item.item;
                 exchangeNpc = item.npc;
                 exchangeAmount = item.amount;
@@ -61,7 +61,7 @@ function exchangeStuff() {
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
             exchangeItem(exchangeTarget, exchangeNpc);
-        } else if (bankDetails[exchangeTarget] >= exchangeAmount) {
+        } else if (bankDetails[exchangeTarget + 0] >= exchangeAmount) {
             let withdraw = withdrawItem(exchangeTarget);
             if (withdraw === null) {
                 exchangeTarget = undefined;
