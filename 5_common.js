@@ -1,6 +1,6 @@
 // State controller
 let lastBankGearCheck;
-function stateController(state) {
+function stateController(state = 10) {
     // Handle BIS
     equipBIS();
     let new_state = 1;
@@ -25,7 +25,7 @@ function stateController(state) {
         new_state = 3;
     }
     //If state changed set it and announce
-    if (state !== new_state) {
+    if (state !== new_state && state !== 99) {
         if (character.ctype === 'rogue') stop('invis');
         game_log("--- NEW STATE " + states[new_state] + " ---");
         state = new_state;
