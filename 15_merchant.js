@@ -40,7 +40,6 @@ function merchantTaskManager() {
 // NPC STUFF
 // Exchange Items
 function exchangeStuff() {
-    closeStand();
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!bankDetails) return;
     if (!exchangeTarget) {
@@ -57,6 +56,7 @@ function exchangeStuff() {
         }
         lastAttemptedExchange = Date.now();
     } else {
+        closeStand();
         set_message('Exchanging');
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
@@ -170,6 +170,7 @@ function sellItemsToPlayers() {
                     pm(buyers.name, 'Enjoy the ' + slot.name + ' ~This is an automated message~');
                     parent.socket.emit("trade_sell", {slot: 'trade' + s, id: buyers.id, rid: slot.rid, q: 1});
                 } else {
+                    closeStand();
                     game_log("Grabbing to sell - " + slot.name);
                     playerSale = {item: slot.name, level: slot.level, rid: slot.rid};
                     currentTask = 'getItem';
@@ -216,7 +217,6 @@ function buyFromPlayers() {
 //UPGRADING and COMBINING
 function combineItems() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    closeStand();
     if (!currentItem) {
         // Chance we skip this time
         if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
@@ -258,6 +258,7 @@ function combineItems() {
         }
         lastAttemptedCrafting = Date.now();
     } else {
+        closeStand();
         set_message('Crafting');
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
