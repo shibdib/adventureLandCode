@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget;
 let state = stateController();
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
@@ -36,19 +36,6 @@ function farm() {
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
-    // Handle too long between fighting our actual target
-    if (lastRealTarget + (60000 * 2) < Date.now()) {
-        target = findBestMonster(800 * (character.level / 2));
-        if (target) {
-            farmWait = undefined;
-            lastRealTarget = Date.now();
-            traveling = true;
-            currentTarget = target;
-            game_log('New target is a ' + target);
-            whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
-            stop();
-        }
-    }
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
@@ -61,8 +48,8 @@ function farm() {
             stop();
         }
     }
-    // Handle the healer disappearing
-    if (character.hp < character.max_hp * 0.5)
+    // Handle target refreshing
+    refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     // Handle various target declarations
@@ -112,8 +99,6 @@ function farm() {
             }
         }
     } else {
-        // Handle target refreshing
-        refreshTarget();
         tackling = undefined;
         if (currentTarget) shibMove(currentTarget);
     }
@@ -139,13 +124,26 @@ function getSecondary() {
 let farmWait;
 function refreshTarget() {
     if (!currentTarget) return;
+    // We haven't seen our actual target in awhile
+    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
+        whisperParty('Have not seen a ' + currentTarget + "'s for a couple minutes, moving onto something new.");
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        currentTarget = undefined;
+        lastTarget = currentTarget;
+        return shibMove('main');
+    }
     // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + 180000 < Date.now()) {
+    if (lastCombat && lastCombat + (60000 * 3) < Date.now()) {
         whisperParty('We have not been in combat for 3 minutes, going to head to town and figure this out.');
         stop();
         lastCombat = Date.now();
+        lastRealTarget = Date.now();
         primary = undefined;
         currentTarget = undefined;
+        lastTarget = currentTarget;
         return shibMove('main');
     }
     // If range doesn't change much start counter
@@ -162,8 +160,10 @@ function refreshTarget() {
         if ((farmWait + cutoff) - Date.now() <= 0) {
             whisperParty(msg);
             lastCombat = Date.now();
+            lastRealTarget = Date.now();
             primary = undefined;
             currentTarget = undefined;
+            lastTarget = currentTarget;
             farmWait = undefined;
             return;
         }
@@ -183,7 +183,7 @@ function slowestMan() {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (!entity || member === character.name || entity.ctype === 'merchant') continue;
-            if (entity.speed < speed) speed = entity.speed - 3;
+            if (entity.speed < speed) speed = entity.speed - 6;
         }
     }
     if (!combatSet && combat) {

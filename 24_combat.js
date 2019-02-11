@@ -152,17 +152,15 @@ function smartAttack(target = get_target()) {
 }
 
 //Returns the party member with the lowest hp -> max_hp ratio.
-function lowHealth() {
+function lowHealth(cutOff = 0.99) {
     let party = [];
     let member;
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
             member = parent.party_list[id];
             let entity = parent.entities[member];
-            if (member == character.name) {
-                entity = character;
-            }
-            if (entity) {
+            if (member == character.name) entity = character;
+            if (entity && entity.hp < entity.max_hp * cutOff) {
                 if (entity.rip) continue;
                 party.push({name: member, entity: entity});
             }
