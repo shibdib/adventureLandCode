@@ -185,6 +185,7 @@ function updateCharacterData() {
     if (localStorage.getItem('myDetails')) currentData = JSON.parse(localStorage.getItem('myDetails'));
     // Store data
     let combat = getMonstersTargeting().length > 0;
+    let state = stateController();
     currentData[character.name] = {
         name: character.name,
         ctype: character.ctype,
@@ -198,7 +199,8 @@ function updateCharacterData() {
         x: character.real_x,
         y: character.real_y,
         target: character.target,
-        combat: combat
+        combat: combat,
+        state: state
     };
     localStorage.setItem('myDetails', JSON.stringify(currentData));
 }
