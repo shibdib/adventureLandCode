@@ -42,8 +42,8 @@ function farm() {
             moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        // No invis on long moves
-        stop('invis');
+        // Only invis if near baddies
+        if (nearbyAggressors(75, true).length && can_use('invis')) use('invis'); else stop('invis');
         // Speedy rogue
         if (can_use('rspeed', character)) use('rspeed', character);
         moveToLeader();
