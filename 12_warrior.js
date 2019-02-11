@@ -66,18 +66,19 @@ function farm() {
     // If we had a primary and he died clear it
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
+        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
         if (getMonstersTargeting()[0]) {
             stop('move');
             primary = getMonstersTargeting()[0];
-        } else if (mainTarget) {
+        } else if (readyToPull && mainTarget) {
             lastRealTarget = Date.now();
             stop('move');
             traveling = false;
             primary = mainTarget;
-        } else if (secondaryTarget && !traveling) {
-            primary = secondaryTarget;
-        } else if (opportunisticTarget && !traveling) {
+        } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
+        } else if (!readyToPull) {
+            use_hp_or_mp();
         }
     }
     // If someone in the party has aggro set them primary
@@ -89,6 +90,8 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
+            // If we have adds queued and we have aggro, get them
+            if (secondaryTarget && get_target_of(primary) === character) primary = secondaryTarget;
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
@@ -126,7 +129,7 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 let farmWait;
 function refreshTarget() {
-    if (!currentTarget) return;
+    if (!currentTarget || waitForHealer(325, true)) return;
     // We haven't seen our actual target in awhile
     if (lastRealTarget + (60000 * 1.5) < Date.now()) {
         whisperParty('Have not seen a ' + currentTarget + "'s for a couple minutes, moving onto something new.");

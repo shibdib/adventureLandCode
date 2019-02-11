@@ -51,7 +51,7 @@ function waitForParty(range = 400) {
 
 // Handle waiting for a healer
 let healerNotify;
-function waitForHealer(range = 300) {
+function waitForHealer(range = 300, silent = false) {
     let healerFound = false;
     if (character.map === 'bank') return false;
     if (parent.party_list.length > 0) {
@@ -63,8 +63,8 @@ function waitForHealer(range = 300) {
             healerFound = true;
             if (entity && entity.mp < entity.max_mp * 0.45) {// Priest is low MP
                 if (!healerNotify) {
-                    game_log('Healer is OOM.');
-                    whisperParty('Waiting for ' + member + ' to get their mp up.')
+                    if (!silent) game_log('Healer is OOM.');
+                    if (!silent) whisperParty('Waiting for ' + member + ' to get their mp up.')
                 }
                 healerNotify = true;
                 return true;
@@ -72,8 +72,8 @@ function waitForHealer(range = 300) {
             // Handle distance
             if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.2) {
                 if (!healerNotify) {
-                    game_log('Healer Range.');
-                    whisperParty('Waiting on our healer ' + member + ' to get in range before I pull.');
+                    if (!silent) game_log('Healer Range.');
+                    if (!silent) whisperParty('Waiting on our healer ' + member + ' to get in range before I pull.');
                 }
                 healerNotify = true;
                 return true;
@@ -82,8 +82,8 @@ function waitForHealer(range = 300) {
     }
     if (!healerFound) {
         if (!healerNotify) {
-            game_log('No healer??');
-            whisperParty('Where did the healer go??');
+            if (!silent) game_log('No healer??');
+            if (!silent) whisperParty('Where did the healer go??');
         }
         healerNotify = true;
         return true;
