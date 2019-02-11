@@ -23,7 +23,8 @@ let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearr
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
 // The merchant will attempt to upgrade these
-let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
+let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield',
+    'helmet1', 'shoes1', 'gloves1', 'pants1', 'coat1'];
 
 // The merchant will attempt to exchange these
 let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop', npc: 'exchange', amount: 10}, {item: 'armorbox', npc: 'exchange'}, {item: 'weaponbox', npc: 'exchange'}];

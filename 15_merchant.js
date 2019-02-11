@@ -89,9 +89,9 @@ function merchantStateController(state) {
 
 //MERCHANT TASKS
 function merch() {
-    useSkills();
+    game_log(currentItem)
     if (standCheck()) return;
-    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 600000 < Date.now()) {
+    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 60000 < Date.now()) {
         combineItems();
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
@@ -101,14 +101,6 @@ function merch() {
             placeStand();
             buyBaseItems();
         }
-    }
-}
-
-function useSkills() {
-    for (let key in Object.keys(parent.entities)) {
-        let entity = parent.entities[key];
-        if (!entity || !is_character(entity) || entity.ctype === 'merchant') continue;
-        if (can_use('mluck', entity)) use('mluck', entity);
     }
 }
 
@@ -163,19 +155,19 @@ function exchangeStuff() {
 // Buy items for crafting
 function buyBaseItems() {
     if (lastRestock + 90000 > Date.now()) return;
-    set_message('Restocking');
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
     items:
     for (let item of baseItems) {
         let need = true;
         for (let l = 0; l < combineUpgradeTarget - 1; l++) {
-            if (l === 0) l = '';
+            if (l === 0) l = 0;
             if (itemCount(item + l) >= 2 || bankDetails[item + l] >= 2) {
                 need = false;
                 continue items;
             }
         }
+        set_message('Restocking');
         if (need) buy(item, 1);
     }
     lastRestock = Date.now();
@@ -206,7 +198,7 @@ function sellExcessToNPC() {
         sellItems.shift();
     } else {
         for (let key of Object.keys(bankDetails)) {
-            if (G.items[key] && bankDetails[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && !noSell.includes(key)) {
+            if (G.items[key] && bankDetails[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && G.items[key].type !== 'uscroll' && !noSell.includes(key)) {
                 if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
             }
         }
@@ -229,7 +221,7 @@ function sellItemsToPlayers() {
             if (slot && slot.b) {
                 if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
                 if (noSell.includes(slot.name)) continue;
-                if (slot.level === 0) theBookName = slot.name; else theBookName = slot.name + slot.level;
+                theBookName = slot.name + slot.level;
                 if (!bankDetails[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
                 if (combineTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
                 if (upgradeTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
@@ -298,7 +290,7 @@ function combineItems() {
                 let append = l;
                 let levelLookup = l;
                 if (!l) {
-                    append = '';
+                    append = 0;
                     levelLookup = undefined;
                 }
                 let stock = 3;
@@ -316,7 +308,7 @@ function combineItems() {
                 let levelLookup = l;
                 if (!l) {
                     levelLookup = undefined;
-                    append = '';
+                    append = 0;
                 }
                 let stock = 1;
                 if (l + 1 === combineUpgradeTarget) stock = 2;
@@ -369,7 +361,7 @@ function combineItems() {
                 lastBankCheck = undefined;
                 lastAttemptedCrafting = Date.now();
             } else if (withdraw) {
-                let append = '';
+                let append = 0;
                 if (craftingLevel) append = craftingLevel;
                 if (bankDetails[currentItem + append] - 1 === 0) {
                     bankDetails[currentItem + append] = undefined;
@@ -414,13 +406,11 @@ function bookKeeping() {
                 if (trashItems.includes(banker.name)) {
                     withdrawItem(banker.name);
                     getInventorySlot(banker.name);
-                    game_log(banker.name)
-                    game_log(getInventorySlot(banker.name))
                     //destroy_item();
                     continue;
                 }
                 let level = item_properties(banker).level;
-                if (!level) level = '';
+                if (!level) level = 0;
                 let quantity = banker.q || 1;
                 if (bankDetails[banker.name + level]) {
                     bankDetails[banker.name + level] += quantity;
@@ -450,3 +440,16 @@ function standCheck() {
         return true;
     }
 }
+
+// Luck loop
+setInterval(function () {
+    for (let key of Object.keys(parent.entities)) {
+        let entity = parent.entities[key];
+        if (!entity || !is_character(entity)) continue;
+        if (can_use('mluck', entity)) {
+            if (Math.random() >= 0.8) say('Pew Pew');
+            game_log('LUCKED - ' + key);
+            use('mluck', entity);
+        }
+    }
+}, 50);
