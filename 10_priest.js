@@ -34,33 +34,33 @@ function farm() {
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible
-    if (!lowest_health && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
+    if (!wounded && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
     }
-    if (lowest_health && !lowest_health.rip && lowest_health.health_ratio < 0.20 && can_use('revive', lowest_health)) { //Max heal with revive
-        if (in_attack_range(lowest_health)) {
+    if (wounded && !wounded.rip && wounded.health_ratio < 0.20 && can_use('revive', wounded)) { //Max heal with revive
+        if (in_attack_range(wounded)) {
             //if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
             alerted = true;
             // Use revive as a mega heal
-            use('revive', lowest_health);
+            use('revive', wounded);
             kite();
         } else {
-            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
+            moveToTarget(wounded, character.range * 0.425, character.range * 0.99);
         }
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
         use('partyheal');
         kite();
-    } else if (wounded && !lowest_health.rip) { //HEAL WOUNDED
-        if (in_attack_range(lowest_health)) {
+    } else if (wounded && !wounded.rip) { //HEAL WOUNDED
+        if (in_attack_range(wounded)) {
             //if (!alerted) pm(lowest_health.name, 'Healing You!!');
             alerted = true;
             // Heal
-            heal(lowest_health);
+            heal(wounded);
             kite();
         } else {
-            moveToTarget(lowest_health, character.range * 0.425, character.range * 0.99);
+            moveToTarget(wounded, character.range * 0.425, character.range * 0.99);
         }
     } else if (!wounded && deadParty()) { //REVIVE DEAD
         alerted = undefined;
