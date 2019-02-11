@@ -72,10 +72,15 @@ function getMagiPortTarget() {
         let leader = get_player(character.party);
         // Don't teleport unless you're with the party;
         if (!leader || parent.distance(character, leader) > 250) return;
+        let partyInfo = get_player(character.party);
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
+            let memberData = getCharacterData()[member];
             let entity = parent.entities[member];
+            // Skip yourself
             if (member === character.name) continue;
+            // If we have member data and they're not in farm mode skip
+            if (memberData && memberData.state !== 1) continue;
             // Don't teleport the tank unless you're in combat
             if (member === character.party && !combat) continue;
             // Don't teleport the merchant
