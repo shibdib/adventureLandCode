@@ -2,6 +2,7 @@ game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastPos, traveling;
 let lastCombat = Date.now();
+let lastRealTarget = Date.now();
 
 //State Controller
 setInterval(function () {
@@ -30,13 +31,27 @@ function farm() {
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
+    // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
+    // Handle too long between fighting our actual target
+    if (lastRealTarget + (60000 * 3) < Date.now()) {
+        target = findBestMonster(800 * (character.level / 2));
+        if (target) {
+            farmWait = undefined;
+            traveling = true;
+            currentTarget = target;
+            game_log('New target is a ' + target);
+            whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
+            stop();
+        }
+    }
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
             farmWait = undefined;
+            traveling = true;
             currentTarget = target;
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
@@ -62,6 +77,7 @@ function farm() {
             stop('move');
             primary = getMonstersTargeting()[0];
         } else if (mainTarget) {
+            lastRealTarget = Date.now();
             stop('move');
             traveling = false;
             primary = mainTarget;
@@ -97,7 +113,7 @@ function farm() {
         refreshTarget();
         tackling = undefined;
         // Set yourself to traveling
-        traveling = smart.plot.length > 1;
+        if (smart.plot) traveling = smart.plot.length > 1;
         if (currentTarget) shibMove(currentTarget);
     }
 }

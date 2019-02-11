@@ -22,11 +22,11 @@ setInterval(function () {
 function farm() {
     loot();
     potionController();
+    // Mark in combat if anyone in the party is being targeted
+    if (character.party) combat = checkPartyAggro(); else return shibMove('main');
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = checkPartyAggro();
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
     if (target && (checkTankAggro() || canOneShot(target))) {
         let range = distanceToPoint(target.real_x, target.real_y);

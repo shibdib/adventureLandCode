@@ -26,7 +26,7 @@ function farm() {
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = checkPartyAggro();
+    if (character.party) combat = checkPartyAggro(); else return shibMove('main');
     let lowest_health = lowHealth();
     let wounded = lowest_health && lowest_health.health_ratio < 0.75;
     let tankTarget = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();

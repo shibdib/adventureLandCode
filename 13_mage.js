@@ -22,11 +22,11 @@ setInterval(function () {
 function farm() {
     loot();
     potionController();
+    // Mark in combat if anyone in the party is being targeted
+    if (character.party) combat = checkPartyAggro(); else return shibMove('main');
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = checkPartyAggro();
     // If you need to blink to leader do it
     if (can_use('blink') && blinkToLeader()) return;
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro()
