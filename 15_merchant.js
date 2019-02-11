@@ -60,6 +60,7 @@ function exchangeStuff() {
         set_message('Exchanging');
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
+            parent.d_text("EXCHANGE!",character,{color:"#ff4130"});
             exchangeItem(exchangeTarget, exchangeNpc);
         } else if (bankDetails[exchangeTarget + 0] >= exchangeAmount) {
             let withdraw = withdrawItem(exchangeTarget);
@@ -101,6 +102,7 @@ function buyBaseItems() {
             }
         }
         set_message('Restocking');
+        parent.d_text("BUYING!",character,{color:"#ff4130"});
         if (need) buy(item, 1);
     }
     lastRestock = Date.now();
@@ -127,6 +129,7 @@ function sellExcessToNPC() {
     } else if (sellItems.length) {
         set_message('SellingNPC');
         let key = getInventorySlot(sellItems[0]);
+        parent.d_text("SELLING!",character,{color:"#ff4130"});
         if (key) sell(getInventorySlot(sellItems[0]), 1);
         sellItems.shift();
     } else {
@@ -167,6 +170,7 @@ function sellItemsToPlayers() {
                     game_log("Item Sold: " + slot.name);
                     game_log("To: " + buyers.name);
                     game_log("Price: " + slot.price);
+                    parent.d_text("SELLING!",character,{color:"#ff4130"});
                     pm(buyers.name, 'Enjoy the ' + slot.name + ' ~This is an automated message~');
                     parent.socket.emit("trade_sell", {slot: 'trade' + s, id: buyers.id, rid: slot.rid, q: 1});
                 } else {
@@ -204,6 +208,7 @@ function buyFromPlayers() {
                     game_log("Item Sold: " + slot.name);
                     game_log("To: " + buyers.name);
                     game_log("Price: " + slot.price);
+                    parent.d_text("BUYING!",character,{color:"#ff4130"});
                     pm(buyers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
                     trade_buy(buyers, slot); // target needs to be an actual player
                     return true;
@@ -273,6 +278,7 @@ function combineItems() {
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
+                parent.d_text("CRAFTING!",character,{color:"#ff4130"});
                 if (crafting(currentTask, componentSlot, scrollSlot)) {
                     currentItem = undefined;
                     currentTask = undefined;
@@ -359,6 +365,7 @@ function bookKeeping() {
         lastBankCheck = Date.now();
         localStorage.removeItem('bankDetails');
         localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+        parent.d_text("BOOKKEEPING!",character,{color:"#ff4130"});
         return bankDetails;
     }
 }
@@ -366,6 +373,7 @@ function bookKeeping() {
 // Go buy a stand
 function standCheck() {
     if (!getInventorySlot('stand0') && !localStorage.getItem('bankDetails')['stand0']) {
+        parent.d_text("WHERE DID MY STAND GO?!",character,{color:"#ff4130"});
         let standsMerchant = getNpc("standmerchant");
         let distanceToMerchant = null;
         if (standsMerchant != null) distanceToMerchant = distanceToPoint(standsMerchant.position[0], standsMerchant.position[1]);
