@@ -193,6 +193,8 @@ function updateCharacterData() {
         maxHp: character.max_hp,
         mp: character.mp,
         maxMp: character.max_mp,
+        attack: character.attack,
+        frequency: character.frequency,
         xp: character.xp,
         maxXp: character.max_xp,
         map: character.map,

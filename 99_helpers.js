@@ -113,7 +113,7 @@ function partyHPS() {
     //Add priest heals
     for (let key in parent.party_list) {
         let member = parent.party_list[key];
-        let entity = parent.entities[member];
+        let entity = getCharacterData()[member] || parent.entities[member];
         if (!entity || entity.ctype !== 'priest') continue;
         power += entity.attack * entity.frequency * 0.925;
     }
@@ -126,7 +126,7 @@ function partyDPS() {
     if (!character.party) return 0;
     for (let key in parent.party_list) {
         let member = parent.party_list[key];
-        let entity = parent.entities[member];
+        let entity = getCharacterData()[member] || parent.entities[member];
         if (!entity || entity.ctype === 'merchant') continue;
         power += entity.attack * entity.frequency * damage_multiplier(-entity.rpiercing || 0) * 0.925;
     }
