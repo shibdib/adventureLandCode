@@ -26,7 +26,7 @@ function merchantTaskManager() {
     if (standCheck()) return;
     if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
-    } else if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 60000 < Date.now()) {
+    } else if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 5) < Date.now()) {
         combineItems();
     } else {
         if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
