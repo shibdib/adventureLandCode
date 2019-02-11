@@ -104,10 +104,10 @@ function getSecondary() {
     let currentThreats = getMonstersTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
-    currentThreats.forEach((t) => totalAttack += t.attack * 1.25);
+    currentThreats.forEach((t) => totalAttack += getMonsterPower(t.attack, t.frequency));
     // If attack is greater than 25% of remaining health, return
     let possibleAdds = findAdds();
-    if (state !== 1 || (possibleAdds.length && totalAttack + possibleAdds[0].attack > character.hp * 0.125) || currentThreats.length > 2) return;
+    if (state !== 1 || (possibleAdds.length && totalAttack + getMonsterPower(possibleAdds[0].attack, possibleAdds[0].frequency) > partyHealPower()) || currentThreats.length > 2) return;
     if (possibleAdds.length) {
         return possibleAdds[0];
     }
