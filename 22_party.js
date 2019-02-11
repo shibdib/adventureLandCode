@@ -8,7 +8,7 @@ function waitForParty(range = 400) {
             let entity = parent.entities[member];
             // Don't wait for merchant or yourself
             if (merchant === member || member === character.name) continue;
-            if ((entity && entity.ctype === 'merchant') || member.includes('merch')) {
+            if ((entity && entity.ctype === 'merchant') || member.includes('merchantTaskManager')) {
                 merchant = member;
                 continue;
             }
