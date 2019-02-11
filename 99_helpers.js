@@ -62,6 +62,11 @@ function on_party_invite(name) {
     accept_party_invite(name);
 }
 
+// Get monster DPS
+function getMonsterPower(attack, frequency) {
+    return (attack / (1 / frequency)) * 0.925;
+}
+
 // Check if entity has a buff
 function checkEntityForBuff(entity, buff) {
     if (!entity.s) return false;

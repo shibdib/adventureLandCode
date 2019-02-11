@@ -1,7 +1,8 @@
 game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock;
+    currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock,
+    buyCooldown;
 let spendingAmount = 10000000;
 let getItems = [];
 let sellItems = [];
@@ -48,7 +49,6 @@ function merchantStateTasks(state) {
         bookKeeping();
         if (localStorage.getItem('bankDetails') && lastBankCheck) {
             lastBankCheck = Date.now();
-            return;
         } else {
             return true;
         }
@@ -87,17 +87,17 @@ function merchantStateController(state) {
     return state;
 }
 
-//ACTIVE SELLING
+//MERCHANT TASKS
 function merch() {
     useSkills();
     if (standCheck()) return;
-    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 25000 < Date.now()) {
+    if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + 600000 < Date.now()) {
         combineItems();
     } else if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
     } else {
         if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
-        if (!sellItemsToPlayers()) if (!sellExcessToNPC()) {
+        if (!sellItemsToPlayers() && !buyFromPlayers()) if (!sellExcessToNPC()) {
             placeStand();
             buyBaseItems();
         }
@@ -105,15 +105,14 @@ function merch() {
 }
 
 function useSkills() {
-    if (parent.party_list.length > 0) {
-        for (let key in Object.keys(parent.entities)) {
-            let entity = parent.entities[key]
-            if (!entity || !is_character(entity) || entity.ctype === 'merchant') continue;
-            if (can_use('mluck', entity)) use('mluck', entity);
-        }
+    for (let key in Object.keys(parent.entities)) {
+        let entity = parent.entities[key];
+        if (!entity || !is_character(entity) || entity.ctype === 'merchant') continue;
+        if (can_use('mluck', entity)) use('mluck', entity);
     }
 }
 
+// NPC STUFF
 // Exchange Items
 function exchangeStuff() {
     closeStand();
@@ -215,6 +214,7 @@ function sellExcessToNPC() {
     }
 }
 
+// PLAYER TRADING
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function sellItemsToPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
@@ -251,6 +251,37 @@ function sellItemsToPlayers() {
                     withdrawItem(slot.name, slot.level)
                 }
                 return true;
+            }
+        }
+    }
+    return false;
+}
+
+// Sell to player buy orders that are better than 60% (the npc markdown)
+function buyFromPlayers() {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (character.map === 'bank') return shibMove('main');
+    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
+    if (buyCooldown + 2500 > Date.now()) return false;
+    for (let buyers of merchants) {
+        for (let s = 1; s <= 16; s++) {
+            let slot = buyers.slots['trade' + s];
+            if (slot && !slot.b) {
+                if (G.items[slot.name].g && slot.price > G.items[slot.name].g * 1.2) continue;
+                for (let item of buyTargets) {
+                    // If we have the item continue
+                    if (bankDetails[item.item] >= item.amount || getInventorySlot(item.item)) continue;
+                    if (item.item !== slot.name) continue;
+                    set_message('BuyingPlayer');
+                    lastBankCheck = undefined;
+                    buyCooldown = Date.now();
+                    game_log("Item Sold: " + slot.name);
+                    game_log("To: " + buyers.name);
+                    game_log("Price: " + slot.price);
+                    pm(buyers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
+                    trade_buy(buyers, slot); // target needs to be an actual player
+                    return true;
+                }
             }
         }
     }

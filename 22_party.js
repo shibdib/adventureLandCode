@@ -136,12 +136,12 @@ function refreshCharacters(force = false) {
                     partyTracker[member] = Date.now();
                 } else {
                     let coolDown = ((1000 * 60) * 5);
-                    if (parent.party[member].type === 'merchant') coolDown = ((1000 * 60) * 15);
+                    if (parent.party[member].type === 'merchant') coolDown = ((1000 * 60) * 30);
                     if (partyTracker[member] + coolDown < Date.now()) {
                         let loginData = pveCharacters.filter((c) => c.name === member);
                         start_character(member, loginData.slot);
                         partyTracker[member] = Date.now();
-                        game_log('Rebooting ' + member + ' as he has not been seen in over 5 minutes.');
+                        game_log('Rebooting ' + member + ' as he has not been seen in over ' + (coolDown / 1000) / 60 + ' minutes.');
                     } else {
                         // If you can find the entity you can "see" him
                         if (parent.entities[member]) partyTracker[member] = Date.now();
@@ -150,6 +150,32 @@ function refreshCharacters(force = false) {
             }
         }
     }
+}
+
+// Get party heal power
+function partyHealPower() {
+    let power = 0;
+    if (!character.party) return 0;
+    for (let key in parent.party_list) {
+        let member = parent.party_list[key];
+        let entity = parent.entities[member];
+        if (!entity || entity.ctype !== 'priest') continue;
+        power += (entity.attack / (1 / entity.frequency)) * 0.925;
+    }
+    return power;
+}
+
+// Get party attack power
+function partyAttackPower() {
+    let power = 0;
+    if (!character.party) return 0;
+    for (let key in parent.party_list) {
+        let member = parent.party_list[key];
+        let entity = parent.entities[member];
+        if (!entity || entity.ctype === 'merchant') continue;
+        power += (entity.attack / (1 / entity.frequency)) * 0.925;
+    }
+    return power;
 }
 
 // Store my character data
@@ -161,6 +187,7 @@ function updateCharacterData() {
     let combat = getMonstersTargeting().length > 0;
     currentData[character.name] = {
         name: character.name,
+        ctype: character.ctype,
         hp: character.hp,
         maxHp: character.max_hp,
         mp: character.mp,

@@ -10,33 +10,31 @@ function findLocalMonsters(type, returnArray = false) {
     if (!returnArray) return monsters[0]; else return monsters;
 }
 
-// Find in view range monsters base off an array of types
-function findLocalMonstersFromArray(type, returnArray = false) {
-    let monsters;
-    // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => type.includes(mob.mtype) && parent.distance(character, mob) <= 175);
-    if (!monsters.length) return false;
+// Find possible targets to pull with your main target
+function findAdds(attack = 0.07) {
+    let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
+        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
+        && parent.distance(character, mob) <= 175);
     //Order monsters by distance.
-    monsters = sortEntitiesByDistance(monsters);
-    if (!returnArray) return monsters[0]; else return monsters;
+    return sortEntitiesByDistance(adds).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));;
+}
+
+// Attack easy to kill things
+function getEasyKills(oneShot = true) {
+    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.hp <= character.attack * 0.8 && G.monsters[mob.mtype].xp);
+    if (!oneShot) easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * 0.1
+        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
+        && parent.distance(character, mob) <= 175);
+    //Order monsters by distance.
+    return sortEntitiesByDistance(easyKill).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));;
 }
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
 function findBestMonster(minXp, array = false) {
     let sorted, monsterSpawns;
-    // Max attack is 90% of your attack when solo, or a combination of attacks 80% when partied
-    let maxAttack = character.attack * 0.45;
-    if (character.party) {
-        for (let key in parent.party_list) {
-            let member = parent.party_list[key];
-            if (member === character.name) continue;
-            let entity = parent.entities[member];
-            // Don't count merchants
-            if (!entity || entity.ctype === 'merchant') continue;
-            maxAttack += entity.attack * 0.036;
-        }
-    }
+    let partyDPS = partyAttackPower();
+    let partyHPS = partyHealPower();
         // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
@@ -50,9 +48,9 @@ function findBestMonster(minXp, array = false) {
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
-        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => G.monsters[m].attack < maxAttack && G.monsters[m].xp >= xpTarget
-            && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
-        && G.monsters[m].respawn < 5000);
+        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterPower(G.monsters[m].attack, G.monsters[m].frequency) < partyHPS
+            && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
+        && G.monsters[m].respawn < 15000);
         if (sorted.length > 2) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
@@ -106,31 +104,12 @@ function nearbyAggressors(range = 215, highRisk) {
     return sortEntitiesByDistance(aggressiveMonsters);
 }
 
-// Find possible targets to pull with your main target
-function findAdds(attack = 0.07) {
-    let adds = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * attack
-        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
-        && parent.distance(character, mob) <= 175);
-    //Order monsters by distance.
-    return sortEntitiesByDistance(adds);
-}
-
 // Return all monsters targeting you
 function getMonstersTargeting(target = character) {
     if (!target) target = character;
     let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === target.name);
     //Order monsters by distance.
     return sortEntitiesByDistance(all);
-}
-
-// Attack easy to kill things
-function getEasyKills(oneShot = true) {
-    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.hp <= character.attack * 0.8 && G.monsters[mob.mtype].xp);
-    if (!oneShot) easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * 0.1
-        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
-        && parent.distance(character, mob) <= 175);
-    //Order monsters by distance.
-    return sortEntitiesByDistance(easyKill);
 }
 
 // Check if the target can be killed in ~1 hit

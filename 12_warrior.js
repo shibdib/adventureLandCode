@@ -1,7 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastPos;
-let xpTarget = 750;
+let currentTarget, target, combat, pendingReboot, tackling, state, primary, lastPos, traveling;
 let lastCombat = Date.now();
 
 //State Controller
@@ -48,35 +47,39 @@ function farm() {
     if (character.hp < character.max_hp * 0.5)
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
+    // Handle various target declarations
     let mainTarget;
     if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
-    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, mainTarget.range * 3, 3, '#ffbf00');
+    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
     let opportunisticTarget = getEasyKills(false)[0];
-    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, opportunisticTarget.range * 3, 3, '#00ffff');
+    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
     let secondaryTarget = getSecondary();
-    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, secondaryTarget.range * 3, 3, '#00e639');
+    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
+    // If we had a primary and he died clear it
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         if (getMonstersTargeting()[0]) {
             stop('move');
             primary = getMonstersTargeting()[0];
-        } else if (mainTarget && state === 1) {
+        } else if (mainTarget) {
+            stop('move');
             primary = mainTarget;
+        } else if (secondaryTarget && !smart.moving) {
+            primary = secondaryTarget;
+        } else if (opportunisticTarget && !smart.moving) {
+            primary = opportunisticTarget;
         }
     }
-    if (party_aggro && character.name !== party_aggro.target) {
+    // If someone in the party has aggro set them primary
+    if (party_aggro && get_target_of(party_aggro) !== character) {
         primary = party_aggro;
-    } else if (!primary && getMonstersTargeting()[0]) {
-        primary = getMonstersTargeting()[0];
-    } else if (!primary && opportunisticTarget && distanceToPoint(lastPos.x, lastPos.y) < 5) {
-        primary = opportunisticTarget;
     }
     // If you have a target deal with it
     if (primary) {
         // Warcry
         if (can_use('warcry')) use('warcry');
-        if (can_attack(primary) && (!waitForHealer() || primary.target === character.name)) {
-            if (secondaryTarget && primary.target === character.name) tackle(secondaryTarget, false); else tackle(primary);
+        if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
+            tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target)) {
@@ -84,6 +87,7 @@ function farm() {
             } else if (!waitForHealer() || primary.target === character.name) {
                 tackle(primary);
             } else {
+                primary = undefined;
                 kite();
             }
         }
@@ -91,9 +95,7 @@ function farm() {
         // Handle target refreshing
         refreshTarget();
         tackling = undefined;
-        if (currentTarget) {
-            shibMove(currentTarget);
-        }
+        if (currentTarget) shibMove(currentTarget);
     }
 }
 

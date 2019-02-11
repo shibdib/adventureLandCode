@@ -31,7 +31,10 @@ let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop'
 let trashItems = ['firecrackers'];
 
 // Don't sell these
-let noSell = ['stand0', 'stand1', 'cdragon'];
+let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {item: 'weaponbox', amount: 1}];
+
+// Don't sell these
+let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 //GEARSCORE
 // These items are not equipped
