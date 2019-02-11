@@ -2,15 +2,16 @@
 let lastBankGearCheck, new_state;
 function stateController(state) {
     if (!state) state = 10;
+    new_state = 1;
     //KIA
     if (character.rip) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if ((character.gold >= 100000 || openInventorySpots() < 30) && state !== 2) {
+    else if ((character.gold >= 100000 || openInventorySpots() < 30)) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
-    else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) && state !== 4) {
+    else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now())) {
         if (!lastBankGearCheck && Math.random() > 0.2) {
             lastBankGearCheck = Date.now();
             new_state = 1;
@@ -18,8 +19,8 @@ function stateController(state) {
             new_state = 4;
         }
     } //POTIONS
-    else if (potionCheck() && state !== 3) {
-        whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
+    else if (potionCheck()) {
+        if (state !== 3) whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
         new_state = 3;
     }
     //If state changed set it and announce
@@ -51,7 +52,7 @@ function stateTasks(state) {
     }
     if (state === 3) { // POTION PICKUP
         getPotions();
-        return false;
+        return true;
     }
     if (state === 4) { // GEAR
         if (gearIssue()) {
