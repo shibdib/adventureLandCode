@@ -75,6 +75,6 @@ function farm() {
         if (lowest_health && lowest_health.health_ratio <= 0.99 && in_attack_range(lowest_health)) {
             heal(lowest_health);
         }
-        if (!combat) moveToLeader(); else moveToLeader(character.range * 0.425, character.range * 0.99);
+        if (!combat) moveToLeader(); else kite();
     }
 }
