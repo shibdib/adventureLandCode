@@ -59,7 +59,7 @@ function findBestMonster(minXp, array = false) {
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
-    if (!array) return sorted[getRndInteger(0, sorted.length / 2)]; else return sorted;
+    if (!array) return random_one(sorted); else return sorted;
 }
 
 // Returns the target of the leader
