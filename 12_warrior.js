@@ -13,6 +13,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (character.rip) {
+        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         state = 99;
@@ -38,7 +39,7 @@ function farm() {
     let party_aggro = checkPartyAggro();
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(800 * (character.level / 2));
-        if (target) {
+        if (target && (!lastTarget || lastTarget !== target)) {
             farmWait = undefined;
             lastRealTarget = Date.now();
             traveling = true;
@@ -46,6 +47,8 @@ function farm() {
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             stop();
+        } else if (lastTarget) {
+            lastTarget = undefined;
         }
     }
     // Handle target refreshing
