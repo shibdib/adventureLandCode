@@ -2,11 +2,10 @@
 function findLocalMonsters(type, returnArray = false) {
     let monsters;
     // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type);
+    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterPower(mob.attack, mob.frequency) < partyHealPower());
     if (!monsters.length) return false;
     //Order monsters by distance and xp.
     monsters = sortEntitiesByDistance(monsters).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
-    ;
     if (!returnArray) return monsters[0]; else return monsters;
 }
 
@@ -48,7 +47,7 @@ function findBestMonster(minXp, array = false) {
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
-        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterPower(G.monsters[m].attack, G.monsters[m].frequency) < partyHPS
+        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterPower(G.monsters[m].attack * 2.5, G.monsters[m].frequency) < partyHPS
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
         && G.monsters[m].respawn < 15000);
         if (sorted.length > 2) break;
