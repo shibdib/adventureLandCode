@@ -68,8 +68,6 @@ function farm() {
         if (can_use('revive', dead_party)) {
             use('revive', dead_party);
             kite();
-        } else {
-            moveToTarget(dead_party);
         }
     } else {
         alerted = undefined;
