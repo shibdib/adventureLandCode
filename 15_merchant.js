@@ -381,14 +381,12 @@ function standCheck() {
 setInterval(function () {
     for (let key of Object.keys(parent.entities)) {
         let entity = parent.entities[key];
-        if (!entity || !is_character(entity)) continue;
-        if (can_use('mluck', entity)) {
-            if (Math.random() >= 0.8) say('Pew Pew');
-            game_log('LUCKED - ' + key);
-            use('mluck', entity);
-        }
+        if (!entity || !is_character(entity) || !can_use('mluck', entity)) continue;
+        parent.d_text("Good Luck!",character,{color:"#58D685"});
+        game_log('LUCKED - ' + key);
+        use('mluck', entity);
     }
-}, 50);
+}, 100);
 
 //State tasks
 function merchantStateTasks(state) {
