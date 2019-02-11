@@ -66,10 +66,10 @@ function on_party_invite(name) {
 function getMonsterDPS(input) {
     // Handle entity
     if (input.level) {
-        return input.attack * G.monsters[input.mtype].frequency * parent.damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
+        return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
     } // Handle mtype
     else if (G.monsters[input]) {
-        return G.monsters[input].attack * G.monsters[input].frequency * parent.damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
+        return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
     }
 }
 
@@ -99,7 +99,7 @@ function partyAttackPower() {
         let member = parent.party_list[key];
         let entity = parent.entities[member];
         if (!entity || entity.ctype === 'merchant') continue;
-        power += entity.attack * entity.frequency * parent.damage_multiplier(-entity.rpiercing || 0) * 0.925;
+        power += entity.attack * entity.frequency * damage_multiplier(-entity.rpiercing || 0) * 0.925;
     }
     return power;
 }
