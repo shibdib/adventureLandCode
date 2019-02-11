@@ -33,7 +33,7 @@ function farm() {
     let party_aggro = checkPartyAggro();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
-    if (!currentTarget && !party_aggro) {
+    if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
             farmWait = undefined;
