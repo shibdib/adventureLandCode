@@ -35,10 +35,11 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Handle too long between fighting our actual target
-    if (lastRealTarget + (60000 * 3) < Date.now()) {
+    if (lastRealTarget + (60000 * 2) < Date.now()) {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
             farmWait = undefined;
+            lastRealTarget = Date.now();
             traveling = true;
             currentTarget = target;
             game_log('New target is a ' + target);
@@ -52,6 +53,7 @@ function farm() {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
             farmWait = undefined;
+            lastRealTarget = Date.now();
             traveling = true;
             currentTarget = target;
             game_log('New target is a ' + target);
@@ -113,8 +115,6 @@ function farm() {
         // Handle target refreshing
         refreshTarget();
         tackling = undefined;
-        // Set yourself to traveling
-        if (smart.plot) traveling = smart.plot.length > 1;
         if (currentTarget) shibMove(currentTarget);
     }
 }
