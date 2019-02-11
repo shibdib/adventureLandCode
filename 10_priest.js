@@ -34,7 +34,7 @@ function farm() {
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible
-    if (tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
+    if (!lowest_health && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
     }
