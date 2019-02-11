@@ -48,6 +48,7 @@ function smart_move(destination,on_done) // despite the name, smart_move isn't v
         else if(destination.to=="potions") smart.map="main",smart.x=56,smart.y=-122;
         else if(destination.to=="scrolls") smart.map="main",smart.x=-465,smart.y=-71;
         else if(destination.to=="stands") smart.map="main",smart.x=-186,smart.y=691; // Added
+        else if(destination.to=="shells") smart.map="main",smart.x=-1499,smart.y=629; // Added
     }
     if(!smart.map)
     {

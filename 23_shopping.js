@@ -42,8 +42,10 @@ function buyScroll(type) {
 function exchangeItem(type, npc) {
     let exchangeMerchant = getNpc(npc);
     let distanceToMerchant = null;
+    let moveDestination = "exchange";
+    if (npc === 'fisherman') moveDestination = 'shells';
     if (exchangeMerchant != null) distanceToMerchant = distanceToPoint(exchangeMerchant.position[0], exchangeMerchant.position[1]);
-    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "exchange"});
+    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: moveDestination});
     if (distanceToMerchant != null && distanceToMerchant < 155) {
         exchange(getInventorySlot(type));
     }
