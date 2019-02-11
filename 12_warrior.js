@@ -17,7 +17,7 @@ setInterval(function () {
         state = 99;
     }
     if (!state) return;
-    if (checkPartyAggro() || getMonstersTargeting()[0] || !stateTasks(state, checkPartyAggro())) farm();
+    if (checkPartyAggro() || getMonstersTargeting()[0] || !stateTasks(state)) farm();
 }, 500);
 
 //Fast Loop

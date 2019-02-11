@@ -10,7 +10,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (!state) return;
-    if (checkPartyAggro() || !stateTasks(state, checkPartyAggro())) farm();
+    if (checkPartyAggro() || !stateTasks(state)) farm();
 }, 500);
 
 //Fast Loop

@@ -1,16 +1,15 @@
 // State controller
 let lastBankGearCheck;
 function stateController(state = 10) {
-    let new_state = 1;
     //KIA
     if (character.rip) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if (character.gold >= 100000 || openInventorySpots() < 30) {
+    else if ((character.gold >= 100000 || openInventorySpots() < 30) && state !== 2) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
-    else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
+    else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) && state !== 4) {
         if (!lastBankGearCheck && Math.random() > 0.2) {
             lastBankGearCheck = Date.now();
             new_state = 1;
@@ -18,7 +17,7 @@ function stateController(state = 10) {
             new_state = 4;
         }
     } //POTIONS
-    else if (potionCheck()) {
+    else if (potionCheck() && state !== 3) {
         whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
         new_state = 3;
     }
@@ -35,7 +34,8 @@ function stateController(state = 10) {
 }
 
 //State tasks
-function stateTasks(state, combat) {
+function stateTasks(state) {
+    if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getMonstersTargeting().length > 0;
     if (state === 99) {
         respawn();
         return true;
