@@ -32,8 +32,7 @@ function getEasyKills(oneShot = true) {
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
 function findBestMonster(minXp, array = false) {
     let sorted, monsterSpawns;
-    let partyDPS = partyDPS();
-    let partyHPS = partyHPS();
+    let healsPerSecond = partyHPS();
         // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
@@ -47,7 +46,7 @@ function findBestMonster(minXp, array = false) {
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
-        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < partyHPS
+        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < healsPerSecond
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
         && G.monsters[m].respawn < 15000);
         if (sorted.length > 2) break;

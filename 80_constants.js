@@ -11,7 +11,7 @@ let pveCharacters = [
 let avoidMtypes = ['iceroamer'];
 
 // Potion count
-let targetPotionAmount = 250;
+let targetPotionAmount = 500;
 
 // Merchant stuff
 // Target for upgrades

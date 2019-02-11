@@ -39,7 +39,7 @@ function farm() {
             farmWait = undefined;
             currentTarget = target;
             game_log('New target is a ' + target);
-            whisperParty('Lets go kill ' + currentTarget + "'s.");
+            whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             stop();
         }
     }
