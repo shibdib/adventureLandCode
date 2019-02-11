@@ -82,7 +82,6 @@ function getInventorySlot(search, multiple = false, level = 0) {
 
 //Pick Up Potions
 let requestOnce;
-
 function getPotions() {
     if (moveToMerchant()) {
         let merchant;

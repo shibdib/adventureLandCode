@@ -9,11 +9,11 @@ function stateController(state) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if (character.gold >= 50000 || openInventorySpots() < 30) {
+    else if (character.gold >= 100000 || openInventorySpots() < 30) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if (countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now()) {
-        if (!state && !lastBankGearCheck && Math.random() > 0.2) {
+        if (!lastBankGearCheck && Math.random() > 0.2) {
             lastBankGearCheck = Date.now();
             new_state = 1;
         } else {

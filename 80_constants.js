@@ -13,6 +13,7 @@ let avoidMtypes = ['iceroamer'];
 // Potion count
 let targetPotionAmount = 250;
 
+// Merchant stuff
 // Target for upgrades
 let combineUpgradeTarget = 8;
 
@@ -35,6 +36,9 @@ let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {
 
 // Don't sell these
 let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
+
+// Do sell these
+let sellList = ['cupid'];
 
 //GEARSCORE
 // These items are not equipped
