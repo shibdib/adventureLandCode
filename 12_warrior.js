@@ -32,6 +32,8 @@ function farm() {
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
+    // Hardshell when health is low
+    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Handle too long between fighting our actual target
@@ -47,8 +49,6 @@ function farm() {
             stop();
         }
     }
-    // Hardshell when health is low
-    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(800 * (character.level / 2));
         if (target) {
