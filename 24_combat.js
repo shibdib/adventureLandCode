@@ -153,40 +153,22 @@ function smartAttack(target = get_target()) {
 
 //Returns the party member with the lowest hp -> max_hp ratio.
 function lowHealth(cutOff = 0.99) {
-    let party = [];
-    let member;
+    let lowestHealth;
+    let lowestEntity;
     if (parent.party_list.length > 0) {
         for (let id in parent.party_list) {
-            member = parent.party_list[id];
-            let entity = parent.entities[member];
-            if (member == character.name) entity = character;
-            if (entity && entity.hp < entity.max_hp * cutOff) {
-                if (entity.rip) continue;
-                party.push({name: member, entity: entity});
+            let entity = parent.entities[parent.party_list[id]];
+            if (!entity || entity.rip) continue;
+            if (entity.hp < entity.max_hp * cutOff) {
+                if (!lowestHealth || entity.hp / entity.max_hp < lowestHealth) {
+                    lowestEntity = entity;
+                    lowestHealth = entity.hp / entity.max_hp;
+                }
             }
         }
-    } else {
-        //Add Self to Party Array
-        party.push({
-            name: character.name,
-            entity: character
-        });
     }
-    //Populate health percentages
-    for (let id in party) {
-        member = party[id];
-        if (member.entity != null) {
-            member.entity.health_ratio = member.entity.hp / member.entity.max_hp;
-        } else {
-            member.health_ratio = 1;
-        }
-    }
-    //Order our party array by health percentage
-    party.sort(function (current, next) {
-        return current.entity.health_ratio - member.entity.health_ratio;
-    });
     //Return the lowest health
-    return party[0].entity;
+    if (lowestEntity) return lowestEntity;
 }
 
 // Return number of wounded below a threshold
