@@ -63,10 +63,11 @@ function farm() {
             primary = getMonstersTargeting()[0];
         } else if (mainTarget) {
             stop('move');
+            traveling = false;
             primary = mainTarget;
-        } else if (secondaryTarget && !smart.moving) {
+        } else if (secondaryTarget && !traveling) {
             primary = secondaryTarget;
-        } else if (opportunisticTarget && !smart.moving) {
+        } else if (opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
         }
     }
@@ -95,6 +96,8 @@ function farm() {
         // Handle target refreshing
         refreshTarget();
         tackling = undefined;
+        // Set yourself to traveling
+        traveling = smart.plot.length > 1;
         if (currentTarget) shibMove(currentTarget);
     }
 }
