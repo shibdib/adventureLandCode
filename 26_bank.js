@@ -43,7 +43,7 @@ function depositItems(potions = false) {
             let item = character.items[key];
             if (!item || item === null) continue;
             let itemInfo = G.items[item.name];
-            if (!potions && itemInfo.type === 'pot') continue;
+            if (!potions && (itemInfo.id === 'hpot1' || itemInfo.id === 'mpot1')) continue;
             if (itemInfo.type === 'stand') continue;
             bank_store(key);
         }

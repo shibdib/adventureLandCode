@@ -426,7 +426,7 @@ function merchantStateTasks(state) {
 // State controller
 function merchantStateController(state) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (itemCount('mpot1') < 200 || itemCount('hpot1') < 200) potionsNeeded = true; else potionsNeeded = undefined;
+    if (itemCount('mpot1') < targetPotionAmount * 2 || itemCount('hpot1') < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
     if (bankDetails) {
         if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
     }
