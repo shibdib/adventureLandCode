@@ -63,8 +63,45 @@ function on_party_invite(name) {
 }
 
 // Get monster DPS
-function getMonsterPower(attack, frequency) {
-    return (attack / (1 / frequency)) * 0.925;
+function getMonsterDPS(input) {
+    // Handle entity
+    if (input.level) {
+        return input.attack * G.monsters[input.mtype].frequency * parent.damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
+    } // Handle mtype
+    else if (G.monsters[input]) {
+        return G.monsters[input].attack * G.monsters[input].frequency * parent.damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
+    }
+}
+
+// Get defense rating
+function getDefenseRating(mtype, entity = undefined) {
+
+}
+
+// Get party heal power
+function partyHealPower() {
+    let power = 0;
+    if (!character.party) return 0;
+    for (let key in parent.party_list) {
+        let member = parent.party_list[key];
+        let entity = parent.entities[member];
+        if (!entity || entity.ctype !== 'priest') continue;
+        power += entity.attack * entity.frequency * 0.925;
+    }
+    return power;
+}
+
+// Get party attack power
+function partyAttackPower() {
+    let power = 0;
+    if (!character.party) return 0;
+    for (let key in parent.party_list) {
+        let member = parent.party_list[key];
+        let entity = parent.entities[member];
+        if (!entity || entity.ctype === 'merchant') continue;
+        power += entity.attack * entity.frequency * parent.damage_multiplier(-entity.rpiercing || 0) * 0.925;
+    }
+    return power;
 }
 
 // Check if entity has a buff
@@ -146,10 +183,6 @@ function sortEntitiesByXp(array) {
     return array;
 }
 
-function bankItemWithdraw(key, pack) {
-    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
-}
-
 function placeStand() {
     if (is_moving(character)) return;
     let slot = getInventorySlot('stand0');
@@ -159,3 +192,4 @@ function placeStand() {
 function closeStand() {
     parent.socket.emit("merchant", {close: 1});
 }
+damage_multiplier
