@@ -38,7 +38,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     if (!currentTarget && !party_aggro && character.party) {
-        target = findBestMonster(800 * (character.level / 2));
+        target = findBestMonster(800 * (character.level / 2), lastTarget);
         if (target && (!lastTarget || lastTarget !== target)) {
             farmWait = undefined;
             lastRealTarget = Date.now();

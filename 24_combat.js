@@ -30,12 +30,14 @@ function getEasyKills(oneShot = true) {
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
-function findBestMonster(minXp, array = false) {
+function findBestMonster(minXp, lastTarget) {
     let sorted, monsterSpawns;
     let healsPerSecond = partyHPS();
         // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
+    // Avoid last target
+    if (lastTarget) avoidMtypes = avoidMtypes.push[lastTarget];
     // Get all monster types from G.maps
     for (let key of maps) {
         if (key.monsters) monsterSpawns = key.monsters.forEach((s) => !avoidMtypes.includes(s.type) && monsterTypes.push(s.type))
@@ -58,7 +60,7 @@ function findBestMonster(minXp, array = false) {
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
-    if (!array) return random_one(sorted); else return sorted;
+    return random_one(sorted);
 }
 
 // Returns the target of the leader
