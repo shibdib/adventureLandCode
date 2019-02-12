@@ -147,10 +147,10 @@ function refreshTarget() {
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
+        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         lowLevelCount = 0;
-        lastTarget = currentTarget;
         traveling = true;
         return shibMove('main');
     }
@@ -160,9 +160,9 @@ function refreshTarget() {
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
+        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
-        lastTarget = currentTarget;
         traveling = true;
         return shibMove('main');
     }
@@ -172,9 +172,9 @@ function refreshTarget() {
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
+        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
-        lastTarget = currentTarget;
         traveling = true;
         return shibMove('main');
     }
@@ -193,9 +193,9 @@ function refreshTarget() {
             whisperParty(msg);
             lastCombat = Date.now();
             lastRealTarget = Date.now();
+            lastTarget = currentTarget;
             primary = undefined;
             currentTarget = undefined;
-            lastTarget = currentTarget;
             farmWait = undefined;
             traveling = true;
             return;
