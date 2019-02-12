@@ -387,12 +387,11 @@ function standCheck() {
 
 // Luck loop
 setInterval(function () {
-    for (let key of Object.keys(parent.entities)) {
-        let entity = parent.entities[key];
-        if (!entity || !is_character(entity) || !can_use('mluck', entity)) continue;
-        parent.d_text("Good Luck!",character,{color:"#58D685"});
-        game_log('LUCKED - ' + key);
+    let entity = parent.entities[getRndInteger(0, Object.keys(parent.entities).length)];
+    if (is_character(entity)) {
         use('mluck', entity);
+        parent.d_text("Good Luck!",character,{color:"#58D685"});
+        game_log('LUCKED - ' + entity.name);
     }
 }, 100);
 
