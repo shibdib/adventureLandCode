@@ -195,6 +195,7 @@ let passiveSale = {};
 function passiveMerchant() {
     set_message('IdleMerchant');
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
     if (currentTask === 'getPassiveItem' && !getInventorySlot(passiveSale.item, false, passiveSale.level)) {
         closeStand();
         withdrawItem(passiveSale.item, passiveSale.level);
@@ -207,42 +208,45 @@ function passiveMerchant() {
         let emptySlots = [];
         for (let s = 1; s <= 16; s++) {
             let slot = character.slots['trade' + s];
-            if (slot && slot.item) listedItems.push(item.name); else emptySlots.push(s);
+            if (slot && slot.item) listedItems.push(item.name); else if (!slot) emptySlots.push('trade' + s);
         }
         if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
-            trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], (G.items[passiveSale.item].g * 3) * passiveSale.level, 1);
-            whisperParty(passiveSale.item + ' listed for ' + (G.items[passiveSale.item].g * 3) * passiveSale.level);
+            let append = passiveSale.level;
+            if (!passiveSale.level) append = '';
+            let price = (G.items[passiveSale.item].g * 4.25) * passiveSale.level;
+            if (priceDetails && priceDetails[passiveSale.item + append]) price = round(priceDetails[passiveSale.item + append].savg) || (G.items[passiveSale.item].g * 4.25) * passiveSale.level;
+            trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
+            whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
             passiveSale = {};
             currentTask = undefined;
         } else if (emptySlots.length) {
             for (let item of sellList) {
                 // Skip if we're already selling one
                 //if (onSale.includes(item)) continue;
-                if (getInventorySlot(item)) {
-                    trade(getInventorySlot(item, false, passiveSale.level), emptySlots[0], (G.items[item].g * 3) * passiveSale.level, 1);
-                    return;
-                } else {
-                    for (let l = 0; l < 10; l++) {
-                        if (bankDetails[item + l]) {
-                            passiveSale.item = item;
-                            passiveSale.level = l;
-                            currentTask = 'getPassiveItem';
-                            return;
-                        }
+                for (let l = 0; l < 10; l++) {
+                    if (bankDetails[item + l]) {
+                        passiveSale.item = item;
+                        passiveSale.level = l;
+                        currentTask = 'getPassiveItem';
+                        return;
                     }
                 }
             }
             for (let item of buyTargets) {
+                let append = item.level;
+                if (!item.level) append = '';
+                let price = G.items[item.item].g;
+                if (priceDetails && priceDetails[item.item + append]) price = round(priceDetails[item.item + append].bavg) || G.items[item.item].g;
                 // Skip if we're already buying one
                 if (listedItems.includes(item.item)) continue;
                 parent.socket.emit("trade_wishlist", {
                     q: item.amount,
                     slot: emptySlots[0],
-                    price: G.items[item.item].g,
+                    price: price,
                     level: item.level || 0,
                     name: item.item
                 });
-                whisperParty(item.item + ' wishlisted for ' + G.items[item.item].g);
+                whisperParty(G.items[item.item].name + ' wishlisted for ' + G.items[item.item].g);
             }
         }
     }
@@ -470,6 +474,67 @@ setInterval(function () {
         game_log('LUCKED - ' + entity.name);
     }
 }, 2500);
+
+// Price Check Loop
+setInterval(function () {
+    if (character.map !== 'main') return;
+    let priceDetails = JSON.parse(localStorage.getItem('priceDetails')) || {};
+    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.stand);
+    for (let merchant of merchants) {
+        for (let s = 1; s <= 16; s++) {
+            let slot = merchant.slots['trade' + s];
+            if (slot) {
+                if (slot.b) {
+                    if (!priceDetails[slot.name + slot.level || '']) {
+                        priceDetails[slot.name + slot.level || ''] = {
+                            bhigh: slot.price,
+                            bavg: slot.price,
+                            blow: slot.price,
+                            bseen: 1
+                        }
+                    } else {
+                        let seen = priceDetails[slot.name + slot.level || ''].bseen++;
+                        let avg = (priceDetails[slot.name + slot.level || ''].bavg + slot.price) / 2;
+                        let high = priceDetails[slot.name + slot.level || ''].bhigh;
+                        if (high < slot.price) high = slot.price;
+                        let low = priceDetails[slot.name + slot.level || ''].blow;
+                        if (low > slot.price) low = slot.price;
+                        priceDetails[slot.name + slot.level || ''] = {
+                            bhigh: high,
+                            bavg: avg,
+                            blow: low,
+                            bseen: seen
+                        }
+                    }
+                } else {
+                    if (!priceDetails[slot.name + slot.level || '']) {
+                        priceDetails[slot.name + slot.level || ''] = {
+                            shigh: slot.price,
+                            savg: slot.price,
+                            slow: slot.price,
+                            sseen: 1
+                        }
+                    } else {
+                        let seen = priceDetails[slot.name + slot.level || ''].sseen++;
+                        let avg = (priceDetails[slot.name + slot.level || ''].savg + slot.price) / 2;
+                        let high = priceDetails[slot.name + slot.level || ''].shigh;
+                        if (high < slot.price) high = slot.price;
+                        let low = priceDetails[slot.name + slot.level || ''].slow;
+                        if (low > slot.price) low = slot.price;
+                        priceDetails[slot.name + slot.level || ''] = {
+                            shigh: high,
+                            savg: avg,
+                            slow: low,
+                            sseen: seen
+                        }
+                    }
+                }
+            }
+        }
+    }
+    localStorage.removeItem('priceDetails');
+    localStorage.setItem('priceDetails', JSON.stringify(priceDetails));
+}, 60000 * 60);
 
 //State tasks
 function merchantStateTasks(state) {

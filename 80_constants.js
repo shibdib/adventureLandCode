@@ -45,7 +45,7 @@ let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {
 let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 // Do sell these
-let sellList = ['cupid'];
+let sellList = ['cupid', 'hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring'];
 // Sell when at or above level
 let sellLevelList = [{item: 'quiver', level: 5}, {item: 'helmet', level: 5}, {item: 'shoes', level: 5}, {
     item: 'gloves',
