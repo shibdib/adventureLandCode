@@ -1,6 +1,6 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, currentItem,
+let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, craftingItem,
     currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock,
     buyCooldown;
 let spendingAmount = 10000000;
@@ -26,13 +26,14 @@ function merchantTaskManager() {
     if (standCheck()) return;
     if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
-    } else if (currentItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 5) < Date.now()) {
+    } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 5) < Date.now()) {
         combineItems();
     } else {
-        if (!getItems.length && !currentItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+        if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
         if (!sellItemsToPlayers() && !buyFromPlayers()) if (!sellExcessToNPC()) {
             placeStand();
             buyBaseItems();
+            passiveSales();
         }
     }
 }
@@ -187,6 +188,44 @@ function sellItemsToPlayers() {
     return false;
 }
 
+let passiveSale = {};
+
+function passiveSales() {
+    set_message('IdleMerchant');
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (currentTask === 'getPassiveItem' && !getInventorySlot(passiveSale.item, false, passiveSale.level)) withdrawItem(passiveSale.item, passiveSale.level);
+    if (character.map === 'bank') return shibMove('main');
+    if (!character.stand) {
+        if (distanceToPoint(69, 12) > 5) return shibMove(69, 12); else placeStand();
+    } else {
+        let onSale = [];
+        let emptySlots = [];
+        for (let s = 1; s <= 16; s++) {
+            let slot = character.slots['trade' + s];
+            if (slot.item) onSale.push(item.name); else emptySlots.push(s);
+        }
+        if (emptySlots.length) {
+            for (let item of sellList) {
+                // Skip if we're already selling one
+                //if (onSale.includes(item)) continue;
+                if (getInventorySlot(item)) {
+                    trade(getInventorySlot(item, false, passiveSale.level), emptySlots[0], (G.items[item].g * 3) * passiveSale.level, 1);
+                    return;
+                } else {
+                    for (let l = 0; l < 10; l++) {
+                        if (bankDetails[item + l]) {
+                            passiveSale.item = item;
+                            passiveSale.level = l;
+                            currentTask = 'getPassiveItem';
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function buyFromPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
@@ -222,7 +261,7 @@ function buyFromPlayers() {
 //UPGRADING and COMBINING
 function combineItems() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (!currentItem) {
+    if (!craftingItem) {
         // Chance we skip this time
         if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
         for (let l = 0; l < normalLevelTarget; l++) {
@@ -243,7 +282,7 @@ function combineItems() {
                 let stock = 3;
                 if (l + 1 === normalLevelTarget) stock = 4;
                 if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
-                    currentItem = item;
+                    craftingItem = item;
                     currentTask = 'combine';
                     craftingLevel = l;
                     lastAttemptedCrafting = undefined;
@@ -267,7 +306,7 @@ function combineItems() {
                 let stock = 1;
                 if (l + 1 === normalLevelTarget) stock = 2;
                 if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
-                    currentItem = item;
+                    craftingItem = item;
                     currentTask = 'upgrade';
                     craftingLevel = l;
                     lastAttemptedCrafting = undefined;
@@ -281,9 +320,9 @@ function combineItems() {
         set_message('Crafting');
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
-        if (itemCount(currentItem, craftingLevel) >= needed) {
+        if (itemCount(craftingItem, craftingLevel) >= needed) {
             let scroll;
-            let componentSlot = getInventorySlot(currentItem, true, craftingLevel);
+            let componentSlot = getInventorySlot(craftingItem, true, craftingLevel);
             let grade = item_grade(character.items[componentSlot[0]]);
             if (currentTask === 'combine') {
                 if (grade === 0) scroll = 'cscroll0'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
@@ -294,7 +333,7 @@ function combineItems() {
                 let scrollSlot = getInventorySlot(scroll);
                 parent.d_text("CRAFTING!",character,{color:"#ff4130"});
                 if (crafting(currentTask, componentSlot, scrollSlot)) {
-                    currentItem = undefined;
+                    craftingItem = undefined;
                     currentTask = undefined;
                     craftingLevel = undefined;
                     lastBankCheck = undefined;
@@ -308,10 +347,10 @@ function combineItems() {
                 }
             }
         } else {
-            let withdraw = withdrawItem(currentItem, craftingLevel);
+            let withdraw = withdrawItem(craftingItem, craftingLevel);
             if (withdraw === null) {
-                bankDetails[currentItem] = undefined;
-                currentItem = undefined;
+                bankDetails[craftingItem] = undefined;
+                craftingItem = undefined;
                 currentTask = undefined;
                 craftingLevel = undefined;
                 lastBankCheck = undefined;
@@ -319,10 +358,10 @@ function combineItems() {
             } else if (withdraw) {
                 let append = 0;
                 if (craftingLevel) append = craftingLevel;
-                if (bankDetails[currentItem + append] - 1 === 0) {
-                    bankDetails[currentItem + append] = undefined;
+                if (bankDetails[craftingItem + append] - 1 === 0) {
+                    bankDetails[craftingItem + append] = undefined;
                 } else {
-                    bankDetails[currentItem + append] -= 1;
+                    bankDetails[craftingItem + append] -= 1;
                 }
             }
             localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
@@ -401,7 +440,7 @@ function standCheck() {
 
 // Luck loop
 setInterval(function () {
-    if (Math.random() > 0.45) return;
+    if (Math.random() > 0.75) return;
     let entity = parent.entities[random_one(Object.keys(parent.entities))];
     if (is_character(entity)) {
         use('mluck', entity);

@@ -46,6 +46,11 @@ let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 // Do sell these
 let sellList = ['cupid'];
+// Sell when at or above level
+let sellLevelList = [{item: 'quiver', level: 5}, {item: 'helmet', level: 5}, {item: 'shoes', level: 5}, {
+    item: 'gloves',
+    level: 5
+}];
 
 //GEARSCORE
 // These items are not equipped
