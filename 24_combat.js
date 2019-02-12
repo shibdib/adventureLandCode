@@ -59,6 +59,7 @@ function findBestMonster(minXp, lastTarget) {
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
+    game_log(JSON.stringify(sorted))
     return random_one(sorted);
 }
 

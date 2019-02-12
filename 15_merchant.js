@@ -23,6 +23,7 @@ setInterval(function () {
 
 //MERCHANT TASKS
 function merchantTaskManager() {
+    potionController();
     if (standCheck()) return;
     if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
@@ -33,7 +34,7 @@ function merchantTaskManager() {
         if (!sellItemsToPlayers() && !buyFromPlayers()) if (!sellExcessToNPC()) {
             placeStand();
             buyBaseItems();
-            passiveSales();
+            passiveMerchant();
         }
     }
 }
@@ -188,23 +189,32 @@ function sellItemsToPlayers() {
     return false;
 }
 
+// Handles the merchant stand
 let passiveSale = {};
 
-function passiveSales() {
+function passiveMerchant() {
     set_message('IdleMerchant');
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (currentTask === 'getPassiveItem' && !getInventorySlot(passiveSale.item, false, passiveSale.level)) withdrawItem(passiveSale.item, passiveSale.level);
+    if (currentTask === 'getPassiveItem' && !getInventorySlot(passiveSale.item, false, passiveSale.level)) {
+        closeStand();
+        withdrawItem(passiveSale.item, passiveSale.level);
+    }
     if (character.map === 'bank') return shibMove('main');
     if (!character.stand) {
         if (distanceToPoint(69, 12) > 5) return shibMove(69, 12); else placeStand();
     } else {
-        let onSale = [];
+        let listedItems = [];
         let emptySlots = [];
         for (let s = 1; s <= 16; s++) {
             let slot = character.slots['trade' + s];
-            if (slot.item) onSale.push(item.name); else emptySlots.push(s);
+            if (slot && slot.item) listedItems.push(item.name); else emptySlots.push(s);
         }
-        if (emptySlots.length) {
+        if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
+            trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], (G.items[passiveSale.item].g * 3) * passiveSale.level, 1);
+            whisperParty(passiveSale.item + ' listed for ' + (G.items[passiveSale.item].g * 3) * passiveSale.level);
+            passiveSale = {};
+            currentTask = undefined;
+        } else if (emptySlots.length) {
             for (let item of sellList) {
                 // Skip if we're already selling one
                 //if (onSale.includes(item)) continue;
@@ -221,6 +231,18 @@ function passiveSales() {
                         }
                     }
                 }
+            }
+            for (let item of buyTargets) {
+                // Skip if we're already buying one
+                if (listedItems.includes(item.item)) continue;
+                parent.socket.emit("trade_wishlist", {
+                    q: item.amount,
+                    slot: emptySlots[0],
+                    price: G.items[item.item].g,
+                    level: item.level || 0,
+                    name: item.item
+                });
+                whisperParty(item.item + ' wishlisted for ' + G.items[item.item].g);
             }
         }
     }
