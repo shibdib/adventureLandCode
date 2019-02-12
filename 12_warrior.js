@@ -239,6 +239,7 @@ function tackle(target, slowMove = true) {
         if (can_attack(target)) smartAttack(target);
         if (slowMove) moveToTarget(target);
     } else {
+        kite(target);
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
         if (can_attack(target)) smartAttack(target);
     }
