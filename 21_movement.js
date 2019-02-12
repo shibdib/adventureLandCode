@@ -140,14 +140,17 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 2.75) {
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 4) {
         character.kiting = undefined;
         return;
     }
+    let x, y;
     if (character.kiting && is_moving(character)) return true; else character.kiting = undefined;
-    draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 2.75, 1, '#b30000');
-    if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * 2; else x = -G.monsters[nearest.mtype].range * 2;
-    if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * 2; else y = -G.monsters[nearest.mtype].range * 2;
+    draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 4, 1, '#b30000');
+    if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * 5; else x = -G.monsters[nearest.mtype].range * 5;
+    if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * 5; else y = -G.monsters[nearest.mtype].range * 5;
+    x += getRndInteger(-15, 15);
+    y += getRndInteger(-15, 15);
     if (can_move_to(character.x + x, character.y + y)) {
         if (smart.moving) stop('move');
         draw_line(character.x, character.y, character.x + x, character.y + y)
