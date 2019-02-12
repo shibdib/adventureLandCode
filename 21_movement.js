@@ -132,7 +132,11 @@ function shibMove(destination, second = undefined) {
 // Stay safe
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
-    if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
+    if (target) {
+        nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
+    } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
+        nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
+    }
     if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;
