@@ -32,7 +32,7 @@ function getEasyKills(oneShot = true) {
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
 function findBestMonster(minXp, lastTarget) {
     let sorted, monsterSpawns;
-    let healsPerSecond = partyHPS();
+    let healsPerSecond = partyHPS() * 0.95;
         // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
