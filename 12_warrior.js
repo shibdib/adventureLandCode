@@ -38,7 +38,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     if (!currentTarget && !party_aggro && character.party) {
-        target = findBestMonster(800 * (character.level / 2), lastTarget);
+        target = findBestMonster(750 * (character.level / 2), lastTarget);
         if (target && (!lastTarget || lastTarget !== target)) {
             farmWait = undefined;
             lastRealTarget = Date.now();
@@ -47,7 +47,7 @@ function farm() {
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.",character,{color:"#354de8"});
-            stop();
+            return stop();
         } else if (lastTarget) {
             lastTarget = undefined;
         }
@@ -93,6 +93,7 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
+            if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
             if (secondaryTarget && get_target_of(primary) === character) {
                 parent.d_text("PULLING MORE!",character,{color:"#FF0000"});
@@ -113,6 +114,7 @@ function farm() {
                 kite();
             }
         }
+        if (!secondaryTarget) kite(primary);
     } else {
         tackling = undefined;
         if (currentTarget) shibMove(currentTarget);
@@ -153,7 +155,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // We haven't seen our actual target in awhile
-    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
+    if (lastRealTarget + (60000 * 2.5) < Date.now()) {
         whisperParty('Have not seen a ' + currentTarget + "'s for a couple minutes, moving onto something new.");
         stop();
         lastCombat = Date.now();
@@ -165,8 +167,8 @@ function refreshTarget() {
         return shibMove('main');
     }
     // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + (60000 * 3) < Date.now()) {
-        whisperParty('We have not been in combat for 3 minutes, going to head to town and figure this out.');
+    if (lastCombat && lastCombat + (60000 * 5) < Date.now()) {
+        whisperParty('We have not been in combat for 5 minutes, going to head to town and figure this out.');
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();

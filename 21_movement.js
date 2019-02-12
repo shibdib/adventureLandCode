@@ -172,8 +172,9 @@ function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0
 }
 
 // Stay safe
-function kite() {
+function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(character.range * 1.25, true);
+    if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;
