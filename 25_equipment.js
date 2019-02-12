@@ -66,17 +66,22 @@ function getInventorySlot(search, multiple = false, level = 0) {
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (item.name === search && item_properties(item).level === level) return key;
+            if (item.name === search && item_properties(item).level === level) {
+                if (character.items[key].name === item) return key;
+            }
         }
     } else {
         let slots = [];
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (item.name === search && item_properties(item).level === level) slots.push(key);
+            if (item.name === search && item_properties(item).level === level) {
+                if (character.items[key].name === item) slots.push(key);
+            }
         }
         return slots;
     }
+    return undefined;
 }
 
 //Pick Up Potions
