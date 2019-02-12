@@ -264,7 +264,7 @@ setInterval(function () {
         if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
         send_party_invite(char.name);
     }
-}, 30000);
+}, 5000);
 
 // Party Move Speed Management
 setInterval(function () {
