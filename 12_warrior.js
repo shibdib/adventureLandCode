@@ -46,7 +46,7 @@ function farm() {
             currentTarget = target;
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
-            parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.",character,{color:"#354de8"});
+            if (Math.random() > 0.9) parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.", character, {color: "#354de8"});
             return stop();
         } else if (lastTarget) {
             lastTarget = undefined;
@@ -96,21 +96,21 @@ function farm() {
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
             if (secondaryTarget && get_target_of(primary) === character) {
-                parent.d_text("PULLING MORE!",character,{color:"#FF0000"});
+                if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
-                parent.d_text("GETTING AGGRO!",character,{color:"#E83E1A"});
+                if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
                 if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
             } else if (!waitForHealer() || primary.target === character.name) {
-                parent.d_text("GO TIME!",character,{color:"#A23720"});
+                if (Math.random() > 0.9) parent.d_text("GO TIME!", character, {color: "#A23720"});
                 tackle(primary);
             } else {
-                parent.d_text("WAITING",character,{color:"#209CA2"});
+                if (Math.random() > 0.9) parent.d_text("WAITING", character, {color: "#209CA2"});
                 primary = undefined;
                 kite();
             }
