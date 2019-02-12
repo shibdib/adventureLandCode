@@ -36,7 +36,7 @@ let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop'
     {item: 'seashell', npc: 'fisherman', amount: 20}];
 
 // The merchant will attempt to destroy these
-let trashItems = ['firecrackers'];
+let trashItems = [];
 
 // Don't sell these
 let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {item: 'weaponbox', amount: 1}];
@@ -45,7 +45,7 @@ let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {
 let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 // Do sell these
-let sellList = ['cupid', 'hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring'];
+let sellList = ['cupid', 'hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'firecrackers'];
 // Sell when at or above level
 let sellLevelList = [{item: 'quiver', level: 5}, {item: 'helmet', level: 5}, {item: 'shoes', level: 5}, {
     item: 'gloves',
