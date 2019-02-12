@@ -127,6 +127,7 @@ function shibMove(destination, second = undefined) {
 }
 
 // Stay safe
+let kitePos = {};
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
     if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
@@ -140,11 +141,13 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 4) return;
-    draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 3, 1, '#b30000');
-    let angle = CalcAngle(character.real_x, character.real_y, nearest.real_x, nearest.real_y);
-    let x = Math.cos(angle)*(G.monsters[nearest.mtype].range * 5.5).toFixed(12);
-    let y = Math.sin(angle)*(G.monsters[nearest.mtype].range * 5.5).toFixed(12);
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 2.75) return;
+    draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 2.75, 1, '#b30000');
+    let angle = CalcAngle(character.x, character.y, nearest.x, nearest.y);
+    let x = Math.cos(angle);
+    let y = Math.sin(angle);
+    if (character.x > nearest.x) x += G.monsters[nearest.mtype].range * 2; else x -= G.monsters[nearest.mtype].range * 2;
+    if (character.y > nearest.y) y += G.monsters[nearest.mtype].range * 2; else y -= G.monsters[nearest.mtype].range * 2;
     if (can_move_to(character.real_x + x, character.real_y + y)) {
         if (smart.moving) stop('move');
         return moveToCoords(character.real_x + x, character.real_y + y);
@@ -162,5 +165,5 @@ function kite(target = undefined) {
 
 // Calc angle for kiting https://stackoverflow.com/a/53838484
 function CalcAngle(px, py, ax, ay) {
-    return Math.atan((ax-px)/(ay-py));
+    return Math.atan2(ay - py, ax - px) * 180 / Math.PI;
 }
