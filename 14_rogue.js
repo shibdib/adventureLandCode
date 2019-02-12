@@ -12,7 +12,7 @@ setInterval(function () {
 setInterval(function () {
     if (!state) return;
     if (!stateTasks(state)) farm();
-}, 100);
+}, 250);
 
 //Fast Loop
 setInterval(function () {
