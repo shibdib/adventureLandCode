@@ -9,6 +9,8 @@ let pveCharacters = [
 
 // Avoid attacking these
 let avoidMtypes = [];
+// Avoid going here
+let avoidMaps = ["tunnel"];
 
 // Potion count
 let targetPotionAmount = 500;
