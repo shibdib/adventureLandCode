@@ -126,51 +126,6 @@ function shibMove(destination, second = undefined) {
     }
 }
 
-// Kite from your current target and also take into account an avoid array
-let alreadyStored = {};
-function getKitePosition(target, avoidArray, rangeToTarget = character.range * 0.95) {
-    let range;
-    if (target) range = distanceToPoint(target.real_x, target.real_y);
-    for (let x = 0; x < 1500; x++) {
-        let xChange = getRndInteger(-150, 150);
-        let yChange = getRndInteger(-character.range, character.range);
-        if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-            let newRange;
-            if (target)  newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-            // Handle avoiding others
-            let closestAvoid, currentClosestAvoid, maxRange;
-            if (avoidArray && avoidArray.length) {
-                for (let avoid of avoidArray) {
-                    if (target && avoid.id === target.id) continue;
-                    let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                    let currentAvoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                    if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
-                    if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = avoidRange;
-                    if (G.monsters[avoid.mtype] && (!maxRange || maxRange < G.monsters[avoid.mtype].range)) maxRange = G.monsters[avoid.mtype].range;
-                }
-            }
-            // Return original if still good otherwise check a new one
-            if ((!target || (range >= rangeToTarget * 0.8 && range <= rangeToTarget)) && (!currentClosestAvoid || currentClosestAvoid > maxRange * 4)) {
-                return undefined;
-            } else if ((!target || (newRange >= rangeToTarget * 0.8 && newRange <= rangeToTarget)) && (!closestAvoid || closestAvoid > maxRange * 4)) {
-                let newPos = {
-                    x: character.real_x + xChange,
-                    y: character.real_y + yChange
-                };
-                if (!alreadyStored[character.name]) {
-                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
-                } else if (alreadyStored[character.name] && alreadyStored[character.name].t + 1200 < Date.now()) {
-                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
-                    return newPos;
-                } else {
-                    return alreadyStored[character.name];
-                }
-            }
-        }
-    }
-    return undefined;
-}
-
 // Stay safe
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
@@ -194,54 +149,18 @@ function kite(target = undefined) {
         if (smart.moving) stop('move');
         return moveToCoords(character.real_x + x, character.real_y + y);
     } else {
-        if (smart.moving) stop('move');
-        let randX = getRndInteger(-10, 10);
-        let randY = getRndInteger(-10, 10);
-        return moveToCoords(character.real_x + x + randX, character.real_y + y + randY);
+        for (let a = 0; a < 100; a++) {
+            let randX = getRndInteger(-40, 40);
+            let randY = getRndInteger(-40, 40);
+            if (can_move_to(character.real_x + x + randX, character.real_y + y + randY)) {
+                if (smart.moving) stop('move');
+                return moveToCoords(character.real_x + x, character.real_y + y);
+            }
+        }
     }
 }
 
 // Calc angle for kiting https://stackoverflow.com/a/53838484
 function CalcAngle(px, py, ax, ay) {
     return Math.atan((ax-px)/(ay-py));
-}
-
-// Try to move tackled away from other threats
-function moveTackled(target, avoidArray) {
-    for (let x = 0; x < 500; x++) {
-        let xChange = getRndInteger(-50, 50);
-        let yChange = getRndInteger(-50, 50);
-        if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-            // Handle avoiding others
-            let closestAvoid, currentClosestAvoid, maxRange;
-            if (avoidArray && avoidArray.length) {
-                for (let avoid of avoidArray) {
-                    if (target && avoid.id === target.id) continue;
-                    let avoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                    let currentAvoidRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, avoid.real_x, avoid.real_y);
-                    if (!closestAvoid || avoidRange < closestAvoid) closestAvoid = avoidRange;
-                    if (!currentClosestAvoid || currentAvoidRange < currentClosestAvoid) currentClosestAvoid = avoidRange;
-                    if (G.monsters[avoid.mtype] && (!maxRange || maxRange < G.monsters[avoid.mtype].range)) maxRange = G.monsters[avoid.mtype].range;
-                }
-            }
-            // Return original if still good otherwise check a new one
-            if (!currentClosestAvoid || currentClosestAvoid > maxRange * 8) {
-                return undefined;
-            } else if (!closestAvoid || closestAvoid > maxRange * 8) {
-                let newPos = {
-                    x: character.real_x + xChange,
-                    y: character.real_y + yChange
-                };
-                if (!alreadyStored[character.name]) {
-                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
-                } else if (alreadyStored[character.name] && alreadyStored[character.name].t + 1200 < Date.now()) {
-                    alreadyStored[character.name] = {x:newPos.x,y:newPos.y,t:Date.now()};
-                    return newPos;
-                } else {
-                    return alreadyStored[character.name];
-                }
-            }
-        }
-    }
-    return undefined;
 }
