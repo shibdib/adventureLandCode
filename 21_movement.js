@@ -127,15 +127,8 @@ function shibMove(destination, second = undefined) {
 }
 
 // Stay safe
-let kitePos = {};
 function kite(target = undefined) {
-    if (kitePos[character.name]) {
-        if (distanceBetweenPoints(kitePos[character.name].x, kitePos[character.name].y, character.x, character.y) > 3) {
-            return moveToCoords(kitePos[character.name].x, kitePos[character.name].y);
-        } else {
-            kitePos[character.name] = undefined;
-        }
-    }
+    if (is_moving(character)) return true;
     let nearbyHostiles = nearbyAggressors(250, true);
     if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     if (!nearbyHostiles.length) return;
@@ -157,7 +150,6 @@ function kite(target = undefined) {
     if (character.y > nearest.y) y += G.monsters[nearest.mtype].range * 2; else y -= G.monsters[nearest.mtype].range * 2;
     if (can_move_to(character.x + x, character.y + y)) {
         if (smart.moving) stop('move');
-        kitePos[character.name] = {x: character.x + x, y: character.y + y};
         return moveToCoords(character.x + x, character.y + y);
     } else {
         for (let a = 0; a < 100; a++) {
@@ -165,7 +157,6 @@ function kite(target = undefined) {
             let randY = getRndInteger(-40, 40);
             if (can_move_to(character.x + x + randX, character.y + y + randY)) {
                 if (smart.moving) stop('move');
-                kitePos[character.name] = {x: character.x + x, y: character.y + y};
                 return moveToCoords(character.x + x, character.y + y);
             }
         }

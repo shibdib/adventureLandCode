@@ -46,13 +46,13 @@ function farm() {
             }
             // Attack
             attack(target);
-            kite(target);
+            kite();
         } else {
             // If you need to kite do so, otherwise get in range
             moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        if (!combat) moveToLeader(); else moveToLeader(character.range * 0.425, character.range * 0.99);
+        if (!combat) moveToLeader(); else kite();
     }
 }
 

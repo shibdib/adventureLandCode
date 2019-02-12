@@ -36,11 +36,16 @@ function farm() {
             if (can_use('quickstab', target)) {
                 parent.d_text("QUICK STAB!",character,{color:"#ff4c25"});
                 use('quickstab', target);
+                kite();
             } else if (can_use('quickpunch', target)) {
                 parent.d_text("QUICK PUNCH!",character,{color:"#ff4130"});
                 use('quickpunch', target);
+                kite();
             }
-            if (can_attack(target)) smartAttack(target);
+            if (can_attack(target)) {
+                smartAttack(target);
+                kite();
+            }
         } else {
             // Poison
             if (can_use('pcoat')) {
@@ -56,7 +61,7 @@ function farm() {
         }
     } else {
         // Only invis if near baddies
-        if (nearbyAggressors(75, true).length && can_use('invis')) use('invis'); else stop('invis');
+        if (nearbyAggressors(100, true).length && can_use('invis')) use('invis'); else stop('invis');
         // Speedy rogue
         if (can_use('rspeed', character)) use('rspeed', character);
         moveToLeader();

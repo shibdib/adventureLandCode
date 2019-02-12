@@ -100,13 +100,12 @@ function farm() {
                 primary = secondaryTarget;
             }
             tackle(primary);
-            if (!secondaryTarget) kite(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
                 parent.d_text("GETTING AGGRO!",character,{color:"#E83E1A"});
                 tackle(primary);
-                if (!secondaryTarget) kite(primary);
+                if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
             } else if (!waitForHealer() || primary.target === character.name) {
                 parent.d_text("GO TIME!",character,{color:"#A23720"});
                 tackle(primary);
@@ -234,10 +233,15 @@ function tackle(target, slowMove = true) {
     lastCombat = Date.now();
     farmWait = undefined;
     tackling = true;
-    if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
-    if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
-    if (can_attack(target)) smartAttack(target);
-    if (slowMove) moveToTarget(target);
+    if (!kite()) {
+        if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
+        if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
+        if (can_attack(target)) smartAttack(target);
+        if (slowMove) moveToTarget(target);
+    } else {
+        if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
+        if (can_attack(target)) smartAttack(target);
+    }
 }
 
 ///
