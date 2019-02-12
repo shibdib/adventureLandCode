@@ -149,6 +149,7 @@ function refreshTarget() {
         currentTarget = undefined;
         lowLevelCount = 0;
         lastTarget = currentTarget;
+        traveling = true;
         return shibMove('main');
     }
     // We haven't seen our actual target in awhile
@@ -160,6 +161,7 @@ function refreshTarget() {
         primary = undefined;
         currentTarget = undefined;
         lastTarget = currentTarget;
+        traveling = true;
         return shibMove('main');
     }
     // If it's been a REALLY long time we probably bugged out so refresh
@@ -171,6 +173,7 @@ function refreshTarget() {
         primary = undefined;
         currentTarget = undefined;
         lastTarget = currentTarget;
+        traveling = true;
         return shibMove('main');
     }
     // If range doesn't change much start counter
@@ -192,6 +195,7 @@ function refreshTarget() {
             currentTarget = undefined;
             lastTarget = currentTarget;
             farmWait = undefined;
+            traveling = true;
             return;
         }
     } else {
