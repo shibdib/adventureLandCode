@@ -50,7 +50,7 @@ function findBestMonster(minXp, lastTarget) {
         sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < healsPerSecond
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
         && G.monsters[m].respawn < 15000);
-        if (sorted.length > 1) break;
+        if (sorted.length > 4) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
     }
