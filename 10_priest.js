@@ -37,6 +37,7 @@ function farm() {
         parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);
+        kite();
     }
     if (mostHurtMember && mostHurtMember.hp < mostHurtMember.max_hp * 0.20 && can_use('revive', mostHurtMember)) { //Max heal with revive
         if (in_attack_range(mostHurtMember)) {
