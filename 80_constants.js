@@ -8,7 +8,7 @@ let pveCharacters = [
 ];
 
 // Avoid attacking these
-let avoidMtypes = ['iceroamer'];
+let avoidMtypes = [];
 
 // Potion count
 let targetPotionAmount = 500;
