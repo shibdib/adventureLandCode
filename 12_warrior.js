@@ -1,6 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget, lowLevelCount;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget;
+let lowLevelCount = 0;
 let state = stateController();
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
@@ -38,7 +39,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     if (!currentTarget && !party_aggro && character.party) {
-        target = findBestMonster(750 * (character.level / 2), lastTarget);
+        target = findBestMonster(75 * (character.level / 2), lastTarget);
         if (target && (!lastTarget || lastTarget !== target)) {
             farmWait = undefined;
             lastRealTarget = Date.now();
