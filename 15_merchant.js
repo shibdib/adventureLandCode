@@ -239,6 +239,8 @@ function passiveMerchant() {
                 if (!item.level) append = '';
                 let price = G.items[item.item].g;
                 if (priceDetails && priceDetails[item.item + append] && priceDetails[item.item + append].savg) price = round(priceDetails[item.item + append].bavg);
+                // Skip if we have enough
+                if (bankDetails[item.item + 0] >= item.amount) continue;
                 // Skip if we're already buying one
                 if (listedItems.includes(item.item)) continue;
                 parent.socket.emit("trade_wishlist", {

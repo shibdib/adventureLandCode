@@ -30,10 +30,19 @@ function getEasyKills(oneShot = true) {
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
+let lastPoisonFarm;
 function findBestMonster(minXp, lastTarget) {
     let sorted, monsterSpawns;
     let healsPerSecond = partyHPS() * 0.95;
-        // Make G.maps an array
+    // Farm for poison when needed
+    if (!lastPoisonFarm || (lastPoisonFarm + (60000)) * 30 < Date.now()) {
+        let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+        if (!bankDetails['poison0'] || bankDetails['poison0'] < 100) {
+            lastPoisonFarm = Date.now();
+            return 'poisio';
+        }
+    }
+    // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
     // Get all monster types from G.maps
