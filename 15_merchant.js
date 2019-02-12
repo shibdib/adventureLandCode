@@ -387,13 +387,14 @@ function standCheck() {
 
 // Luck loop
 setInterval(function () {
-    let entity = parent.entities[getRndInteger(0, Object.keys(parent.entities).length)];
+    if (Math.random() > 0.45) return;
+    let entity = parent.entities[random_one(Object.keys(parent.entities))];
     if (is_character(entity)) {
         use('mluck', entity);
         parent.d_text("Good Luck!",character,{color:"#58D685"});
         game_log('LUCKED - ' + entity.name);
     }
-}, 100);
+}, 2500);
 
 //State tasks
 function merchantStateTasks(state) {
