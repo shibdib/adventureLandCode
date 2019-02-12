@@ -136,7 +136,7 @@ function getSecondary() {
 }
 
 // Refresh your target if the spawn is empty
-let farmWait, lowLevelCount;
+let farmWait;
 function refreshTarget() {
     if (!currentTarget || waitForHealer(325, true)) return;
     // We're only fighting low level main targets, time to rotate to let them build up
