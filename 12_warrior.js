@@ -131,7 +131,7 @@ function getSecondary() {
     let possibleAdds = findAdds();
     if (state !== 1 ||
         (possibleAdds.length && totalAttack + getMonsterDPS(possibleAdds[0], true) > partyHPS())
-        || currentThreats.length > 2) return;
+        || currentThreats.length > 4) return;
     if (possibleAdds.length) {
         return possibleAdds[0];
     }
