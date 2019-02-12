@@ -36,15 +36,12 @@ function farm() {
             if (can_use('quickstab', target)) {
                 parent.d_text("QUICK STAB!",character,{color:"#ff4c25"});
                 use('quickstab', target);
-                kite();
             } else if (can_use('quickpunch', target)) {
                 parent.d_text("QUICK PUNCH!",character,{color:"#ff4130"});
                 use('quickpunch', target);
-                kite();
             }
             if (can_attack(target)) {
                 smartAttack(target);
-                kite();
             }
         } else {
             // Poison
