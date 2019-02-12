@@ -6,7 +6,7 @@ function moveToTarget(target, min = 0, max = character.range * 0.9) {
     // If range is good stay
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
-    if (range && smart.moving && range <= character.range) return stop();
+    if (range && smart.moving && range <= 100) return stop();
     // If moving continue
     if (smart.moving) return;
     // Handle different map
