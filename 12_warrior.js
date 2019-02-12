@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget, lowLevelMonster;
 let state = stateController();
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
@@ -76,6 +76,8 @@ function farm() {
             stop('move');
             traveling = false;
             primary = mainTarget;
+            // Is main target level 1-2??
+            lowLevelMonster = mainTarget.level <= 2;
         } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
         } else if (!readyToPull) {
@@ -134,9 +136,24 @@ function getSecondary() {
 }
 
 // Refresh your target if the spawn is empty
-let farmWait;
+let farmWait, lowLevelCount;
 function refreshTarget() {
     if (!currentTarget || waitForHealer(325, true)) return;
+    // We're only fighting low level main targets, time to rotate to let them build up
+    if (lowLevelMonster) {
+        lowLevelCount++;
+        if (lowLevelCount >= 4) {
+            whisperParty('These ' + currentTarget + "'s have been over farmed and need to level up, time to rotate to something new.");
+            stop();
+            lastCombat = Date.now();
+            lastRealTarget = Date.now();
+            primary = undefined;
+            currentTarget = undefined;
+            lowLevelCount = 0;
+            lastTarget = currentTarget;
+            return shibMove('main');
+        }
+    }
     // We haven't seen our actual target in awhile
     if (lastRealTarget + (60000 * 1.5) < Date.now()) {
         whisperParty('Have not seen a ' + currentTarget + "'s for a couple minutes, moving onto something new.");
