@@ -17,16 +17,18 @@ let targetPotionAmount = 500;
 
 // Merchant stuff
 // Target for upgrades
-let combineUpgradeTarget = 8;
+let normalLevelTarget = 8;
+let highLevelTarget = 5;
+let epicLevelTarget = 3;
 
-// The merchant will attempt to combine these
+// The merchant will attempt to combine these to the target level
 let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt' , 'warmscarf', 'darktristone',
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
 // The merchant will attempt to upgrade these
 let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield',
-    'helmet1', 'shoes1', 'gloves1', 'pants1', 'coat1'];
+    'helmet1', 'shoes1', 'gloves1', 'pants1', 'coat1', 't2bow', 'cupid', 'pmace', 'firestaff', 'harbringer', 'basher', 'fireblade', 'spear', 'throwingstars'];
 
 // The merchant will attempt to exchange these
 let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop', npc: 'exchange', amount: 10},

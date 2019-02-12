@@ -94,7 +94,7 @@ function buyBaseItems() {
     items:
     for (let item of baseItems) {
         let need = true;
-        for (let l = 0; l < combineUpgradeTarget - 1; l++) {
+        for (let l = 0; l < normalLevelTarget - 1; l++) {
             if (l === 0) l = 0;
             if (itemCount(item + l) >= 2 || bankDetails[item + l] >= 2) {
                 need = false;
@@ -225,8 +225,15 @@ function combineItems() {
     if (!currentItem) {
         // Chance we skip this time
         if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
-        for (let l = 0; l < combineUpgradeTarget; l++) {
+        for (let l = 0; l < normalLevelTarget; l++) {
             for (let item of combineTargets) {
+                if (item_grade({
+                    name: item,
+                    level: l
+                }) === 1 && l > highLevelTarget) continue; else if (item_grade({
+                    name: item,
+                    level: l
+                }) === 2 && l > epicLevelTarget) continue;
                 let append = l;
                 let levelLookup = l;
                 if (!l) {
@@ -234,7 +241,7 @@ function combineItems() {
                     levelLookup = undefined;
                 }
                 let stock = 3;
-                if (l + 1 === combineUpgradeTarget) stock = 4;
+                if (l + 1 === normalLevelTarget) stock = 4;
                 if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
                     currentItem = item;
                     currentTask = 'combine';
@@ -244,6 +251,13 @@ function combineItems() {
                 }
             }
             for (let item of upgradeTargets) {
+                if (item_grade({
+                    name: item,
+                    level: l
+                }) === 1 && l > highLevelTarget) continue; else if (item_grade({
+                    name: item,
+                    level: l
+                }) === 2 && l > epicLevelTarget) continue;
                 let append = l;
                 let levelLookup = l;
                 if (!l) {
@@ -251,7 +265,7 @@ function combineItems() {
                     append = 0;
                 }
                 let stock = 1;
-                if (l + 1 === combineUpgradeTarget) stock = 2;
+                if (l + 1 === normalLevelTarget) stock = 2;
                 if (getInventorySlot(item, true, levelLookup).length >= stock || bankDetails[item + append] >= stock) {
                     currentItem = item;
                     currentTask = 'upgrade';
