@@ -71,6 +71,6 @@ function farm() {
         if (mostHurtMember && in_attack_range(mostHurtMember)) {
             heal(mostHurtMember);
         }
-        if (nearbyAggressors(150, true).length) kite(); else if (!combat) moveToLeader(); else kite();
+        if (!combat) moveToLeader(); else kite();
     }
 }

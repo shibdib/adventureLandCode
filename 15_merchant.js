@@ -481,7 +481,7 @@ setInterval(function () {
 cachePriceInfo();
 setInterval(function () {
     cachePriceInfo()
-}, 60000 * 60);
+}, 60000 * 30);
 
 function cachePriceInfo() {
     if (character.map !== 'main') return;
