@@ -1,7 +1,6 @@
 // Handle moving to a target
 // TODO: send_cm/on_cm stuff for map change
 function moveToTarget(target, min = 0, max = character.range * 0.9) {
-    if (nearbyAggressors(150, true).length) return kite();
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
     // If range is good stay
@@ -24,7 +23,6 @@ function moveToTarget(target, min = 0, max = character.range * 0.9) {
 // TODO: send_cm/on_cm stuff for map change
 let mapSwap = {};
 function moveToLeader(min = 20, max = 25) {
-    if (nearbyAggressors(150, true).length) return kite();
     let leader = get_player(character.party);
     let range;
     if (leader) range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
@@ -123,7 +121,6 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, second = undefined) {
-    if (nearbyAggressors(150, true).length) return kite();
     if (!is_moving(character)){
         smart_move(destination, second);
     }
@@ -136,6 +133,8 @@ function kite(target = undefined) {
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
+    } else if (character.ctype === 'warrior' && getMonstersTargeting()[0]) {
+        nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getMonstersTargeting()[0].id);
     }
     if (!nearbyHostiles.length) return;
     // Check if we should move
