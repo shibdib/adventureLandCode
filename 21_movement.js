@@ -127,7 +127,15 @@ function shibMove(destination, second = undefined) {
 }
 
 // Stay safe
+let kitePos = {};
 function kite(target = undefined) {
+    if (kitePos[character.name]) {
+        if (distanceBetweenPoints(kitePos[character.name].x, kitePos[character.name].y, character.x, character.y) > 3) {
+            return moveToCoords(kitePos[character.name].x, kitePos[character.name].y);
+        } else {
+            kitePos[character.name] = undefined;
+        }
+    }
     let nearbyHostiles = nearbyAggressors(250, true);
     if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     if (!nearbyHostiles.length) return;
@@ -147,22 +155,27 @@ function kite(target = undefined) {
     let y = Math.sin(angle);
     if (character.x > nearest.x) x += G.monsters[nearest.mtype].range * 2; else x -= G.monsters[nearest.mtype].range * 2;
     if (character.y > nearest.y) y += G.monsters[nearest.mtype].range * 2; else y -= G.monsters[nearest.mtype].range * 2;
-    if (can_move_to(character.real_x + x, character.real_y + y)) {
+    if (can_move_to(character.x + x, character.y + y)) {
         if (smart.moving) stop('move');
-        return moveToCoords(character.real_x + x, character.real_y + y);
+        kitePos[character.name] = {x: character.x + x, y: character.y + y};
+        return moveToCoords(character.x + x, character.y + y);
     } else {
         for (let a = 0; a < 100; a++) {
             let randX = getRndInteger(-40, 40);
             let randY = getRndInteger(-40, 40);
-            if (can_move_to(character.real_x + x + randX, character.real_y + y + randY)) {
+            if (can_move_to(character.x + x + randX, character.y + y + randY)) {
                 if (smart.moving) stop('move');
-                return moveToCoords(character.real_x + x, character.real_y + y);
+                kitePos[character.name] = {x: character.x + x, y: character.y + y};
+                return moveToCoords(character.x + x, character.y + y);
             }
         }
     }
 }
 
-// Calc angle for kiting https://stackoverflow.com/a/53838484
+// Calc angle for kiting https://gist.github.com/conorbuck/2606166
+/**
+ * @return {number}
+ */
 function CalcAngle(px, py, ax, ay) {
     return Math.atan2(ay - py, ax - px) * 180 / Math.PI;
 }

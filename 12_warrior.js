@@ -99,17 +99,17 @@ function farm() {
                 parent.d_text("PULLING MORE!",character,{color:"#FF0000"});
                 primary = secondaryTarget;
             }
-            tackle(primary);
+            tackle(primary, false);
             if (!secondaryTarget) kite(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
                 parent.d_text("GETTING AGGRO!",character,{color:"#E83E1A"});
-                tackle(primary);
+                tackle(primary, false);
                 if (!secondaryTarget) kite(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
                 parent.d_text("GO TIME!",character,{color:"#A23720"});
-                tackle(primary);
+                tackle(primary, false);
             } else {
                 parent.d_text("WAITING",character,{color:"#209CA2"});
                 primary = undefined;
