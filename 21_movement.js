@@ -127,7 +127,6 @@ function shibMove(destination, second = undefined) {
 }
 
 // Stay safe
-let kitePos = {};
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
     if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
