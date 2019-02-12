@@ -233,7 +233,7 @@ function tackle(target, slowMove = true) {
     lastCombat = Date.now();
     farmWait = undefined;
     tackling = true;
-    if (!kite()) {
+    if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
         if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
         if (can_attack(target)) smartAttack(target);
