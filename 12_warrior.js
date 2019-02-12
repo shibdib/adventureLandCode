@@ -20,7 +20,7 @@ setInterval(function () {
     }
     if (!state) return;
     if (!stateTasks(state)) farm();
-}, 500);
+}, 100);
 
 //Fast Loop
 setInterval(function () {
