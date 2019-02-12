@@ -13,7 +13,7 @@ setInterval(function () {
 //Primary Loop
 setInterval(function () {
     if (character.rip) {
-        lastTarget = currentTarget;
+        if (currentTarget) lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         state = 99;
