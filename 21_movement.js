@@ -144,7 +144,7 @@ function kite(target = undefined) {
         character.kiting = undefined;
         return;
     }
-    if (character.kiting) return true;
+    if (character.kiting && is_moving(character)) return true; else character.kiting = undefined;
     draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 2.75, 1, '#b30000');
     if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * 2; else x = -G.monsters[nearest.mtype].range * 2;
     if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * 2; else y = -G.monsters[nearest.mtype].range * 2;
