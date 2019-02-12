@@ -207,7 +207,7 @@ function passiveMerchant() {
         let emptySlots = [];
         for (let s = 1; s <= 16; s++) {
             let slot = character.slots['trade' + s];
-            if (slot && slot.item) listedItems.push(item.name); else if (!slot) emptySlots.push('trade' + s);
+            if (slot && slot.name) listedItems.push(slot.name); else if (!slot) emptySlots.push('trade' + s);
         }
         if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
             let append = passiveSale.level;
@@ -224,7 +224,7 @@ function passiveMerchant() {
         } else if (emptySlots.length) {
             for (let item of sellList) {
                 // Skip if we're already selling one
-                //if (onSale.includes(item)) continue;
+                if (listedItems.includes(item)) continue;
                 for (let l = 0; l < 10; l++) {
                     if (bankDetails[item + l]) {
                         passiveSale.item = item;
