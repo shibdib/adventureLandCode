@@ -11,8 +11,8 @@ let specialSlots = {
 };
 
 // Cycles thru inventory and equips bis
+let checked = [];
 function equipBIS() {
-    let checked = [];
     for (let key in character.items) {
         let item = character.items[key];
         if (!item || checked.includes(item.name)) continue;
@@ -28,14 +28,13 @@ function gearIssue() {
         shibMove('bank');
         return false;
     } else {
-        let checked = [];
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
             for (let packKey in slot) {
                 let item = slot[packKey];
-                if (!item || checked.includes(item.name)) continue;
-                //checked.push(item.name);
+                if (!item || checked.includes(item.name+item.level)) continue;
+                checked.push(item.name+item.level);
                 if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
                 bestItemEquip(getHighestLevel(item.name));
             }
