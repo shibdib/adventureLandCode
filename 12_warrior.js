@@ -100,11 +100,13 @@ function farm() {
                 primary = secondaryTarget;
             }
             tackle(primary);
+            if (!secondaryTarget) kite(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
                 parent.d_text("GETTING AGGRO!",character,{color:"#E83E1A"});
                 tackle(primary);
+                if (!secondaryTarget) kite(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
                 parent.d_text("GO TIME!",character,{color:"#A23720"});
                 tackle(primary);
@@ -114,7 +116,6 @@ function farm() {
                 kite();
             }
         }
-        if (!secondaryTarget) kite(primary);
     } else {
         tackling = undefined;
         if (currentTarget) shibMove(currentTarget);
