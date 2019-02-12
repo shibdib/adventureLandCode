@@ -128,7 +128,6 @@ function shibMove(destination, second = undefined) {
 
 // Stay safe
 function kite(target = undefined) {
-    if (is_moving(character) && !smart.moving) return true;
     let nearbyHostiles = nearbyAggressors(250, true);
     if (target) nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     if (!nearbyHostiles.length) return;
@@ -141,15 +140,18 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 2.75) return;
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 2.75) {
+        character.kiting = undefined;
+        return;
+    }
+    if (character.kiting) return true;
     draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 2.75, 1, '#b30000');
-    let angle = CalcAngle(character.x, character.y, nearest.x, nearest.y);
-    let x = Math.cos(angle);
-    let y = Math.sin(angle);
-    if (character.x > nearest.x) x += G.monsters[nearest.mtype].range * 2; else x -= G.monsters[nearest.mtype].range * 2;
-    if (character.y > nearest.y) y += G.monsters[nearest.mtype].range * 2; else y -= G.monsters[nearest.mtype].range * 2;
+    if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * 2; else x = -G.monsters[nearest.mtype].range * 2;
+    if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * 2; else y = -G.monsters[nearest.mtype].range * 2;
     if (can_move_to(character.x + x, character.y + y)) {
         if (smart.moving) stop('move');
+        draw_line(character.x, character.y, character.x + x, character.y + y)
+        character.kiting = true;
         return moveToCoords(character.x + x, character.y + y);
     } else {
         for (let a = 0; a < 100; a++) {
@@ -157,6 +159,8 @@ function kite(target = undefined) {
             let randY = getRndInteger(-40, 40);
             if (can_move_to(character.x + x + randX, character.y + y + randY)) {
                 if (smart.moving) stop('move');
+                draw_line(character.x, character.y, character.x + x, character.y + y)
+                character.kiting = true;
                 return moveToCoords(character.x + x, character.y + y);
             }
         }
