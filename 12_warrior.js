@@ -99,7 +99,7 @@ function farm() {
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (parent.party_list.includes(primary.target)) {
+            if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
                 parent.d_text("GETTING AGGRO!",character,{color:"#E83E1A"});
                 tackle(primary);
             } else if (!waitForHealer() || primary.target === character.name) {
@@ -169,7 +169,7 @@ function refreshTarget() {
             msg = 'There is too many people farming here, so I will look for a new target.';
         }
         if (!farmWait) farmWait = Date.now();
-        game_log('Target Reset Timeout In ' + (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) + ' Seconds.');
+        if ((((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) < (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) / 2) game_log('Target Reset Timeout In ' + (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) + ' Seconds.');
         if ((farmWait + cutoff) - Date.now() <= 0) {
             whisperParty(msg);
             lastCombat = Date.now();

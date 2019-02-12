@@ -1,6 +1,6 @@
 game_log("---Priest Script Start---");
 load_code(2);
-let combat, alerted;
+let combat;
 let state = stateController();
 
 //State Controller
@@ -40,8 +40,6 @@ function farm() {
     }
     if (mostHurtMember && mostHurtMember.hp < mostHurtMember.max_hp * 0.20 && can_use('revive', mostHurtMember)) { //Max heal with revive
         if (in_attack_range(mostHurtMember)) {
-            //if (!alerted) pm(lowest_health.name, 'Max Heal Incoming!');
-            alerted = true;
             // Use revive as a mega heal
             use('revive', mostHurtMember);
             kite();
@@ -54,9 +52,7 @@ function farm() {
         kite();
     } else if (mostHurtMember && !mostHurtMember.rip) { //HEAL WOUNDED
         if (in_attack_range(mostHurtMember)) {
-            parent.d_text("HEALS COMING!",character,{color:"#36e80a"});
-            //if (!alerted) pm(lowest_health.name, 'Healing You!!');
-            alerted = true;
+            parent.d_text("HEALING " + mostHurtMember.name + "!",character,{color:"#36e80a"});
             // Heal
             heal(mostHurtMember);
             kite();
@@ -64,15 +60,13 @@ function farm() {
             moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.99);
         }
     } else if (!mostHurtMember && deadParty()) { //REVIVE DEAD
-        alerted = undefined;
-        let dead_party = deadParty();
-        if (can_use('revive', dead_party)) {
-            parent.d_text("REVIVING!",character,{color:"#27ffeb"});
-            use('revive', dead_party);
+        let deadMember = deadParty();
+        if (can_use('revive', deadMember)) {
+            parent.d_text("REVIVING " + deadMember.name + "!",character,{color:"#27ffeb"});
+            use('revive', deadMember);
             kite();
         }
     } else {
-        alerted = undefined;
         if (mostHurtMember && in_attack_range(mostHurtMember)) {
             heal(mostHurtMember);
         }
