@@ -35,6 +35,8 @@ function gearIssue() {
                 let item = slot[packKey];
                 if (!item || checked.includes(item.name+item.level)) continue;
                 checked.push(item.name+item.level);
+                // Get poison
+                if ((character.ctype === 'rogue' || character.ctype === 'hunter') && item.name === 'poison' && !getInventorySlot(item.name)) withdrawItem(item.name);
                 if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
                 bestItemEquip(getHighestLevel(item.name));
             }
