@@ -35,7 +35,7 @@ function gearIssue() {
             for (let packKey in slot) {
                 let item = slot[packKey];
                 if (!item || checked.includes(item.name)) continue;
-                checked.push(item.name);
+                //checked.push(item.name);
                 if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
                 bestItemEquip(getHighestLevel(item.name));
             }
@@ -203,6 +203,7 @@ function bestItemEquip(item, bank = true) {
 
 //Clear outdate scores
 if (localStorage.getItem('gearVersion') && localStorage.getItem('gearVersion') !== attributeVersion) {
+    localStorage.removeItem('gearScore');
     localStorage.removeItem('gearVersion');
     localStorage.setItem('gearVersion', attributeVersion);
 }
@@ -229,7 +230,7 @@ function computeGearScore(ctype, item, level) {
         for (let atr of Object.keys(weights)) {
             let itemAtr = details[atr] || 0;
             let levelSteps = 0;
-            if (details['upgrade']) levelSteps = details['upgrade'][atr] || 0; else if (details['combine']) levelSteps = details['combine'][atr] || 0;
+            if (details['upgrade']) levelSteps = details['upgrade'][atr] || 0; else if (details['compound']) levelSteps = details['compound'][atr] || 0;
             base += (weights[atr] * (itemAtr + (levelSteps * level)));
         }
         stored[storedName][key] = base

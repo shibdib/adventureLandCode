@@ -47,7 +47,7 @@ let sellList = ['cupid'];
 // These items are not equipped
 let ignoredItems = ['cupid'];
 // Change to force update of gear score
-let attributeVersion = 1;
+let attributeVersion = 2;
 // Stat weights (1-10)
 let attributeWeights = {
     'priest': {
@@ -64,7 +64,8 @@ let attributeWeights = {
         "resistance": 5,
         "rpiercing": 6,
         "lifesteal": 1,
-        "stat": 2
+        "stat": 2,
+        "hp": 3
     },
     'ranger': {
         "dex": 10,
@@ -80,7 +81,8 @@ let attributeWeights = {
         "resistance": 3,
         "rpiercing": 1,
         "lifesteal": 1,
-        "stat": 2
+        "stat": 2,
+        "hp": 3
     },
     'warrior': {
         "dex": 2,
@@ -96,7 +98,8 @@ let attributeWeights = {
         "resistance": 6,
         "rpiercing": 1,
         "lifesteal": 7,
-        "stat": 2
+        "stat": 2,
+        "hp": 3
     },
     'rogue': {
         "dex": 10,
@@ -112,7 +115,8 @@ let attributeWeights = {
         "resistance": 3,
         "rpiercing": 5,
         "lifesteal": 3,
-        "stat": 5
+        "stat": 5,
+        "hp": 3
     },
     'overall': {
         "dex": 5,
@@ -128,7 +132,8 @@ let attributeWeights = {
         "resistance": 5,
         "rpiercing": 5,
         "lifesteal": 5,
-        "stat": 2
+        "stat": 2,
+        "hp": 3
     }
 };
 
