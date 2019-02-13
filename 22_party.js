@@ -92,13 +92,31 @@ function waitForHealer(range = 300, silent = false) {
 }
 
 // Whisper the party
-function whisperParty(message, public = false) {
+let messageQueue = [];
+let lastSent;
+function whisperParty(message, sendPublic = false) {
+    if (lastSent && lastSent + 5000 > Date.now()) {
+        messageQueue.push(message);
+        return;
+    }
     if (parent.party_list.length > 0) {
+        lastSent = Date.now();
         say('/p ' + message);
-    } else if (public) {
+    } else if (sendPublic) {
+        lastSent = Date.now();
         say(message);
     }
 }
+// Queued message loop
+setInterval(function () {
+    if (messageQueue.length && lastSent + 5000 <= Date.now()) {
+        if (parent.party_list.length > 0) {
+            lastSent = Date.now();
+            say('/p ' + messageQueue[0]);
+            messageQueue.shift();
+        }
+    }
+}, 2500);
 
 let partyTracker = {};
 // Restarts lost party members
