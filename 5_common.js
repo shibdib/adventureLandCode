@@ -1,13 +1,18 @@
 // State controller
-let lastBankGearCheck, new_state;
+let lastBankGearCheck, new_state, deathCooldown;
+let deathTime = {};
 function stateController(state) {
     if (!state) state = 10;
     new_state = 1;
     //KIA
+    if (isPvP()) grieferTracking();
     if (character.rip) {
-        if (state !== 99) whisperParty('I died');
+        if (state !== 99) {
+            deathTime[character.name] = Date.now();
+            if (isPvP()) deathTracker++;
+            whisperParty('I died');
+        }
         new_state = 99;
-        respawn();
     } //BANKING
     else if ((character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
@@ -45,7 +50,9 @@ function stateTasks(state) {
     let combat;
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
-        respawn();
+        let tod = deathTime[character.name];
+        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(25000, 65000); else deathCooldown = 15000;
+        if (tod + deathCooldown < Date.now()) respawn();
         return true;
     } // DEAD
     if (state === 1 || combat) return false; // FARM
@@ -105,3 +112,27 @@ function potionCheck() {
     }
     if (needPots) return true;
 }
+
+//PVP Death tracking
+let deathTracker, lastDownTick;
+function grieferTracking() {
+    if (deathTracker >= 5) {
+        realmSwap(pvp = false);
+    } else if (deathTracker && lastDownTick + (60000 * 3) < Date.now()) {
+        deathTracker--;
+    }
+}
+//Realm switching
+function realmSwap(pvp = false) {
+    let serverRegions = ['EU', 'US'];
+    let names = ['I', 'II'];
+    let pvpNames = ['PVP'];
+    if (pvp) names = names.concat(pvpNames);
+    change_server(random_one(serverRegions), random_one(names));
+}
+//Chance for a realm swap every hour
+setInterval(function () {
+    if (Math.random() > 0.6) {
+        realmSwap(true);
+    }
+}, 60000 * 60);
