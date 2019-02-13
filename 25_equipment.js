@@ -122,6 +122,7 @@ function getPotions() {
 
 // Grabs an item from the bank if it's potentially better;
 function bestItemEquip(item, bank = true) {
+    let twoHander;
     if (!item || ignoredItems.includes(item.name)) return;
     let itemInfo = G.items[item.name];
     // Check if slot doesn't match type
@@ -136,6 +137,7 @@ function bestItemEquip(item, bank = true) {
             itemSlot = ['mainhand', 'offhand']
         } // 2 hander
         else if (G.classes[character.ctype].doublehand.includes(itemInfo.wtype)) {
+            twoHander = true;
             itemSlot = 'mainhand'
         } // Offhand only?
         else if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)) {
@@ -145,6 +147,7 @@ function bestItemEquip(item, bank = true) {
             itemSlot = 'mainhand'
         }
     }
+    let replacementScore = getGearScore(character.ctype, item.name, item_properties(item).level);
     // Handle holding a 2 hander
     if ((itemSlot === 'offhand' || (Array.isArray(itemSlot) && itemSlot.includes('offhand'))) && character.slots['mainhand'] && G.classes[character.ctype].doublehand && G.classes[character.ctype].doublehand.includes(G.items[character.slots['mainhand'].name].wtype)) return;
     // Handle ears and rings
@@ -166,7 +169,7 @@ function bestItemEquip(item, bank = true) {
                 return;
             }
             // Compare gear score to slotted
-            if (getGearScore(character.ctype, item.name, item_properties(item).level) > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
+            if (replacementScore > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
                 if (bank) {
                     withdrawItem(item.name, item_properties(item).level);
                     game_log('Grabbing ' + itemInfo.name + ' from the bank.');
@@ -194,15 +197,31 @@ function bestItemEquip(item, bank = true) {
             return true;
         }
         // Compare gear score to slotted
-        if (getGearScore(character.ctype, item.name, item_properties(item).level) > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
-             if (bank) {
+        if (!twoHander && replacementScore > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
+            if (bank) {
+                withdrawItem(item.name, item_properties(item).level);
+                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
+            } else {
+                game_log('Equipping ' + itemInfo.name + '.');
+            }
+             equip(getInventorySlot(item.name, false, item_properties(item).level));
+             return true;
+        } else if (twoHander && getGearScore(character.ctype, item.name, item_properties(item).level) > (getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level))) {
+            let mainHandScore = getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level);
+            let offHandItem = character.slots['offhand'];
+            let offHandScore = 0;
+            if (offHandItem) offHandScore = getGearScore(character.ctype, offHandItem.name, item_properties(offHandItem).level);
+            if (replacementScore > (offHandScore + mainHandScore) * 0.8) {
+                if (bank) {
                     withdrawItem(item.name, item_properties(item).level);
                     game_log('Grabbing ' + itemInfo.name + ' from the bank.');
                 } else {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
-             equip(getInventorySlot(item.name, false, item_properties(item).level));
-             return true;
+                unequip('mainhand');
+                unequip('offhand');
+                equip(getInventorySlot(item.name, false, item_properties(item).level));
+            }
         }
     }
 }
