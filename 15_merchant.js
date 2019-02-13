@@ -24,6 +24,9 @@ setInterval(function () {
 //MERCHANT TASKS
 function merchantTaskManager() {
     potionController();
+    if (isPvP() && nearbyAggressors(400)) {
+        return shibMove('bank')
+    }
     if (standCheck()) return;
     if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
         exchangeStuff();
