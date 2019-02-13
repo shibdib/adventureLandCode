@@ -74,6 +74,7 @@ function waitForHealer(range = 300, silent = false) {
                 if (!healerNotify) {
                     if (!silent) game_log('Healer Range.');
                     if (!silent) whisperParty('Waiting on our healer ' + member + ' to get in range before I pull.');
+                    if (isPvP()) moveToTarget(entity);
                 }
                 healerNotify = true;
                 return true;
@@ -88,7 +89,7 @@ function waitForHealer(range = 300, silent = false) {
         healerNotify = true;
         if (isPvP() && findStoredHealer()) {
             let healer = findStoredHealer();
-            moveToCoords(healer.x, healer.y)
+            moveToCoords(healer.x, healer.y);
             return true;
         } else {
             return true;
@@ -180,7 +181,7 @@ function refreshCharacters(force = false) {
 function findStoredHealer() {
     let currentData = JSON.parse(localStorage.getItem('myDetails'));
     if (currentData) {
-        for (let key of currentData) {
+        for (let key of Object.keys(currentData)) {
             let member = currentData[key];
             if (member.ctype === 'priest') {
                 return member;

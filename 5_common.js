@@ -34,6 +34,7 @@ function stateController(state) {
         game_log("--- NEW STATE " + states[new_state] + " ---");
         state = new_state;
         set_message(states[state]);
+        stop();
     }
     // return state
     return state;

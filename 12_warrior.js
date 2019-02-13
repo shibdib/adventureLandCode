@@ -43,6 +43,8 @@ function farm() {
     let party_aggro = checkPartyAggro();
     // Handle target refreshing
     refreshTarget();
+    // Stay with healer on pvp
+    if (isPvP() && waitForHealer()) return;
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
