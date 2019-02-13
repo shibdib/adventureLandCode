@@ -67,6 +67,6 @@ function farm() {
             if (nearbyAggressors(150, true).length) kite(); else moveToTarget(target, character.range * 0.5, character.range * 0.99);
         }
     } else {
-        if (nearbyAggressors(150, true).length) kite(); else if (!combat) moveToLeader(); else kite();
+        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.425, character.range * 0.99);
     }
 }

@@ -32,6 +32,8 @@ function farm() {
     let tankTarget = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
+    // If tank target is a kitey player CURSE THEM!!!!
+    if (tankTarget && is_character(tankTarget) && (tankTarget.ctype === 'mage' || tankTarget.ctype === 'ranger') && can_use('curse', tankTarget)) use('curse', tankTarget);
     // Do Damage if possible
     if (!mostHurtMember && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
         parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
@@ -71,6 +73,6 @@ function farm() {
         if (lowHealth(1) && in_attack_range(lowHealth(1))) {
             heal(lowHealth(1));
         }
-        if (nearbyAggressors(150, true).length) kite(); else if (!combat) moveToLeader(); else kite();
+        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.425, character.range * 0.99);
     }
 }
