@@ -85,9 +85,14 @@ function waitForHealer(range = 300, silent = false) {
             if (!silent) game_log('No healer??');
             if (!silent) whisperParty('Where did the healer go??');
         }
-        if (isPvP())
         healerNotify = true;
-        return true;
+        if (isPvP() && findStoredHealer()) {
+            let healer = findStoredHealer();
+            moveToCoords(healer.x, healer.y)
+            return true;
+        } else {
+            return true;
+        }
     }
     healerNotify = undefined;
 }
@@ -171,11 +176,23 @@ function refreshCharacters(force = false) {
     }
 }
 
+// Find a healer via party data
+function findStoredHealer() {
+    let currentData = JSON.parse(localStorage.getItem('myDetails'));
+    if (currentData) {
+        for (let key of currentData) {
+            let member = currentData[key];
+            if (member.ctype === 'priest') {
+                return member;
+            }
+        }
+    }
+}
+
 // Store my character data
 function updateCharacterData() {
     // Get or create data
-    let currentData = {};
-    if (localStorage.getItem('myDetails')) currentData = JSON.parse(localStorage.getItem('myDetails'));
+    let currentData = JSON.parse(localStorage.getItem('myDetails')) || {};
     // Store data
     let combat = getEntitiesTargeting().length > 0;
     currentData[character.name] = {

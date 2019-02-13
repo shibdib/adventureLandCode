@@ -115,7 +115,7 @@ function moveToCoords(x, y) {
     } else if (is_moving(character)) {
         return;
     } else {
-        smart_move({x: x, y: y});
+        shibMove({x: x, y: y});
     }
 }
 
