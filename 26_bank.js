@@ -74,6 +74,11 @@ function withdrawItem(target, level = undefined) {
     }
 }
 
+// No function for withdrawing
+function bankItemWithdraw(key, pack) {
+    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
+}
+
 //Get the highest level of a certain item in the bank
 function getHighestLevel(itemName) {
     let best, bestLevel;
@@ -90,8 +95,4 @@ function getHighestLevel(itemName) {
         }
     }
     return best;
-}
-
-function bankItemWithdraw(key, pack) {
-    parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
 }
