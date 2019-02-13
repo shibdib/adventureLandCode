@@ -4,7 +4,7 @@ function findLocalTargets(type, returnArray = false) {
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
     if (isPvP()) {
-        let nearbyPlayers = getNearbyCharacters(400, true);
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => player.level <= character.level && !parent.friends.includes(player.owner));
         if (nearbyPlayers.length) monsters = monsters.concat(nearbyPlayers);
     }
     if (!monsters.length) return false;
