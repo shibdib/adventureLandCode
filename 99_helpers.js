@@ -57,6 +57,25 @@ function on_party_invite(name) {
     accept_party_invite(name);
 }
 
+// Disable all the other logging because it's really annoying
+function add_log(c, a) {
+    if (mode.dom_tests || inside == "payments" || no_html) {
+        return
+    }
+    if (c.includes('killed') || c.includes('gold')) return;
+    if (game_logs.length > 750) {
+        var b = "<div class='gameentry' style='color: gray'>- Truncated -</div>";
+        game_logs = game_logs.slice(-160);
+        game_logs.forEach(function(d) {
+            b += "<div class='gameentry' style='color: " + (d[1] || "white") + "'>" + d[0] + "</div>"
+        });
+        $("#gamelog").html(b)
+    }
+    game_logs.push([c, a]);
+    $("#gamelog").append("<div class='gameentry' style='color: " + (a || "white") + "'>" + c + "</div>");
+    $("#gamelog").scrollTop($("#gamelog")[0].scrollHeight)
+}
+
 // Character DPS
 function getCharacterDPS(userCharacter = character) {
     if (G.classes[userCharacter.ctype].damage_type === 'physical') {
