@@ -9,6 +9,7 @@ function stateController(state) {
         respawn();
     } //BANKING
     else if ((character.gold >= 100000 || openInventorySpots() < 30)) {
+        if (state !== 2) whisperParty('Headed to the bank, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now())) {

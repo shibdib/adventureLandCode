@@ -1,18 +1,11 @@
 //BANKING
 //Drop off gold
-let goldWithdrawNotify;
-
 function depositGold(amount = character.gold - 5000) {
-    if (!goldWithdrawNotify) {
-        whisperParty('I have way too much gold, brb.');
-        goldWithdrawNotify = true;
-    }
     if (character.map !== 'bank') {
         shibMove('bank');
         return false;
     } else {
         bank_deposit(amount);
-        goldWithdrawNotify = undefined;
     }
 }
 
@@ -28,13 +21,7 @@ function withdrawGold(amount) {
 }
 
 //Drop off all items
-let itemsNotify;
-
 function depositItems(potions = false) {
-    if (!itemsNotify) {
-        whisperParty('Running to the bank to drop off some loot, brb.');
-        itemsNotify = true;
-    }
     if (character.map !== 'bank') {
         shibMove('bank');
         return false;
