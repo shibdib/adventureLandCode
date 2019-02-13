@@ -46,7 +46,7 @@ function farm() {
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
-        if (target && (!lastTarget || lastTarget !== target)) {
+        if (target) {
             farmWait = undefined;
             lastRealTarget = Date.now();
             traveling = true;
@@ -56,8 +56,6 @@ function farm() {
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             if (Math.random() > 0.9) parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.", character, {color: "#354de8"});
             return stop();
-        } else if (lastTarget) {
-            lastTarget = undefined;
         }
     }
     // Handle various target declarations
