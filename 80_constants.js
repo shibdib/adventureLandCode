@@ -16,6 +16,9 @@ let eventMobs = ['snowman', 'goblin', 'pinkgoo'];
 // Loot targets (These will always be in the array of possibles as they drop something worthwhile.
 let lootTargets = ['tortoise', 'poisio'];
 
+// Filter words from log
+let filterWord = ['gold', 'killed', 'speed'];
+
 // Potion count
 let targetPotionAmount = 500;
 

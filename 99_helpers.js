@@ -59,22 +59,28 @@ function on_party_invite(name) {
 
 // Disable all the other logging because it's really annoying
 function add_log(c, a) {
-    if (mode.dom_tests || inside == "payments" || no_html) {
+    if (parent === null || parent.mode.dom_tests || parent.inside == "payments" || parent.no_html) {
         return
     }
-    if (c.includes('killed') || c.includes('gold')) return;
-    if (game_logs.length > 750) {
-        var b = "<div class='gameentry' style='color: gray'>- Truncated -</div>";
-        game_logs = game_logs.slice(-160);
-        game_logs.forEach(function(d) {
+    // Filters log entries from an array called filterWord
+    let length = filterWord.length;
+    while(length--) {
+        if (c.indexOf(filterWord[length])!==-1) {
+            return;
+        }
+    }
+    if (parent.game_logs.length > 480) {
+        let b = "<div class='gameentry' style='color: gray'>- Truncated -</div>";
+        parent.game_logs = parent.game_logs.slice(-160);
+        parent.game_logs.forEach(function (d) {
             b += "<div class='gameentry' style='color: " + (d[1] || "white") + "'>" + d[0] + "</div>"
         });
-        $("#gamelog").html(b)
+        parent.$("#gamelog").html(b)
     }
-    game_logs.push([c, a]);
-    $("#gamelog").append("<div class='gameentry' style='color: " + (a || "white") + "'>" + c + "</div>");
-    $("#gamelog").scrollTop($("#gamelog")[0].scrollHeight)
+    parent.game_logs.push([c, a]);
+    parent.$("#gamelog").append("<div class='gameentry' style='color: " + (a || "white") + "'>" + c + "</div>");
 }
+parent.add_log = add_log;
 
 // Character DPS
 function getCharacterDPS(userCharacter = character) {
