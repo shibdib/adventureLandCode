@@ -5,7 +5,7 @@ function findLocalTargets(type, returnArray = false) {
     potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
-        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && !parent.friends.includes(player.owner));
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && !parent.friends.includes(player.owner) && checkIfHostile(player));
         if (nearbyPlayers.length) potentialTargets = potentialTargets.concat(nearbyPlayers);
     }
     if (!potentialTargets.length) return false;
@@ -96,19 +96,20 @@ function checkTankAggro() {
 function checkPartyAggro() {
     if (!character.party) return;
     if (parent.party_list.length) {
-        let bad_aggro = Object.values(parent.entities).filter(mob => mob.type === "monster" && parent.party_list.includes(mob.target));
-        if (bad_aggro.length) return bad_aggro[0];
+        let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
+        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && is_character(mob) && parent.party_list.includes(mob.target));
+        if (playerAggro.length) playerAggro.forEach((p) => storeHostilePlayer(p));
+        if (playerAggro.length) return playerAggro[0]; else if (monsterAggro.length) return monsterAggro[0];
     }
 }
 
 // Check for monsters nearby who will aggro
 function nearbyAggressors(range = 215, highRisk) {
-    let attackCutoff = 20;
-    if (highRisk) attackCutoff = character.hp * 0.1;
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
-        G.monsters[mob.mtype].aggro && G.monsters[mob.mtype].attack >= attackCutoff && parent.distance(character, mob) <= range);
+        G.monsters[mob.mtype].aggro && getMonsterDPS(mob) >= partyHPS() && parent.distance(character, mob) <= range);
     if (isPvP()) {
-        let nearbyPlayers = getNearbyCharacters(400, true);
+        // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => !parent.friends.includes(player.owner) && checkIfHostile(player));
         if (nearbyPlayers.length) aggressiveMonsters = aggressiveMonsters.concat(nearbyPlayers);
     }
     //Order monsters by distance.
@@ -116,9 +117,15 @@ function nearbyAggressors(range = 215, highRisk) {
 }
 
 // Return all monsters targeting you
-function getMonstersTargeting(target = character) {
+function getEntitiesTargeting(target = character) {
     if (!target) target = character;
-    let all = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.target === target.name);
+    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
+    let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && is_character(mob) && get_target_of(mob) === target);
+    if (playerAggro.length) {
+        playerAggro.forEach((p) => storeHostilePlayer(p));
+        return sortEntitiesByDistance(playerAggro);
+    }
+    let all = monsterAggro.concat(playerAggro);
     //Order monsters by distance.
     return sortEntitiesByDistance(all);
 }
@@ -207,5 +214,33 @@ function deadParty() {
             if (!entity.rip) continue;
             if (entity) return entity;
         }
+    }
+}
+
+// Store PVP info
+function storeHostilePlayer(hostile, act = 'target') {
+    let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
+    if (!hostilePlayers[hostile.owner]) {
+        hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
+        pm(hostile.name, 'You have been marked hostile for 30 minutes. ' +
+            '(If you know of a better way of determining hostility than targeting please contact me on discord @shibdib)');
+        whisperParty(hostile.name + ' has been marked hostile.');
+        localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
+    }
+}
+
+// Check PVP status
+function checkIfHostile(hostile) {
+    let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
+    if (hostilePlayers[hostile.owner]) {
+        if (hostilePlayers[hostile.owner].time + (60000 * 30) < Date.now()) {
+            hostilePlayers[hostile.owner] = undefined;
+            localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
     }
 }

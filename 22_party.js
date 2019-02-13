@@ -176,7 +176,7 @@ function updateCharacterData() {
     let currentData = {};
     if (localStorage.getItem('myDetails')) currentData = JSON.parse(localStorage.getItem('myDetails'));
     // Store data
-    let combat = getMonstersTargeting().length > 0;
+    let combat = getEntitiesTargeting().length > 0;
     currentData[character.name] = {
         name: character.name,
         ctype: character.ctype,

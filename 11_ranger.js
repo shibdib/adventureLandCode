@@ -28,7 +28,7 @@ function farm() {
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (leader) {
-        let pulledMonsters = getMonstersTargeting(leader);
+        let pulledMonsters = getEntitiesTargeting(leader);
         if (pulledMonsters.length >= 5 && can_use['5shot']) {
             parent.d_text("5-SHOT!",character,{color:"#ffc230"});
             use('5shot', pulledMonsters);
@@ -41,7 +41,7 @@ function farm() {
     }
     // Use track on pvp servers
     if (isPvP() && can_use('track')) use('track');
-    let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
+    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     if (target) {
         if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
             // Long range

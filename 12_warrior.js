@@ -73,9 +73,9 @@ function farm() {
     if (primary && primary.dead) primary = undefined;
     if (!primary) {
         let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
-        if (getMonstersTargeting()[0]) {
+        if (getEntitiesTargeting()[0]) {
             stop('move');
-            primary = getMonstersTargeting()[0];
+            primary = getEntitiesTargeting()[0];
         } else if (readyToPull && mainTarget) {
             lastRealTarget = Date.now();
             stop('move');
@@ -132,7 +132,7 @@ function farm() {
 
 // Pull additional monsters
 function getSecondary() {
-    let currentThreats = getMonstersTargeting();
+    let currentThreats = getEntitiesTargeting();
     // Get total incoming attack damage
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += getMonsterDPS(t, true));

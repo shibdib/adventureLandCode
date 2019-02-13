@@ -29,7 +29,7 @@ function farm() {
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     let mostHurtMember = lowHealth(0.75);
-    let tankTarget = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
+    let tankTarget = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // Do Damage if possible

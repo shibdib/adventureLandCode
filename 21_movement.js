@@ -136,9 +136,9 @@ function kite(target = undefined) {
     } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
         multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
-    } else if (character.ctype === 'warrior' && getMonstersTargeting()[0]) {
+    } else if (character.ctype === 'warrior' && getEntitiesTargeting()[0]) {
         multi = 1;
-        nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getMonstersTargeting()[0].id);
+        nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getEntitiesTargeting()[0].id);
     }
     if (!nearbyHostiles.length) return;
     // Check if we should move

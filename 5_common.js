@@ -42,7 +42,7 @@ function stateController(state) {
 //State tasks
 function stateTasks(state) {
     let combat;
-    if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getMonstersTargeting().length > 0;
+    if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         respawn();
         return true;
