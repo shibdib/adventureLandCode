@@ -301,3 +301,10 @@ setInterval(function () {
         pendingReboot = true;
     }
 }, 60000 * 60);
+
+//Add button to refresh target
+add_bottom_button(3, 'Refresh Target', function () {
+    lastTarget = currentTarget;
+    currentTarget = undefined;
+    whisperParty('Manual target refresh requested..');
+});
