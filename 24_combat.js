@@ -1,16 +1,17 @@
 // Find in view range monsters base off type
 function findLocalTargets(type, returnArray = false) {
-    let monsters;
+    let potentialTargets;
     // Look for targets in range
-    monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
+    potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
     if (isPvP()) {
-        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => player.level <= character.level && !parent.friends.includes(player.owner));
-        if (nearbyPlayers.length) monsters = monsters.concat(nearbyPlayers);
+        // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && !parent.friends.includes(player.owner));
+        if (nearbyPlayers.length) potentialTargets = potentialTargets.concat(nearbyPlayers);
     }
-    if (!monsters.length) return false;
+    if (!potentialTargets.length) return false;
     //Order monsters by distance and xp.
-    monsters = sortEntitiesByDistance(monsters).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
-    if (!returnArray) return monsters[0]; else return monsters;
+    potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
+    if (!returnArray) return potentialTargets[0]; else return potentialTargets;
 }
 
 // Find possible targets to pull with your main target
