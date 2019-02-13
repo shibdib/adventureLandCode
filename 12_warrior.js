@@ -209,6 +209,18 @@ function refreshTarget() {
         traveling = true;
         return shibMove('main');
     }
+    // PVP server, dont farm near other players
+    if (!smart.moving && isPvP() && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length) {
+        whisperParty('Do no want to farm near another player on this realm, switching target.');
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        lastTarget = currentTarget;
+        primary = undefined;
+        currentTarget = undefined;
+        traveling = true;
+        return shibMove('main');
+    }
 }
 
 //Move as fast as the slowest man
