@@ -260,7 +260,7 @@ function tackle(target, slowMove = true) {
     tackling = true;
     if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
-        if (can_use('charge', target) && 250 > parent.distance(character, target) > 100) use('charge', target);
+        if (can_use('charge') && parent.distance(character, target) > 120) use('charge');
         if (can_attack(target)) smartAttack(target);
         if (slowMove) moveToTarget(target);
     } else {
