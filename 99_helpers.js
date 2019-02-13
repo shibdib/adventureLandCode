@@ -253,6 +253,39 @@ function sortEntitiesByXp(array) {
     return array;
 }
 
+//Returns the number of items in your inventory for a given item name;
+function itemCount(name, level = 0) {
+    let count = character.items.filter(item => item != null && item.name === name && item_properties(item).level === level).reduce(function (a, b) {
+        return a + (b["q"] || 1);
+    }, 0);
+    return count;
+}
+
+//Returns how many inventory slots have not yet been filled.
+function openInventorySpots() {
+    return character.esize;
+}
+
+// Check inventory for at risk items
+function vulnerableItemsCheck() {
+    let count = 0;
+    for (let key in character.items) {
+        let item = character.items[key];
+        if (!item || item === null) continue;
+        if (item.v) count++;
+    }
+    return count;
+}
+
+//Gets an NPC by name from the current map.
+function getNpc(name) {
+    let npc = parent.G.maps[character.map].npcs.filter(npc => npc.id === name);
+    if (npc.length > 0) {
+        return npc[0];
+    }
+    return null;
+}
+
 function placeStand() {
     if (is_moving(character)) return;
     let slot = getInventorySlot('stand0');

@@ -85,6 +85,7 @@ function waitForHealer(range = 300, silent = false) {
             if (!silent) game_log('No healer??');
             if (!silent) whisperParty('Where did the healer go??');
         }
+        if (isPvP())
         healerNotify = true;
         return true;
     }
