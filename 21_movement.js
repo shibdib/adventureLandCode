@@ -129,15 +129,15 @@ function shibMove(destination, second = undefined) {
 // Stay safe
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
-    let multi = 1;
+    let multi = 1.2;
     if (target) {
-        multi = 0.5;
+        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
-        multi = 0.5;
+        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
     } else if (character.ctype === 'warrior' && getMonstersTargeting()[0]) {
-        multi = 0.5;
+        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getMonstersTargeting()[0].id);
     }
     if (!nearbyHostiles.length) return;
@@ -150,18 +150,17 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    let avoidRange;
-    if (is_character(nearest)) avoidRange = nearest.range; else avoidRange = G.monsters[nearest.mtype].range;
-    if (avoidRange > 200) avoidRange = 125;
-    if (!nearest || currentClosestAvoid >= avoidRange * (4 * multi)) {
+    let avoidRange = 45;
+    if (is_monster(nearest) && G.monsters[nearest.mtype].range > avoidRange) avoidRange = G.monsters[nearest.mtype].range;
+    if (!nearest || currentClosestAvoid >= avoidRange * multi) {
         character.kiting = undefined;
         return;
     }
     let x, y;
     if (character.kiting && is_moving(character)) return true; else character.kiting = undefined;
-    draw_circle(nearest.x, nearest.y, avoidRange * 4, 1, '#b30000');
-    if (character.x > nearest.x) x = avoidRange * (5 * multi); else x = -avoidRange * (5 * multi);
-    if (character.y > nearest.y) y = avoidRange * (5 * multi); else y = -avoidRange * (5 * multi);
+    draw_circle(nearest.x, nearest.y, 90 * multi, 1, '#b30000');
+    if (character.x > nearest.x) x = 90 * multi; else x = -90 * multi;
+    if (character.y > nearest.y) y = 90 * multi; else y = -90 * multi;
     x += getRndInteger(-15, 15);
     y += getRndInteger(-15, 15);
     if (can_move_to(character.x + x, character.y + y)) {
