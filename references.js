@@ -1,5 +1,5 @@
 //Keys
-let keys = [
+let GKeys = [
     "tilesets",
     "images",
     "classes",

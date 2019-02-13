@@ -23,15 +23,6 @@ setInterval(function () {
     }
     if (!state) return;
     if (!stateTasks(state)) farm();
-
-    //Add button to refresh target
-    let label = 'No Target';
-    if (currentTarget) label = G.monsters[currentTarget].name;
-    add_bottom_button(3, label, function () {
-        lastTarget = currentTarget;
-        currentTarget = undefined;
-        whisperParty('Manual target refresh requested..');
-    });
 }, 250);
 
 //Fast Loop
@@ -49,6 +40,8 @@ function farm() {
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
+    // Handle target refreshing
+    refreshTarget();
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
@@ -66,8 +59,6 @@ function farm() {
             lastTarget = undefined;
         }
     }
-    // Handle target refreshing
-    refreshTarget();
     // Mark in combat if anyone in the party is being targeted
     combat = party_aggro;
     // Handle various target declarations
@@ -107,20 +98,24 @@ function farm() {
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
+            combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
             if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling) {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
+            if (Math.random() > 0.9) parent.d_text("KILL!", character, {color: "#A23720"});
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
+                combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
                 if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
             } else if (!waitForHealer() || primary.target === character.name) {
+                combat = true;
                 if (Math.random() > 0.9) parent.d_text("GO TIME!", character, {color: "#A23720"});
                 tackle(primary);
             } else {
@@ -232,27 +227,6 @@ function refreshTarget() {
     }
 }
 
-//Move as fast as the slowest man
-let combatSet;
-function slowestMan() {
-    let speed = character.speed;
-    if (parent.party_list.length) {
-        for (id in parent.party_list) {
-            let member = parent.party_list[id];
-            let entity = parent.entities[member];
-            if (!entity || member === character.name || entity.ctype === 'merchant') continue;
-            if (entity.speed < speed) speed = entity.speed - 6;
-        }
-    }
-    if (!combatSet && combat) {
-        combatSet = true;
-        cruise(9999);
-    } else if (!combat && speed !== character.speed) {
-        combatSet = undefined;
-        cruise(speed);
-    }
-}
-
 //Tackle a target
 function tackle(target, slowMove = true) {
     lastCombat = Date.now();
@@ -298,6 +272,25 @@ setInterval(function () {
 setInterval(function () {
     slowestMan();
 }, 500);
+let combatSet;
+function slowestMan() {
+    let speed = character.speed;
+    if (parent.party_list.length) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (!entity || member === character.name || entity.ctype === 'merchant') continue;
+            if (entity.speed < speed) speed = entity.speed - 6;
+        }
+    }
+    if (!combatSet && combat) {
+        combatSet = true;
+        cruise(9999);
+    } else if (!combat && speed !== character.speed) {
+        combatSet = undefined;
+        cruise(speed);
+    }
+}
 
 //Force reboot of character (1h)
 setInterval(function () {
@@ -325,3 +318,10 @@ function on_game_event(event) {
         return shibMove('main');
     }
 }
+
+// Add manual target refresh
+add_bottom_button(3, 'Refresh Target', function () {
+    lastTarget = currentTarget;
+    currentTarget = undefined;
+    whisperParty('Manual target refresh requested..');
+});
