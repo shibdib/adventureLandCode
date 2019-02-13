@@ -98,8 +98,7 @@ function checkPartyAggro() {
     if (parent.party_list.length) {
         let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
         let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === character);
-        if (playerAggro.length) playerAggro.forEach((p) => storeHostilePlayer(p));
-        if (playerAggro.length) return playerAggro[0]; else if (monsterAggro.length) return monsterAggro[0];
+        if (playerAggro.length) return sortEntitiesByDistance(playerAggro)[0]; else if (monsterAggro.length) return monsterAggro[0];
     }
 }
 
@@ -121,13 +120,7 @@ function getEntitiesTargeting(target = character) {
     if (!target) target = character;
     let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
     let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === target);
-    if (playerAggro.length) {
-        playerAggro.forEach((p) => storeHostilePlayer(p));
-        return sortEntitiesByDistance(playerAggro);
-    }
-    let all = monsterAggro.concat(playerAggro);
-    //Order monsters by distance.
-    return sortEntitiesByDistance(all);
+    if (playerAggro.length) return sortEntitiesByDistance(playerAggro); else return sortEntitiesByDistance(monsterAggro);
 }
 
 // Check if the target can be killed in ~1 hit
@@ -220,10 +213,9 @@ function deadParty() {
 // Store PVP info
 function storeHostilePlayer(hostile, act = 'target') {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
-    if (!hostilePlayers[hostile.owner] && !parent.party_list.includes(hostile.name) && parent.friends.includes(hostile.owner)) {
+    if (!parent.party_list.includes(hostile.name) && !parent.friends.includes(hostile.owner)) {
         hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
-        pm(hostile.name, 'You have been marked hostile for 30 minutes. ' +
-            '(If you know of a better way of determining hostility than targeting please contact me on discord @shibdib)');
+        pm(hostile.name, 'You have been marked hostile for 30 minutes.');
         whisperParty(hostile.name + ' has been marked hostile.');
         localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
     }
@@ -244,3 +236,35 @@ function checkIfHostile(hostile) {
         return false;
     }
 }
+
+// Determine if player is hostile (Stole from Spadar)
+parent.prev_handlerstargeting = [];
+// Clean out an pre-existing listeners
+if (parent.prev_handlerstargeting) {
+    for (let [event, handler] of parent.prev_handlerstargeting) {
+        parent.socket.removeListener(event, handler);
+    }
+}
+//handler pattern shamelessly stolen from JourneyOver
+function register_targetinghandler(event, handler) {
+    parent.prev_handlerstargeting.push([event, handler]);
+    parent.socket.on(event, handler);
+}
+hitHandler = function(event){
+    console.log(event);
+    if (parent != null) {
+        let attacker = event.hid;
+        let attacked = event.id;
+        let attackedEntity = parent.entities[attacked];
+        if (attacked === character.name || (parent.party_list && parent.party_list.includes(attacked))) {
+            attackedEntity = character;
+        }
+        if (attackedEntity && !event.heal) {
+            if (is_character(attackedEntity)) {
+                storeHostilePlayer(attacker, 'attacked');
+            }
+        }
+    }
+};
+
+register_targetinghandler("hit", hitHandler);
