@@ -504,7 +504,7 @@ function cachePriceInfo() {
                             bseen: 1
                         }
                     } else {
-                        let seen = priceDetails[slot.name + level].bseen++;
+                        let seen = priceDetails[slot.name + level].bseen + 1;
                         let avg = (priceDetails[slot.name + level].bavg + slot.price) / 2;
                         let high = priceDetails[slot.name + level].bhigh;
                         if (high < slot.price) high = slot.price;
@@ -526,7 +526,7 @@ function cachePriceInfo() {
                             sseen: 1
                         }
                     } else {
-                        let seen = priceDetails[slot.name + level].sseen++;
+                        let seen = priceDetails[slot.name + level].sseen + 1;
                         let avg = (priceDetails[slot.name + level].savg + slot.price) / 2;
                         let high = priceDetails[slot.name + level].shigh;
                         if (high < slot.price) high = slot.price;
