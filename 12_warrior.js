@@ -31,6 +31,7 @@ setInterval(function () {
     updateCharacterData();
 }, 75);
 
+let noHealCount;
 function farm() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
@@ -44,7 +45,15 @@ function farm() {
     // Handle target refreshing
     refreshTarget();
     // Stay with healer on pvp
-    if (isPvP() && waitForHealer()) return;
+    if (isPvP() && waitForHealer()) {
+        if (!noHealCount || noHealCount >= 50) {
+            return stop();
+        } else {
+            noHealCount++
+        }
+    } else {
+        noHealCount = 0;
+    }
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
