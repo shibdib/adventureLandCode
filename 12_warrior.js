@@ -13,10 +13,12 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
-    if (character.rip) {
-        if (currentTarget) lastTarget = currentTarget;
+    if (character.rip && state !== 99) {
+        if (currentTarget) {
+            lastTarget = currentTarget;
+            currentTarget = undefined;
+        }
         primary = undefined;
-        currentTarget = undefined;
         state = 99;
     }
     if (!state) return;
@@ -168,8 +170,8 @@ function refreshTarget() {
         return shibMove('main');
     }
     // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + (60000 * 5) < Date.now()) {
-        whisperParty('We have not been in combat for 5 minutes, going to head to town and figure this out.');
+    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
+        whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
@@ -179,37 +181,22 @@ function refreshTarget() {
         traveling = true;
         return shibMove('main');
     }
-    // If range doesn't change much start counter
-    if (distanceToPoint(lastPos.x, lastPos.y) < 5) {
-        let cutoff = 10000; // Wait 10 seconds
-        let msg = 'There are no ' + currentTarget + "'s here, so time for a new target.";
-        // Spot is crowded
-        if (getNearbyCharacters(200, true).length >= 4) {
-            cutoff = 5000;
-            msg = 'There is too many people farming here, so I will look for a new target.';
-        }
-        if (!farmWait) farmWait = Date.now();
-        if ((((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) < (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) / 2) game_log('Target Reset Timeout In ' + (((farmWait + cutoff) - Date.now()) / 1000).toFixed(2) + ' Seconds.');
-        if ((farmWait + cutoff) - Date.now() <= 0) {
-            whisperParty(msg);
-            lastCombat = Date.now();
-            lastRealTarget = Date.now();
-            lastTarget = currentTarget;
-            primary = undefined;
-            currentTarget = undefined;
-            farmWait = undefined;
-            traveling = true;
-            return;
-        }
-    } else {
-        farmWait = undefined;
+    // It's crowded time to move on
+    if (lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 4) {
+        whisperParty('There is too many people farming here, so I will look for a new target.');
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        lastTarget = currentTarget;
+        primary = undefined;
+        currentTarget = undefined;
+        traveling = true;
+        return shibMove('main');
     }
-    lastPos = {x: character.x, y: character.y};
 }
 
 //Move as fast as the slowest man
 let combatSet;
-
 function slowestMan() {
     let speed = character.speed;
     if (parent.party_list.length) {
@@ -242,7 +229,7 @@ function tackle(target, slowMove = true) {
     } else {
         kite(target);
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
-        if (can_attack(target)) smartAttack(target);
+        if (can_attack(target)) attack(target);
     }
 }
 
@@ -256,6 +243,8 @@ function tackle(target, slowMove = true) {
 setInterval(function () {
     // If reboot is pending do it when out of combat
     if (!combat && pendingReboot) {
+        updateCode();
+        load_code(12);
         refreshCharacters(true);
         pendingReboot = undefined;
     }
@@ -276,11 +265,16 @@ setInterval(function () {
 //Force reboot of character (1h)
 setInterval(function () {
     // Update and reboot
-    updateCode();
-    if (!combat) refreshCharacters(true); else pendingReboot = true;
-}, 3600000);
+    if (!combat) {
+        updateCode();
+        load_code(12);
+        refreshCharacters(true);
+    } else {
+        pendingReboot = true;
+    }
+}, 60000 * 60);
 
-// Farm target refreshes every 10 minutes
+// Farm target refreshes every 30 minutes
 setInterval(function () {
     currentTarget = undefined;
-}, 600000);
+}, 60000 * 30);
