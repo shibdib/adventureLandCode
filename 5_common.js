@@ -5,11 +5,12 @@ function stateController(state) {
     new_state = 1;
     //KIA
     if (character.rip) {
+        if (state !== 99) whisperParty('I died');
         new_state = 99;
         respawn();
     } //BANKING
     else if ((character.gold >= 100000 || openInventorySpots() < 30)) {
-        if (state !== 2) whisperParty('Headed to the bank, BRB.');
+        if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + 1800000 < Date.now())) {
@@ -17,6 +18,7 @@ function stateController(state) {
             lastBankGearCheck = Date.now();
             new_state = 1;
         } else {
+            if (state !== 4) whisperParty('Headed to the bank to gear up.');
             new_state = 4;
         }
     } //POTIONS
