@@ -152,32 +152,6 @@ function refreshCharacters(force = false) {
     }
 }
 
-// Get party heal power
-function partyHealPower() {
-    let power = 0;
-    if (!character.party) return 0;
-    for (let key in parent.party_list) {
-        let member = parent.party_list[key];
-        let entity = parent.entities[member];
-        if (!entity || entity.ctype !== 'priest') continue;
-        power += (entity.attack / (1 / entity.frequency)) * 0.925;
-    }
-    return power;
-}
-
-// Get party attack power
-function partyAttackPower() {
-    let power = 0;
-    if (!character.party) return 0;
-    for (let key in parent.party_list) {
-        let member = parent.party_list[key];
-        let entity = parent.entities[member];
-        if (!entity || entity.ctype === 'merchant') continue;
-        power += (entity.attack / (1 / entity.frequency)) * 0.925;
-    }
-    return power;
-}
-
 // Store my character data
 function updateCharacterData() {
     // Get or create data

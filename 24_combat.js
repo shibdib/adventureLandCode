@@ -1,8 +1,12 @@
 // Find in view range monsters base off type
-function findLocalMonsters(type, returnArray = false) {
+function findLocalTargets(type, returnArray = false) {
     let monsters;
     // Look for targets in range
     monsters = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
+    if (isPvP()) {
+        let nearbyPlayers = getNearbyCharacters(400, true);
+        if (nearbyPlayers.length) monsters = monsters.concat(nearbyPlayers);
+    }
     if (!monsters.length) return false;
     //Order monsters by distance and xp.
     monsters = sortEntitiesByDistance(monsters).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));

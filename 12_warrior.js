@@ -61,7 +61,7 @@ function farm() {
     combat = party_aggro;
     // Handle various target declarations
     let mainTarget;
-    if (currentTarget) mainTarget = findLocalMonsters(currentTarget);
+    if (currentTarget) mainTarget = findLocalTargets(currentTarget);
     if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
     let opportunisticTarget = getEasyKills(false)[0];
     if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);

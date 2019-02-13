@@ -234,3 +234,7 @@ function placeStand() {
 function closeStand() {
     parent.socket.emit("merchant", {close: 1});
 }
+
+function isPvP() {
+    return !!(parent.is_pvp || get_map().pvp);
+}

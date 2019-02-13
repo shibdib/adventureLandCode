@@ -129,12 +129,20 @@ function shibMove(destination, second = undefined) {
 // Stay safe
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true);
+    let multi = 1;
     if (target) {
+        multi = 0.5;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
+        multi = 0.5;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
     } else if (character.ctype === 'warrior' && getMonstersTargeting()[0]) {
+        multi = 0.5;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getMonstersTargeting()[0].id);
+    }
+    if (isPvP()) {
+        let nearbyPlayers = getNearbyCharacters(400, true);
+        if (nearbyPlayers.length) nearbyHostiles = nearbyHostiles.concat(nearbyPlayers);
     }
     if (!nearbyHostiles.length) return;
     // Check if we should move
@@ -146,15 +154,15 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
-    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * 4) {
+    if (!nearest || currentClosestAvoid >= G.monsters[nearest.mtype].range * (4 * multi)) {
         character.kiting = undefined;
         return;
     }
     let x, y;
     if (character.kiting && is_moving(character)) return true; else character.kiting = undefined;
     draw_circle(nearest.x, nearest.y, G.monsters[nearest.mtype].range * 4, 1, '#b30000');
-    if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * 5; else x = -G.monsters[nearest.mtype].range * 5;
-    if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * 5; else y = -G.monsters[nearest.mtype].range * 5;
+    if (character.x > nearest.x) x = G.monsters[nearest.mtype].range * (5 * multi); else x = -G.monsters[nearest.mtype].range * (5 * multi);
+    if (character.y > nearest.y) y = G.monsters[nearest.mtype].range * (5 * multi); else y = -G.monsters[nearest.mtype].range * (5 * multi);
     x += getRndInteger(-15, 15);
     y += getRndInteger(-15, 15);
     if (can_move_to(character.x + x, character.y + y)) {
