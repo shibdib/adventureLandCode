@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget, targetSetAt;
 let lowLevelCount = 0;
 let state = stateController();
 let lastCombat = Date.now();
@@ -40,12 +40,14 @@ function farm() {
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
+    // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
         if (target && (!lastTarget || lastTarget !== target)) {
             farmWait = undefined;
             lastRealTarget = Date.now();
             traveling = true;
+            targetSetAt = Date.now();
             currentTarget = target;
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
@@ -143,7 +145,21 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 let farmWait;
 function refreshTarget() {
-    if (!currentTarget || waitForHealer(325, true) || smart.moving) return;
+    // Reset target if we've been there for hours
+    if (targetSetAt && targetSetAt + (60000 * 180) < Date.now()) {
+        whisperParty("We've been killing " + currentTarget + "'s for 3 hours, time to rotate to something new.");
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        lastTarget = currentTarget;
+        primary = undefined;
+        currentTarget = undefined;
+        lowLevelCount = 0;
+        traveling = true;
+        return shibMove('main');
+    }
+    // No target or waiting for healer check
+    if (!currentTarget || waitForHealer(325, true)) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 4) {
         whisperParty('These ' + currentTarget + "'s have been over farmed and need to level up, time to rotate to something new.");
@@ -182,7 +198,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // It's crowded time to move on
-    if (lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 4) {
+    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 4) {
         whisperParty('There is too many people farming here, so I will look for a new target.');
         stop();
         lastCombat = Date.now();
@@ -273,8 +289,3 @@ setInterval(function () {
         pendingReboot = true;
     }
 }, 60000 * 60);
-
-// Farm target refreshes every 30 minutes
-setInterval(function () {
-    currentTarget = undefined;
-}, 60000 * 30);
