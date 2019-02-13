@@ -36,6 +36,7 @@ function farm() {
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
+    if (character.party) combat = checkPartyAggro(); else return kite();
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
@@ -59,8 +60,6 @@ function farm() {
             lastTarget = undefined;
         }
     }
-    // Mark in combat if anyone in the party is being targeted
-    combat = party_aggro;
     // Handle various target declarations
     let mainTarget;
     if (currentTarget) mainTarget = findLocalTargets(currentTarget);

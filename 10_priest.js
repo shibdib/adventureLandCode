@@ -24,7 +24,7 @@ function farm() {
     loot();
     potionController(true);
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = checkPartyAggro(); else return shibMove('main');
+    if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);

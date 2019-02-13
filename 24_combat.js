@@ -97,7 +97,7 @@ function checkPartyAggro() {
     if (!character.party) return;
     if (parent.party_list.length) {
         let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
-        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === target);
+        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === character);
         if (playerAggro.length) playerAggro.forEach((p) => storeHostilePlayer(p));
         if (playerAggro.length) return playerAggro[0]; else if (monsterAggro.length) return monsterAggro[0];
     }
