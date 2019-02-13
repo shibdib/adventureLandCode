@@ -307,15 +307,18 @@ setInterval(function () {
 //Handle events
 function on_game_event(event) {
     if (eventMobs.includes(event.name)) {
-        whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        currentTarget = event.name;
-        lastTarget = undefined;
-        primary = undefined;
-        traveling = true;
-        return shibMove('main');
+        let eventTarget = get_nearest_monster({type: event.name});
+        if (eventTarget) {
+            whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
+            stop();
+            lastCombat = Date.now();
+            lastRealTarget = Date.now();
+            currentTarget = event.name;
+            lastTarget = undefined;
+            primary = undefined;
+            traveling = true;
+            return shibMove('main');
+        }
     }
 }
 
