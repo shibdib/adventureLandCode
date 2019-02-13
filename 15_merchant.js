@@ -24,7 +24,7 @@ setInterval(function () {
 //MERCHANT TASKS
 function merchantTaskManager() {
     potionController();
-    if (isPvP() && nearbyAggressors(400)) {
+    if (isPvP() && nearbyAggressors(400).length) {
         set_message('Fleeing');
         return shibMove('bank')
     }
