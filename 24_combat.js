@@ -97,7 +97,7 @@ function checkPartyAggro() {
     if (!character.party) return;
     if (parent.party_list.length) {
         let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
-        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && is_character(mob) && parent.party_list.includes(mob.target));
+        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === target);
         if (playerAggro.length) playerAggro.forEach((p) => storeHostilePlayer(p));
         if (playerAggro.length) return playerAggro[0]; else if (monsterAggro.length) return monsterAggro[0];
     }
@@ -120,7 +120,7 @@ function nearbyAggressors(range = 215, highRisk) {
 function getEntitiesTargeting(target = character) {
     if (!target) target = character;
     let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
-    let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && is_character(mob) && get_target_of(mob) === target);
+    let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === target);
     if (playerAggro.length) {
         playerAggro.forEach((p) => storeHostilePlayer(p));
         return sortEntitiesByDistance(playerAggro);
@@ -220,7 +220,7 @@ function deadParty() {
 // Store PVP info
 function storeHostilePlayer(hostile, act = 'target') {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
-    if (!hostilePlayers[hostile.owner]) {
+    if (!hostilePlayers[hostile.owner] && !parent.party_list.includes(hostile.name) && parent.friends.includes(hostile.owner)) {
         hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
         pm(hostile.name, 'You have been marked hostile for 30 minutes. ' +
             '(If you know of a better way of determining hostility than targeting please contact me on discord @shibdib)');

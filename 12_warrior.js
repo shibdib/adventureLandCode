@@ -133,6 +133,8 @@ function farm() {
 // Pull additional monsters
 function getSecondary() {
     let currentThreats = getEntitiesTargeting();
+    // If a player is targeting dont pull adds
+    if (is_character(currentThreats[0])) return false;
     // Get total incoming attack damage
     let totalAttack = 0;
     currentThreats.forEach((t) => totalAttack += getMonsterDPS(t, true));
