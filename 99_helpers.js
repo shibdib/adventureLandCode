@@ -59,10 +59,10 @@ function on_party_invite(name) {
 
 // Character DPS
 function getCharacterDPS(userCharacter = character) {
-    if (userCharacter.damage_type === 'physical') {
-        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.apiercing || 0) * 0.9;
-    } else if (userCharacter.damage_type === 'magical') {
-        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.rpiercing || 0) * 0.9;
+    if (G.classes[userCharacter.ctype].damage_type === 'physical') {
+        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.apiercing || 0) * 0.95;
+    } else if (G.classes[userCharacter.ctype].damage_type === 'magical') {
+        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.rpiercing || 0) * 0.95;
     }
 }
 
