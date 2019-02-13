@@ -78,9 +78,9 @@ function getMonsterDPS(input, mitigate = false) {
             }
         } else {
             if (G.monsters[input.mtype].damage_type === 'physical') {
-                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.armor - (G.monsters[input.mtype].apiercing || 0) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.armor - (G.monsters[input.mtype].apiercing || 0) + ((G.monsters[input.mtype].reflection || 0) * getCharacterDPS())) * 1.1;
             } else if (G.monsters[input.mtype].damage_type === 'magical') {
-                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.resistance - (G.monsters[input.mtype].rpiercing || 0) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.resistance - (G.monsters[input.mtype].rpiercing || 0) + ((G.monsters[input.mtype].reflection || 0) * getCharacterDPS())) * 1.1;
             }
         }
     } // Handle mtype

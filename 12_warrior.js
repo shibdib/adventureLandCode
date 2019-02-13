@@ -23,6 +23,15 @@ setInterval(function () {
     }
     if (!state) return;
     if (!stateTasks(state)) farm();
+
+    //Add button to refresh target
+    let label = 'No Target';
+    if (currentTarget) label = G.monsters[currentTarget].name;
+    add_bottom_button(3, label, function () {
+        lastTarget = currentTarget;
+        currentTarget = undefined;
+        whisperParty('Manual target refresh requested..');
+    });
 }, 250);
 
 //Fast Loop
@@ -302,9 +311,17 @@ setInterval(function () {
     }
 }, 60000 * 60);
 
-//Add button to refresh target
-add_bottom_button(3, 'Refresh Target', function () {
-    lastTarget = currentTarget;
-    currentTarget = undefined;
-    whisperParty('Manual target refresh requested..');
-});
+//Handle events
+function on_game_event(event) {
+    if (eventMobs.includes(event.name)) {
+        whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        currentTarget = event.name;
+        lastTarget = undefined;
+        primary = undefined;
+        traveling = true;
+        return shibMove('main');
+    }
+}

@@ -11,6 +11,8 @@ let pveCharacters = [
 let avoidMtypes = ["phoenix"];
 // Avoid going here
 let avoidMaps = ["tunnel"];
+// Event targets
+let eventMobs = ['snowman', 'goblin', 'pinkgoo'];
 
 // Potion count
 let targetPotionAmount = 500;
