@@ -131,6 +131,8 @@ function farm() {
 
 // Pull additional monsters
 function getSecondary() {
+    // Don't pull more on pvp
+    if (isPvP()) return;
     let currentThreats = getEntitiesTargeting();
     // If a player is targeting dont pull adds
     if (is_character(currentThreats[0])) return false;
@@ -324,8 +326,9 @@ function on_game_event(event) {
 }
 
 // Add manual target refresh
+/**
 add_bottom_button(3, 'Refresh Target', function () {
     lastTarget = currentTarget;
     currentTarget = undefined;
     whisperParty('Manual target refresh requested..');
-});
+});**/
