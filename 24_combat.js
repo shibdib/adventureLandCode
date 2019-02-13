@@ -112,7 +112,7 @@ function nearbyAggressors(range = 215, highRisk) {
         if (nearbyPlayers.length) aggressiveMonsters = aggressiveMonsters.concat(nearbyPlayers);
     }
     //Order monsters by distance.
-    return sortEntitiesByDistance(aggressiveMonsters);
+    if (aggressiveMonsters.length) return sortEntitiesByDistance(aggressiveMonsters);
 }
 
 // Return all monsters targeting you
