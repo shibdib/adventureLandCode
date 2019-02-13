@@ -9,7 +9,7 @@ function stateController(state) {
         new_state = 99;
         respawn();
     } //BANKING
-    else if ((character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck())) {
+    else if ((character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)

@@ -273,6 +273,7 @@ function vulnerableItemsCheck() {
         let item = character.items[key];
         if (!item || item === null) continue;
         if (item.v) count++;
+        if (item_grade(item)) count = 99;
     }
     return count;
 }
