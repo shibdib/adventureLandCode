@@ -151,7 +151,7 @@ let farmWait;
 function refreshTarget() {
     // Reset target if we've been there for hours
     if (targetSetAt && targetSetAt + (60000 * 180) < Date.now()) {
-        whisperParty("We've been killing " + currentTarget + "'s for 3 hours, time to rotate to something new.");
+        whisperParty("We've been killing " + G.monsters[currentTarget].name + "'s for 3 hours, time to rotate to something new.");
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
@@ -166,7 +166,7 @@ function refreshTarget() {
     if (!currentTarget || waitForHealer(325, true)) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 4) {
-        whisperParty('These ' + currentTarget + "'s have been over farmed and need to level up, time to rotate to something new.");
+        whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
@@ -179,7 +179,7 @@ function refreshTarget() {
     }
     // We haven't seen our actual target in awhile
     if (lastRealTarget + (60000 * 2.5) < Date.now()) {
-        whisperParty('Have not seen a ' + currentTarget + "'s for a couple minutes, moving onto something new.");
+        whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
@@ -202,7 +202,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // It's crowded time to move on
-    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 4) {
+    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
         whisperParty('There is too many people farming here, so I will look for a new target.');
         stop();
         lastCombat = Date.now();
