@@ -58,11 +58,11 @@ function on_party_invite(name) {
 }
 
 // Character DPS
-function getCharacterDPS() {
-    if (character.damage_type === 'physical') {
-        return character.attack * character.frequency * damage_multiplier(-character.apiercing || 0) * 0.9;
-    } else if (character.damage_type === 'magical') {
-        return character.attack * character.frequency * damage_multiplier(-character.rpiercing || 0) * 0.9;
+function getCharacterDPS(userCharacter = character) {
+    if (userCharacter.damage_type === 'physical') {
+        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.apiercing || 0) * 0.9;
+    } else if (userCharacter.damage_type === 'magical') {
+        return userCharacter.attack * userCharacter.frequency * damage_multiplier(-userCharacter.rpiercing || 0) * 0.9;
     }
 }
 
@@ -78,24 +78,27 @@ function getMonsterDPS(input, mitigate = false) {
             }
         } else {
             if (G.monsters[input.mtype].damage_type === 'physical') {
-                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.armor - (G.monsters[input.mtype].apiercing || 0)) * 1.1;
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.armor - (G.monsters[input.mtype].apiercing || 0) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             } else if (G.monsters[input.mtype].damage_type === 'magical') {
-                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.resistance - (G.monsters[input.mtype].rpiercing || 0)) * 1.1;
+                return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(character.resistance - (G.monsters[input.mtype].rpiercing || 0) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             }
         }
     } // Handle mtype
     else if (G.monsters[input]) {
+        let level = 12;
         if (!mitigate) {
             if (G.monsters[input].damage_type === 'physical') {
-                return ((G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].apiercing || 0)) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 2.2;
+                return (((G.monsters[input].attack + (level * (G.monsters[input].attack * 0.2))) * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].apiercing || 0)) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             } else if (G.monsters[input].damage_type === 'magical') {
-                return ((G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0)) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 2.2;
+                return (((G.monsters[input].attack + (level * (G.monsters[input].attack * 0.2))) * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0)) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             }
         } else {
             if (G.monsters[input].damage_type === 'physical') {
-                return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(character.armor - (G.monsters[input].apiercing || 0)) * 2.2;
+                let remainingPiercing = character.armor - (G.monsters[input].apiercing || 0);
+                return ((G.monsters[input].attack + (level * (G.monsters[input].attack * 0.2))) * G.monsters[input].frequency * damage_multiplier(remainingPiercing) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             } else if (G.monsters[input].damage_type === 'magical') {
-                return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(character.resistance - (G.monsters[input].rpiercing || 0)) * 2.2;
+                let remainingPiercing = character.resistance - (G.monsters[input].rpiercing || 0);
+                return ((G.monsters[input].attack + (level * (G.monsters[input].attack * 0.2))) * G.monsters[input].frequency * damage_multiplier(remainingPiercing) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             }
         }
     }
