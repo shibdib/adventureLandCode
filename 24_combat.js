@@ -35,18 +35,9 @@ function getEasyKills(oneShot = true) {
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
-let lastPoisonFarm;
 function findBestMonster(minXp, lastTarget) {
     let sorted, monsterSpawns;
     let healsPerSecond = partyHPS() * 0.95;
-    // Farm for poison when needed
-    if (!lastPoisonFarm || (lastPoisonFarm + (60000)) * 30 < Date.now()) {
-        let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-        if (!bankDetails['poison0'] || bankDetails['poison0'] < 100) {
-            lastPoisonFarm = Date.now();
-            return 'poisio';
-        }
-    }
     // Make G.maps an array
     let maps = Object.values(G.maps);
     let monsterTypes = [];
@@ -64,12 +55,14 @@ function findBestMonster(minXp, lastTarget) {
         sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < healsPerSecond
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn < 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 80)
         && G.monsters[m].respawn < 15000);
-        if (sorted.length > 5) break;
+        if (sorted.length > 4) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
     }
     // If it doesn't find anything return false
     if (!sorted || !sorted.length) return false;
+    // Concat the loot targets
+    sorted = Array.from(new Set(sorted.concat(lootTargets)));
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];

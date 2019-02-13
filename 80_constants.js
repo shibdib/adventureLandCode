@@ -13,6 +13,8 @@ let avoidMtypes = ["phoenix"];
 let avoidMaps = ["tunnel"];
 // Event targets
 let eventMobs = ['snowman', 'goblin', 'pinkgoo'];
+// Loot targets (These will always be in the array of possibles as they drop something worthwhile.
+let lootTargets = ['tortoise', 'poisio'];
 
 // Potion count
 let targetPotionAmount = 500;
