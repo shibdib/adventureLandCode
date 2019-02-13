@@ -213,10 +213,10 @@ function deadParty() {
 // Store PVP info
 function storeHostilePlayer(hostile, act = 'target') {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
-    if (!parent.party_list.includes(hostile.name) && !parent.friends.includes(hostile.owner)) {
+    if (!parent.party_list.includes(hostile.name) && !parent.friends.includes(hostile.owner) && hostile && hostile.name) {
         hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
-        pm(hostile.name, 'You have been marked hostile for 30 minutes.');
-        whisperParty(hostile.name + ' has been marked hostile.');
+        //pm(hostile.name, 'You have been marked hostile for 30 minutes.');
+        //whisperParty(hostile.name + ' has been marked hostile.');
         localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
     }
 }
