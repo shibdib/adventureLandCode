@@ -45,7 +45,7 @@ function farm() {
             use('revive', mostHurtMember);
             kite();
         } else {
-            moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.99);
+            if (nearbyAggressors(150, true).length) kite(); else moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.99);
         }
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
@@ -58,7 +58,7 @@ function farm() {
             heal(mostHurtMember);
             kite();
         } else {
-            moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.99);
+            if (nearbyAggressors(150, true).length) kite(); else moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.99);
         }
     } else if (!mostHurtMember && deadParty()) { //REVIVE DEAD
         let deadMember = deadParty();
@@ -68,8 +68,8 @@ function farm() {
             kite();
         }
     } else {
-        if (mostHurtMember && in_attack_range(mostHurtMember)) {
-            heal(mostHurtMember);
+        if (lowHealth(1) && in_attack_range(lowHealth(1))) {
+            heal(lowHealth(1));
         }
         if (nearbyAggressors(150, true).length) kite(); else if (!combat) moveToLeader(); else kite();
     }

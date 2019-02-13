@@ -119,7 +119,7 @@ function farm() {
             }
         }
     } else {
-        if (nearbyAggressors(150, true).length) kite(); else if (currentTarget) shibMove(currentTarget);
+        if (nearbyAggressors(175, true).length) kite(); else if (currentTarget) shibMove(currentTarget);
         tackling = undefined;
     }
 }
@@ -143,7 +143,7 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 let farmWait;
 function refreshTarget() {
-    if (!currentTarget || waitForHealer(325, true)) return;
+    if (!currentTarget || waitForHealer(325, true) || smart.moving) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 4) {
         whisperParty('These ' + currentTarget + "'s have been over farmed and need to level up, time to rotate to something new.");
