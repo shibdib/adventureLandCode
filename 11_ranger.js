@@ -39,6 +39,8 @@ function farm() {
     } else {
         return moveToLeader(character.range * 0.5, character.range * 0.7);
     }
+    // Use track on pvp servers
+    if (isPvP() && can_use('track')) use('track');
     let target = getMonstersTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     if (target) {
         if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
