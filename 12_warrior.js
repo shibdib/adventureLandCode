@@ -100,7 +100,7 @@ function farm() {
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
-            if (secondaryTarget && get_target_of(primary) === character) {
+            if (currentTarget && secondaryTarget && get_target_of(primary) === character) {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
