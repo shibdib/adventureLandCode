@@ -140,10 +140,6 @@ function kite(target = undefined) {
         multi = 0.5;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getMonstersTargeting()[0].id);
     }
-    if (isPvP()) {
-        let nearbyPlayers = getNearbyCharacters(400, true);
-        if (nearbyPlayers.length) nearbyHostiles = nearbyHostiles.concat(nearbyPlayers);
-    }
     if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;

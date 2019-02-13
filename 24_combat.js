@@ -113,6 +113,10 @@ function nearbyAggressors(range = 215, highRisk) {
     if (highRisk) attackCutoff = character.hp * 0.1;
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
         G.monsters[mob.mtype].aggro && G.monsters[mob.mtype].attack >= attackCutoff && parent.distance(character, mob) <= range);
+    if (isPvP()) {
+        let nearbyPlayers = getNearbyCharacters(400, true);
+        if (nearbyPlayers.length) aggressiveMonsters = aggressiveMonsters.concat(nearbyPlayers);
+    }
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
 }
