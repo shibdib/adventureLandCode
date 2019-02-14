@@ -29,16 +29,16 @@ function farm() {
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     let mostHurtMember = lowHealth(0.75);
-    let tankTarget = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
+    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // If tank target is a kitey player CURSE THEM!!!!
-    if (tankTarget && is_character(tankTarget) && (tankTarget.ctype === 'mage' || tankTarget.ctype === 'ranger') && can_use('curse', tankTarget)) use('curse', tankTarget);
+    if (target && is_character(target) && (target.ctype === 'mage' || target.ctype === 'ranger') && can_use('curse', target)) use('curse', target);
     // Do Damage if possible
-    if (!mostHurtMember && tankTarget && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(tankTarget) || canOneShot(tankTarget))) {
+    if (!mostHurtMember && target && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(target) || canOneShot(target))) {
         parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
-        if (can_use('curse', tankTarget)) use('curse', tankTarget);
-        if (can_attack(tankTarget)) attack(tankTarget);
+        if (can_use('curse', target)) use('curse', target);
+        if (can_attack(target)) attack(target);
         kite();
     }
     if (mostHurtMember && mostHurtMember.hp < mostHurtMember.max_hp * 0.20 && can_use('revive', mostHurtMember)) { //Max heal with revive

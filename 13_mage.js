@@ -30,7 +30,7 @@ function farm() {
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     // If you need to blink to leader do it
     if (can_use('blink') && blinkToLeader()) return;
-    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
+    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     let magiPortTarget = getMagiPortTarget();
     if (magiPortTarget && can_use('magiport')) {
         parent.d_text("MAGIPORT FOR "+ magiPortTarget + "!",character,{color:"#ffc230"});

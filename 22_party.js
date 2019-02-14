@@ -61,7 +61,7 @@ function waitForHealer(range = 300, silent = false) {
             if (member === character.name) continue;
             if (!entity || entity.ctype !== 'priest') continue;
             healerFound = true;
-            if (entity && entity.mp < entity.max_mp * 0.45) {// Priest is low MP
+            if (entity && entity.mp < entity.max_mp * 0.03) {// Priest is low MP
                 if (!healerNotify) {
                     if (!silent) game_log('Healer is OOM.');
                     if (!silent) whisperParty('Waiting for ' + member + ' to get their mp up.')
@@ -73,7 +73,7 @@ function waitForHealer(range = 300, silent = false) {
             if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.2) {
                 if (!healerNotify) {
                     if (!silent) game_log('Healer Range.');
-                    if (!silent) whisperParty('Waiting on our healer ' + member + ' to get in range before I pull.');
+                    if (!silent) whisperParty('Waiting on our healer ' + member + '.');
                     if (isPvP()) moveToTarget(entity);
                 }
                 healerNotify = true;

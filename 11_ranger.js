@@ -41,7 +41,7 @@ function farm() {
     }
     // Use track on pvp servers
     if (isPvP() && can_use('track')) use('track');
-    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
+    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (target) {
         if (in_attack_range(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Long range

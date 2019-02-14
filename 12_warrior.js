@@ -232,7 +232,7 @@ function tackle(target, slowMove = true) {
     tackling = true;
     if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
-        if (can_use('charge') && parent.distance(character, target) > 120) use('charge');
+        if (can_use('charge') && parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
         if (can_attack(target)) smartAttack(target);
         if (slowMove) moveToTarget(target);
     } else {
@@ -270,7 +270,7 @@ setInterval(function () {
 setInterval(function () {
     slowestMan();
 }, 500);
-let combatSet;
+let lastSet;
 function slowestMan() {
     let speed = character.speed;
     if (parent.party_list.length) {
@@ -281,11 +281,11 @@ function slowestMan() {
             if (entity.speed < speed) speed = entity.speed - 6;
         }
     }
-    if (!combatSet && combat) {
-        combatSet = true;
+    if (lastSet !== 9999 && (combat || primary)) {
+        lastSet = 9999;
         cruise(9999);
-    } else if (!combat && speed !== character.speed) {
-        combatSet = undefined;
+    } else if (lastSet !== speed) {
+        lastSet = speed;
         cruise(speed);
     }
 }
