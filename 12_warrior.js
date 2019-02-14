@@ -9,6 +9,12 @@ let lastRealTarget = Date.now();
 //State Controller
 setInterval(function () {
     state = stateController(state);
+    if (combat) {
+        // Send CM attack info on combat
+        let type;
+        if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
+        sendPartyCM({type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}});
+    }
 }, 5000);
 
 //Primary Loop
@@ -106,10 +112,6 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
-        // Send CM attack info on combat
-        let type;
-        if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
-        sendPartyCM({type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}});
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
@@ -166,7 +168,6 @@ function getSecondary() {
 }
 
 // Refresh your target if the spawn is empty
-let farmWait;
 function refreshTarget() {
     // No target or waiting for healer check
     if ((!currentTarget || waitForHealer(325, true)) && (targetSetAt + (60000 * 5) < Date.now())) return;
@@ -268,7 +269,7 @@ setInterval(function () {
     refreshCharacters();
     // Handles sending invites
     for (let char of pveCharacters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name))) continue;
+        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || character.class === 'merchant') continue;
         send_party_invite(char.name);
     }
 }, 5000);

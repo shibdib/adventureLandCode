@@ -51,8 +51,8 @@ function stateTasks(state) {
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         let tod = deathTime[character.name];
-        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(25000, 65000); else deathCooldown = 15000;
-        if (tod + deathCooldown < Date.now()) respawn();
+        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
+        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
         return true;
     } // DEAD
     if (state === 1 || combat) return false; // FARM
