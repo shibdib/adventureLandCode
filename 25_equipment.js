@@ -248,6 +248,7 @@ function computeGearScore(ctype, item, level) {
     if (localStorage.getItem('gearScore')) stored = JSON.parse(localStorage.getItem('gearScore'));
     let storedName = item + level;
     let details = G.items[item];
+    if (!details) return;
     stored[storedName] = {};
     for (let key of Object.keys(attributeWeights)) {
         let weights = attributeWeights[key];

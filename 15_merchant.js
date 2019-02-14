@@ -28,18 +28,19 @@ function merchantTaskManager() {
         closeStand();
         set_message('Fleeing');
         return shibMove('bank')
-    }
-    if (standCheck()) return;
-    if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
-        exchangeStuff();
-    } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
-        combineItems();
-    } else {
-        if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
-        if (!sellItemsToPlayers() && !buyFromPlayers()) if (!sellExcessToNPC()) {
-            placeStand();
-            buyBaseItems();
-            passiveMerchant();
+    } else if (!sellExcessToNPC()) {
+        if (standCheck()) return;
+        if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
+            exchangeStuff();
+        } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
+            combineItems();
+        } else {
+            if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+            if (!sellItemsToPlayers() && !buyFromPlayers()) {
+                placeStand();
+                buyBaseItems();
+                passiveMerchant();
+            }
         }
     }
 }
@@ -101,9 +102,10 @@ function buyBaseItems() {
     items:
     for (let item of baseItems) {
         let need = true;
-        for (let l = 0; l < normalLevelTarget - 1; l++) {
-            if (l === 0) l = 0;
-            if (itemCount(item + l) >= 2 || bankDetails[item + l] >= 2) {
+        let totalCount = 0;
+        for (let l = 0; l < normalLevelTarget; l++) {
+            totalCount += (itemCount(item, l) || 0) + (bankDetails[item + l] || 0);
+            if (totalCount >= 1) {
                 need = false;
                 continue items;
             }
@@ -120,11 +122,23 @@ function sellExcessToNPC() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!bankDetails) return;
     // Set bank items for sale if overstocked
-    if (getItems.length) {
+    if (sellItems.length) {
+        if (character.map !== 'main') {
+            shibMove('main');
+            return true;
+        }
+        set_message('SellingNPC');
+        let slot = getInventorySlot(sellItems[0].name, false, sellItems[0].level);
+        parent.d_text("SELLING!",character,{color:"#ff4130"});
+        if (slot) sell(slot, 1);
+        sellItems.shift();
+        lastBankCheck = undefined;
+        return true;
+    } else if (getItems.length) {
         closeStand();
-        switch (withdrawItem(getItems[0])) {
+        switch (withdrawItem(getItems[0].name, getItems[0].level)) {
             case true:
-                sellItems.push(getItems[0]);
+                sellItems.push({name: getItems[0].name, level: getItems[0].level});
                 getItems.shift();
                 break;
             case false:
@@ -133,16 +147,19 @@ function sellExcessToNPC() {
                 getItems.shift();
                 break;
         }
-    } else if (sellItems.length) {
-        set_message('SellingNPC');
-        let key = getInventorySlot(sellItems[0]);
-        parent.d_text("SELLING!",character,{color:"#ff4130"});
-        if (key) sell(getInventorySlot(sellItems[0]), 1);
-        sellItems.shift();
+        return true;
     } else {
         for (let key of Object.keys(bankDetails)) {
-            if (G.items[key] && bankDetails[key] > 7 && G.items[key].type !== 'quest' && G.items[key].type !== 'gem' && G.items[key].type !== 'uscroll' && !noSell.includes(key)) {
-                if (!getItems.includes(key) && !sellItems.includes(key)) getItems.push(key);
+            if (key === 'gold') continue;
+            let level = parseInt(key[key.length - 1]);
+            let cleanName = key.slice(0, -1);
+            if (item_grade({name: cleanName, level: level})) continue;
+            let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
+            if (G.items[cleanName] && bankDetails[key] > 3 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName)) {
+                if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
+                    name: cleanName,
+                    level: level
+                });
             }
         }
         if (!getItems.length) return false;
@@ -153,6 +170,7 @@ function sellExcessToNPC() {
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function sellItemsToPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
     if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
     if (character.map === 'bank') return shibMove('main');
     let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
@@ -162,10 +180,12 @@ function sellItemsToPlayers() {
             let slot = buyers.slots['trade' + s];
             let theBookName;
             if (slot && slot.b) {
-                if (G.items[slot.name].g && slot.price < G.items[slot.name].g * 0.6) continue;
-                if (noSell.includes(slot.name)) continue;
                 theBookName = slot.name + slot.level;
+                if (noSell.includes(slot.name)) continue;
                 if (!bankDetails[theBookName] && !getInventorySlot(slot.name, false, slot.level)) continue;
+                let goodPrice = G.items[slot.name].g;
+                if (priceDetails && priceDetails[slot.name + slot.level] && priceDetails[slot.name + slot.level].bavg) goodPrice = round(priceDetails[slot.name + slot.level].bavg);
+                if (slot.price < goodPrice) continue;
                 if (combineTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 4) continue;
                 if (upgradeTargets.includes(slot.name) && (bankDetails[theBookName] || 0 + getInventorySlot(slot.name, true, slot.level).length) < 2) continue;
                 set_message('SellingPlayer');
@@ -362,9 +382,9 @@ function combineItems() {
             let componentSlot = getInventorySlot(craftingItem, true, craftingLevel);
             let grade = item_grade(character.items[componentSlot[0]]);
             if (currentTask === 'combine') {
-                if (grade === 0) scroll = 'cscroll0'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
+                if (grade === 0 && craftingLevel < 4) scroll = 'cscroll0'; else if (grade === 0 && craftingLevel >= 4) scroll = 'cscroll1'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
             } else {
-                if (grade === 0) scroll = 'scroll0'; else if (grade === 1) scroll = 'scroll1'; else if (grade === 2) scroll = 'scroll2';
+                if (grade === 0 && craftingLevel < 4) scroll = 'scroll0'; else if (grade === 0 && craftingLevel >= 4) scroll = 'scroll1'; else if (grade === 1) scroll = 'scroll1'; else if (grade === 2) scroll = 'scroll2';
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);

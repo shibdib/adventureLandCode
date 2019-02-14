@@ -1,42 +1,34 @@
-function smart_move(destination,on_done) // despite the name, smart_move isn't very smart or efficient, it's up to the players to implement a better movement method [05/02/17]
-{
+function smart_move(destination, on_done) {
     smart.map="";
     if(is_string(destination)) destination={to:destination};
     if(is_number(destination)) destination={x:destination,y:on_done},on_done=null;
-    if("x" in destination)
-    {
+    if ("x" in destination) {
         smart.map=destination.map||character.map;
         smart.x=destination.x;
         smart.y=destination.y;
-    }
-    else if("to" in destination || "map" in destination)
-    {
-        if(destination.to=="town") destination.to="main";
-        if(G.monsters[destination.to])
-        {
-            for(var name in G.maps)
+    } else if ("to" in destination || "map" in destination) {
+        if (destination.to === "town") destination.to = "main";
+        if (G.monsters[destination.to]) {
+            for (let name in G.maps) {
+                if (!G.maps[name].monsters) continue;
                 (shuffle(G.maps[name].monsters) || []).forEach(function (pack) {
-                    if(pack.type!=destination.to || G.maps[name].ignore || G.maps[name].instance || avoidMaps.includes(name)) return;
-                    if(pack.boundaries) // boundaries: for phoenix, mvampire
-                    {
-                        pack.last=pack.last||0;
-                        var boundary=pack.boundaries[pack.last%pack.boundaries.length];
+                    if (pack.type !== destination.to || G.maps[name].ignore || G.maps[name].instance || avoidMaps.includes(name)) return;
+                    if (pack.boundaries) {
+                        pack.last = pack.last || 0;
+                        let boundary = pack.boundaries[pack.last % pack.boundaries.length];
                         pack.last++;
-                        smart.map=boundary[0];
-                        smart.x=(boundary[1]+boundary[3])/2;
-                        smart.y=(boundary[2]+boundary[4])/2;
-                    }
-                    else if(pack.boundary)
-                    {
-                        var boundary=pack.boundary;
-                        smart.map=name;
-                        smart.x=(boundary[0]+boundary[2])/2;
-                        smart.y=(boundary[1]+boundary[3])/2;
+                        smart.map = boundary[0];
+                        smart.x = (boundary[1] + boundary[3]) / 2;
+                        smart.y = (boundary[2] + boundary[4]) / 2;
+                    } else if (pack.boundary) {
+                        let boundary = pack.boundary;
+                        smart.map = name;
+                        smart.x = (boundary[0] + boundary[2]) / 2;
+                        smart.y = (boundary[1] + boundary[3]) / 2;
                     }
                 });
-        }
-        else if(G.maps[destination.to||destination.map])
-        {
+            }
+        } else if (G.maps[destination.to || destination.map]) {
             smart.map=destination.to||destination.map;
             smart.x=G.maps[smart.map].spawns[0][0];
             smart.y=G.maps[smart.map].spawns[0][1];
@@ -50,22 +42,20 @@ function smart_move(destination,on_done) // despite the name, smart_move isn't v
         else if(destination.to=="stands") smart.map="main",smart.x=-186,smart.y=691; // Added
         else if(destination.to=="shells") smart.map="main",smart.x=-1499,smart.y=629; // Added
     }
-    if(!smart.map)
-    {
+    if (!smart.map) {
         //game_log("Unrecognized","#CF5B5B");
         return;
     }
     smart.moving=true;
     smart.plot=[]; smart.flags={}; smart.searching=smart.found=false;
-    if(destination.return)
-    {
+    if (destination.return) {
         var cx=character.real_x,cy=character.real_y,cmap=character.map;
         smart.on_done=function(){
             if(on_done) on_done();
             smart_move({map:cmap,x:cx,y:cy});
         }
-    }
-    else smart.on_done=on_done||function(){};
+    } else smart.on_done = on_done || function () {
+    };
     console.log(smart.map+" "+smart.x+" "+smart.y);
 }
 
@@ -117,8 +107,7 @@ function smart_move_logic()
     }
 }
 
-function start_pathfinding()
-{
+function start_pathfinding() {
     smart.searching=true;
     queue=[],visited={},start=0,best=null;
     qpush({x:character.real_x,y:character.real_y,map:character.map,i:-1});
@@ -126,8 +115,7 @@ function start_pathfinding()
     bfs();
 }
 
-function bfs()
-{
+function bfs() {
     var timer=new Date(),result=null,optimal=true;
 
     while(start<queue.length)
