@@ -53,7 +53,7 @@ function farm() {
         noHealCount = 0;
     }
     // Find a mtype to kill
-    if (!currentTarget && !party_aggro && character.party) {
+    if (!currentTarget && !party_aggro && character.party && partyHPS() > 100) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
         if (target) {
             targetSetAt = Date.now();
@@ -168,23 +168,10 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 let farmWait;
 function refreshTarget() {
-    // Reset target if we've been there for hours
-    if (targetSetAt && targetSetAt + (60000 * 180) < Date.now()) {
-        whisperParty("We've been killing " + G.monsters[currentTarget].name + "'s for 3 hours, time to rotate to something new.");
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        lastTarget = currentTarget;
-        primary = undefined;
-        currentTarget = undefined;
-        lowLevelCount = 0;
-        traveling = true;
-        return shibMove('main');
-    }
     // No target or waiting for healer check
-    if (!currentTarget || waitForHealer(325, true)) return;
+    if ((!currentTarget || waitForHealer(325, true)) && (targetSetAt + (60000 * 5) < Date.now())) return;
     // We're only fighting low level main targets, time to rotate to let them build up
-    if (lowLevelCount && lowLevelCount >= 4) {
+    if (lowLevelCount && lowLevelCount >= 5) {
         whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
         stop();
         lastCombat = Date.now();
@@ -197,7 +184,7 @@ function refreshTarget() {
         return shibMove('main');
     }
     // We haven't seen our actual target in awhile
-    if (lastRealTarget + (60000 * 2.5) < Date.now()) {
+    if (lastRealTarget + (60000 * 3.5) < Date.now()) {
         whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
         stop();
         lastCombat = Date.now();
@@ -249,7 +236,6 @@ function refreshTarget() {
 //Tackle a target
 function tackle(target, slowMove = true) {
     lastCombat = Date.now();
-    farmWait = undefined;
     tackling = true;
     if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
