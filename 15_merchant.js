@@ -197,6 +197,8 @@ function sellItemsToPlayers() {
 // Handles the merchant stand
 let passiveSale = {};
 function passiveMerchant() {
+    // No idle on pvp realms
+    if (isPvP()) return lastAttemptedCrafting = undefined;
     set_message('IdleMerchant');
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));

@@ -1,5 +1,6 @@
 // State controller
 let lastBankGearCheck, new_state, deathCooldown;
+let deathTracker = 0;
 let deathTime = {};
 function stateController(state) {
     if (!state) state = 10;
@@ -114,12 +115,9 @@ function potionCheck() {
 }
 
 //PVP Death tracking
-let deathTracker, lastDownTick;
 function grieferTracking() {
-    if (deathTracker >= 5) {
+    if (deathTracker >= 3) {
         realmSwap(pvp = false);
-    } else if (deathTracker && lastDownTick + (60000 * 3) < Date.now()) {
-        deathTracker--;
     }
 }
 //Realm switching

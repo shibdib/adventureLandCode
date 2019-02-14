@@ -64,9 +64,9 @@ function farm() {
                 use('supershot', target);
             }
             // If you need to kite do so, otherwise get in range
-            if (nearbyAggressors(150, true).length) kite(); else moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            if (nearbyAggressors(150, true).length) kite(); else moveToTarget(target, character.range * 0.5, character.range * 0.7);
         }
     } else {
-        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.425, character.range * 0.5);
+        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.1, character.range * 0.15);
     }
 }

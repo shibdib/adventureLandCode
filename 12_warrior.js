@@ -49,15 +49,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
-    if (isPvP() && waitForHealer()) {
-        if (!noHealCount || noHealCount >= 50) {
-            return stop();
-        } else {
-            noHealCount++
-        }
-    } else {
-        noHealCount = 0;
-    }
+    if (isPvP() && waitForHealer()) return;
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party && partyHPS() > 100) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
