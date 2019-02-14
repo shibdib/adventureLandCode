@@ -15,7 +15,7 @@ function smart_move(destination,on_done) // despite the name, smart_move isn't v
         if(G.monsters[destination.to])
         {
             for(var name in G.maps)
-                (G.maps[name].monsters||[]).forEach(function(pack){
+                (shuffle(G.maps[name].monsters) || []).forEach(function (pack) {
                     if(pack.type!=destination.to || G.maps[name].ignore || G.maps[name].instance || avoidMaps.includes(name)) return;
                     if(pack.boundaries) // boundaries: for phoenix, mvampire
                     {

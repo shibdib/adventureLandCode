@@ -2,9 +2,8 @@
 let lastBankGearCheck, new_state, deathCooldown;
 let deathTracker = 0;
 let deathTime = {};
-function stateController(state) {
-    if (!state) state = 10;
-    new_state = 1;
+
+function stateController(state = 1) {
     //KIA
     if (isPvP()) grieferTracking();
     if (character.rip) {
@@ -31,6 +30,8 @@ function stateController(state) {
     else if (potionCheck()) {
         if (state !== 3) whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
         new_state = 3;
+    } else {
+        new_state = 1;
     }
     //If state changed set it and announce
     if (state !== new_state) {

@@ -31,14 +31,13 @@ function farm() {
     // If you need to blink to leader do it
     if (can_use('blink') && blinkToLeader()) return;
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
-    //let magiPortTarget = getMagiPortTarget();
-    let magiPortTarget;
+    let magiPortTarget = getMagiPortTarget();
     if (magiPortTarget && can_use('magiport')) {
         parent.d_text("MAGIPORT FOR "+ magiPortTarget + "!",character,{color:"#ffc230"});
         if (character.mp < 900) use('use_mp'); else use('magiport', magiPortTarget);
     } else if (target) {
         // Energize the party
-        if (can_use('energize')) randomEnergize();
+        if (can_use('energize')) energizeNeedy();
         if (can_attack(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {
@@ -77,7 +76,6 @@ function getMagiPortTarget() {
         let leader = get_player(character.party);
         // Don't teleport unless you're with the party;
         if (!leader || parent.distance(character, leader) > 250) return;
-        let partyInfo = get_player(character.party);
         for (let key in parent.party_list) {
             let member = parent.party_list[key];
             let memberData = getCharacterData()[member];
@@ -86,6 +84,8 @@ function getMagiPortTarget() {
             if (member === character.name) continue;
             // If we have member data and they're not in farm mode skip
             if (memberData && memberData.state !== 1) continue;
+            // If we don't have member data skip
+            if (!memberData) continue;
             // Don't teleport the tank unless you're in combat
             if (member === character.party && !combat) continue;
             // Don't teleport the merchant
@@ -97,18 +97,18 @@ function getMagiPortTarget() {
     }
 }
 
-function randomEnergize() {
+function energizeNeedy() {
     if (parent.party_list.length > 0) {
-        for (let key in shuffle(parent.party_list)) {
-            let member = parent.party_list[key];
-            let entity = parent.entities[member];
+        for (let key of parent.party_list) {
+            let entity = parent.entities[key];
             // Don't energize far away, high mp, has energize or merchants
-            if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11 || checkEntityForBuff(entity, 'energized')) continue;
-            if (Math.random() > 0.7) {
-                parent.d_text("ENERGIZING "+ member + "!",character,{color:"#ffc230"});
-                if (member !== character.name) whisperParty('Energizing ' + member + ' with increased MP regen and Attack Speed.'); else whisperParty('Energizing myself.');
-                use('energize', entity);
-            }
+            if (!entity || entity.ctype === 'merchant' || entity.mp > entity.max_mp * 0.11 || checkEntityForBuff(entity, 'energized') || key === character.name) continue;
+            parent.socket.emit("skill", {
+                name: "energize",
+                id: entity.id,
+                mp: character.mp / 2
+            });
+            return whisperParty("ENERGIZING: Sending some MP over to " + key);
         }
     }
 }

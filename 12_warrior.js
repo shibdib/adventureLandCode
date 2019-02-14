@@ -9,11 +9,17 @@ let lastRealTarget = Date.now();
 //State Controller
 setInterval(function () {
     state = stateController(state);
-    if (combat) {
-        // Send CM attack info on combat
-        let type;
-        if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
-        sendPartyCM({type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}});
+}, 5000);
+
+//CM Location Loop
+//Only sends details to people it cant see
+setInterval(function () {
+    for (let key of parent.party_list) {
+        let entity = parent.entities[key];
+        if (entity) continue;
+        let type = 'moving';
+        if (primary) if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
+        send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
     }
 }, 5000);
 
@@ -37,7 +43,7 @@ setInterval(function () {
     updateCharacterData();
 }, 75);
 
-let noHealCount;
+//Primary loop
 function farm() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
@@ -55,13 +61,13 @@ function farm() {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
         if (target) {
             targetSetAt = Date.now();
-            currentTarget = target;
             lastCombat = Date.now();
             lastRealTarget = Date.now();
             lastTarget = currentTarget;
+            currentTarget = target;
             primary = undefined;
-            lowLevelCount = 0;
             traveling = true;
+            lowLevelCount = 0;
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             if (Math.random() > 0.9) parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.", character, {color: "#354de8"});
@@ -80,16 +86,20 @@ function farm() {
     if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
     // If we had a primary and he died clear it
     if (primary && primary.dead) primary = undefined;
+    // If someone in the party has aggro set them primary
+    if (party_aggro && get_target_of(party_aggro) !== character) {
+        primary = party_aggro;
+    }
+    // If you don't have a target find one
     if (!primary) {
         let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
         if (getEntitiesTargeting()[0]) {
             stop('move');
             primary = getEntitiesTargeting()[0];
         } else if (readyToPull && mainTarget) {
-            lastRealTarget = Date.now();
             stop('move');
-            traveling = false;
             primary = mainTarget;
+            traveling = false;
             // Is main target level 1-2??
             if (mainTarget.level <= 2) lowLevelCount++; else lowLevelCount = 0;
         } else if (readyToPull && opportunisticTarget && !traveling) {
@@ -97,10 +107,6 @@ function farm() {
         } else if (!readyToPull) {
             use_hp_or_mp();
         }
-    }
-    // If someone in the party has aggro set them primary
-    if (party_aggro && get_target_of(party_aggro) !== character) {
-        primary = party_aggro;
     }
     // If you have a target deal with it
     if (primary) {
