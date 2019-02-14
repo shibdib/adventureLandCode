@@ -5,13 +5,52 @@ function findLocalTargets(type, returnArray = false) {
     potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
-        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && !parent.friends.includes(player.owner) && checkIfHostile(player));
-        if (nearbyPlayers.length) potentialTargets = potentialTargets.concat(nearbyPlayers);
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && checkIfHostile(player) && !player.rip);
+        if (nearbyPlayers.length) return sortEntitiesByDistance(nearbyPlayers)[0];
     }
     if (!potentialTargets.length) return false;
     //Order monsters by distance and xp.
     potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
     if (!returnArray) return potentialTargets[0]; else return potentialTargets;
+}
+
+// Returns the target of the leader
+function findLeaderTarget() {
+    if (!character.party) return;
+    let target = get_target_of(get_player(character.party));
+    if (!target) return;
+    if (parent.party_list.length) {
+        for (id in parent.party_list) {
+            let member = parent.party_list[id];
+            if (member === target.name) return;
+        }
+    }
+    //Handle monsters
+    if (target && is_monster(target)) return target;
+    if (target && is_character(target) && checkIfHostile(target) && !target.rip) return target;
+}
+
+// Return all monsters targeting you
+function getEntitiesTargeting(target = character) {
+    if (!target) target = character;
+    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
+    let playerAggro = Object.values(parent.entities).filter(player => isPvP() && is_character(player) && get_target_of(player) === target && checkIfHostile(player) && !player.rip);
+    if (playerAggro.length) return sortEntitiesByDistance(playerAggro); else return sortEntitiesByDistance(monsterAggro);
+}
+
+// Check if the tank has aggro
+function checkIfSafeToAggro(target) {
+    if (target.target && target.target !== character.name) return true;
+}
+
+// Check if anyone has aggro
+function checkPartyAggro() {
+    if (!character.party) return;
+    if (parent.party_list.length) {
+        let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
+        let playerAggro = Object.values(parent.entities).filter(player => isPvP() && parent.party_list.includes(player.target) && checkIfHostile(player) && !player.rip);
+        if (playerAggro.length) return sortEntitiesByDistance(playerAggro)[0]; else if (monsterAggro.length) return monsterAggro[0];
+    }
 }
 
 // Find possible targets to pull with your main target
@@ -70,57 +109,17 @@ function findBestMonster(minXp, lastTarget) {
     return random_one(sorted);
 }
 
-// Returns the target of the leader
-function findLeaderTarget() {
-    if (!character.party) return;
-    let target = get_target_of(get_player(character.party));
-    if (!target) return;
-    if (parent.party_list.length) {
-        for (id in parent.party_list) {
-            let member = parent.party_list[id];
-            if (member === target.name) return;
-        }
-    }
-    if (target) return target;
-}
-
-// Check if the tank has aggro
-function checkTankAggro() {
-    if (!character.party) return;
-    let target = get_target_of(get_player(character.party));
-    let targetsTarget = get_target_of(target);
-    if (target && targetsTarget === get_player(character.party) || targetsTarget === character.party) return true;
-}
-
-// Check if anyone has aggro
-function checkPartyAggro() {
-    if (!character.party) return;
-    if (parent.party_list.length) {
-        let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && parent.party_list.includes(mob.target));
-        let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === character);
-        if (playerAggro.length) return sortEntitiesByDistance(playerAggro)[0]; else if (monsterAggro.length) return monsterAggro[0];
-    }
-}
-
 // Check for monsters nearby who will aggro
 function nearbyAggressors(range = 215, highRisk) {
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
         G.monsters[mob.mtype].aggro && getMonsterDPS(mob) >= partyHPS() && parent.distance(character, mob) <= range);
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
-        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => !parent.friends.includes(player.owner) && checkIfHostile(player));
+        let nearbyPlayers = getNearbyCharacters(400, true).filter(player => !parent.friends.includes(player.owner) && checkIfHostile(player) && !player.rip);
         if (nearbyPlayers.length) aggressiveMonsters = aggressiveMonsters.concat(nearbyPlayers);
     }
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
-}
-
-// Return all monsters targeting you
-function getEntitiesTargeting(target = character) {
-    if (!target) target = character;
-    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
-    let playerAggro = Object.values(parent.entities).filter(mob => isPvP() && !parent.party_list.includes(mob.name) && is_character(mob) && get_target_of(mob) === target);
-    if (playerAggro.length) return sortEntitiesByDistance(playerAggro); else return sortEntitiesByDistance(monsterAggro);
 }
 
 // Check if the target can be killed in ~1 hit
@@ -213,10 +212,13 @@ function deadParty() {
 // Store PVP info
 function storeHostilePlayer(hostile, act = 'target') {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
+    if (parent.entities[hostile]) hostile = parent.entities[hostile];
     if (!parent.party_list.includes(hostile.name) && !parent.friends.includes(hostile.owner) && hostile && hostile.name) {
+        if (!hostilePlayers[hostile.owner]) {
+            pm(hostile.name, 'You have been marked hostile for 30 minutes.')
+            whisperParty(hostile.name + ' is now hostile!!')
+        }
         hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
-        //pm(hostile.name, 'You have been marked hostile for 30 minutes.');
-        //whisperParty(hostile.name + ' has been marked hostile.');
         localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
     }
 }
@@ -224,8 +226,9 @@ function storeHostilePlayer(hostile, act = 'target') {
 // Check PVP status
 function checkIfHostile(hostile) {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
+    if (!hostile.owner) return;
     if (hostilePlayers[hostile.owner]) {
-        if (hostilePlayers[hostile.owner].time + (60000 * 30) < Date.now()) {
+        if (hostilePlayers[hostile.owner].time && hostilePlayers[hostile.owner].time + (60000 * 30) < Date.now()) {
             hostilePlayers[hostile.owner] = undefined;
             localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));
             return false;
@@ -255,14 +258,8 @@ hitHandler = function(event){
     if (parent != null) {
         let attacker = event.hid;
         let attacked = event.id;
-        let attackedEntity = parent.entities[attacked];
-        if (attacked === character.name || (parent.party_list && parent.party_list.includes(attacked))) {
-            attackedEntity = character;
-        }
-        if (attackedEntity && !event.heal) {
-            if (is_character(attackedEntity)) {
-                storeHostilePlayer(attacker, 'attacked');
-            }
+        if (parent.party_list && parent.party_list.includes(attacked)) {
+            storeHostilePlayer(attacker, 'attacked');
         }
     }
 };

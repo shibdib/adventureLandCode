@@ -38,7 +38,7 @@ function farm() {
     } else if (target) {
         // Energize the party
         if (can_use('energize')) randomEnergize();
-        if (can_attack(target) && (checkTankAggro() || canOneShot(target))) {
+        if (can_attack(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {
                 parent.d_text("BURST!",character,{color:"#ffc230"});

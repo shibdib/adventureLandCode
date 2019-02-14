@@ -43,7 +43,7 @@ function farm() {
     if (isPvP() && can_use('track')) use('track');
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro();
     if (target) {
-        if (in_attack_range(target) && (checkTankAggro() || canOneShot(target))) {
+        if (in_attack_range(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Long range
             if (can_use('supershot', target)) {
                 parent.d_text("SUPERSHOT!",character,{color:"#ffc230"});
@@ -59,7 +59,7 @@ function farm() {
             kite();
         } else {
             // Long range
-            if ((checkTankAggro() || canOneShot(target) && can_use('supershot', target))) {
+            if ((checkIfSafeToAggro(target) || canOneShot(target) && can_use('supershot', target))) {
                 parent.d_text("SUPERSHOT!",character,{color:"#ffc230"});
                 use('supershot', target);
             }

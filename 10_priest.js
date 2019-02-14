@@ -35,7 +35,7 @@ function farm() {
     // If tank target is a kitey player CURSE THEM!!!!
     if (tankTarget && is_character(tankTarget) && (tankTarget.ctype === 'mage' || tankTarget.ctype === 'ranger') && can_use('curse', tankTarget)) use('curse', tankTarget);
     // Do Damage if possible
-    if (!mostHurtMember && tankTarget && character.mp > character.max_mp * 0.5 && (checkTankAggro() || canOneShot(tankTarget))) {
+    if (!mostHurtMember && tankTarget && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(tankTarget) || canOneShot(tankTarget))) {
         parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
         if (can_use('curse', tankTarget)) use('curse', tankTarget);
         if (can_attack(tankTarget)) attack(tankTarget);

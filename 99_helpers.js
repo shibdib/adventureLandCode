@@ -57,31 +57,6 @@ function on_party_invite(name) {
     accept_party_invite(name);
 }
 
-// Disable all the other logging because it's really annoying
-function add_log(c, a) {
-    if (parent === null || parent.mode.dom_tests || parent.inside == "payments" || parent.no_html) {
-        return
-    }
-    // Filters log entries from an array called filterWord
-    let length = filterWord.length;
-    while(length--) {
-        if (c.indexOf(filterWord[length])!==-1) {
-            return;
-        }
-    }
-    if (parent.game_logs.length > 480) {
-        let b = "<div class='gameentry' style='color: gray'>- Truncated -</div>";
-        parent.game_logs = parent.game_logs.slice(-160);
-        parent.game_logs.forEach(function (d) {
-            b += "<div class='gameentry' style='color: " + (d[1] || "white") + "'>" + d[0] + "</div>"
-        });
-        parent.$("#gamelog").html(b)
-    }
-    parent.game_logs.push([c, a]);
-    parent.$("#gamelog").append("<div class='gameentry' style='color: " + (a || "white") + "'>" + c + "</div>");
-}
-parent.add_log = add_log;
-
 // Character DPS
 function getCharacterDPS(userCharacter = character) {
     if (G.classes[userCharacter.ctype].damage_type === 'physical') {
@@ -182,7 +157,7 @@ function checkEntityForBuff(entity, buff) {
 
 // Get all characters within range
 function getNearbyCharacters(range = 200, filterParty = false) {
-    let characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob));
+    let characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob) && !mob.rip);
     if (filterParty) characters = Object.values(parent.entities).filter(mob => parent.distance(character, mob) <= range && is_character(mob) && !parent.party_list.includes(mob.name));
     if (characters.length) return characters; else return [];
 }
