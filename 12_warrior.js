@@ -49,7 +49,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
-    if (isPvP() && waitForHealer()) return;
+    if (isPvP() && waitForHealer() && !combat) return;
     // Find a mtype to kill
     if (!currentTarget && !party_aggro && character.party && partyHPS() > 100) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
@@ -267,11 +267,9 @@ setInterval(function () {
 }, 5000);
 
 // Party Move Speed Management
+
+let combatSet;
 setInterval(function () {
-    slowestMan();
-}, 500);
-let lastSet;
-function slowestMan() {
     let speed = character.speed;
     if (parent.party_list.length) {
         for (id in parent.party_list) {
@@ -281,14 +279,14 @@ function slowestMan() {
             if (entity.speed < speed) speed = entity.speed - 6;
         }
     }
-    if (lastSet !== 9999 && (combat || primary)) {
-        lastSet = 9999;
+    if (!combatSet && (combat || primary)) {
+        combatSet = true;
         cruise(9999);
-    } else if (lastSet !== speed) {
-        lastSet = speed;
+    } else if (!combat && !primary && speed !== character.speed) {
+        combatSet = undefined;
         cruise(speed);
     }
-}
+}, 500);
 
 //Force reboot of character (1h)
 setInterval(function () {
