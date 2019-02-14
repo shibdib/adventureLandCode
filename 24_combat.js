@@ -10,7 +10,7 @@ function findLocalTargets(type, returnArray = false) {
     }
     if (!potentialTargets.length) return false;
     //Order monsters by distance and xp.
-    potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
+    potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => ((b.xp * 3) - parent.distance(character, b)) - ((a.xp * 3) - parent.distance(character, a)));
     if (!returnArray) return potentialTargets[0]; else return potentialTargets;
 }
 
