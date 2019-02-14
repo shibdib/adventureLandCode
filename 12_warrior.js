@@ -42,8 +42,6 @@ function farm() {
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
-    // Handle target refreshing
-    refreshTarget();
     // Stay with healer on pvp
     if (isPvP() && waitForHealer()) {
         if (!noHealCount || noHealCount >= 50) {
@@ -58,17 +56,22 @@ function farm() {
     if (!currentTarget && !party_aggro && character.party) {
         target = findBestMonster(75 * (character.level / 2), lastTarget);
         if (target) {
-            farmWait = undefined;
-            lastRealTarget = Date.now();
-            traveling = true;
             targetSetAt = Date.now();
             currentTarget = target;
+            lastCombat = Date.now();
+            lastRealTarget = Date.now();
+            lastTarget = currentTarget;
+            primary = undefined;
+            lowLevelCount = 0;
+            traveling = true;
             game_log('New target is a ' + target);
             whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
             if (Math.random() > 0.9) parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.", character, {color: "#354de8"});
             return stop();
         }
     }
+    // Handle target refreshing
+    refreshTarget();
     // Handle various target declarations
     let mainTarget;
     if (currentTarget) mainTarget = findLocalTargets(currentTarget);
@@ -103,6 +106,10 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
+        // Send CM attack info on combat
+        let type;
+        if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
+        sendPartyCM({type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}});
         // Warcry
         if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
@@ -117,7 +124,7 @@ function farm() {
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character) {
+            if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior') {
                 combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
