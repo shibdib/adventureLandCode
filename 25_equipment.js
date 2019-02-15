@@ -227,7 +227,6 @@ function statItems() {
                 if (grade === 1) amount = 10; else if (grade === 2) amount = 100;
                 statItem[character.name] = {slot: slot, amount: amount, name: item.name, level: properties.level};
                 unequip(statItem[character.name].slot);
-                show_json(statItem[character.name])
                 return false;
             }
         }
