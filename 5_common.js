@@ -48,6 +48,8 @@ function stateController(state = 1) {
 //State tasks
 function stateTasks(state) {
     let combat;
+    // STAT YOUR GEAR!!
+    if (!statItems()) return;
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         let tod = deathTime[character.name];
@@ -65,7 +67,7 @@ function stateTasks(state) {
         return true;
     }
     if (state === 4) { // GEAR
-        if (gearIssue() && statItems()) {
+        if (gearIssue()) {
             lastBankGearCheck = Date.now();
             stateController(1);
         }
