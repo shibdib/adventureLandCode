@@ -7,6 +7,7 @@ function can_use(name, target = undefined) {
     if (G.skills[name] && G.skills[name].consume && !getInventorySlot(G.skills[name].consume)) return false; // checks for consumable
     if (target && G.skills[name] && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
     if (target && G.skills[name] && checkEntityForBuff(target, name)) return false; // checks if this is already applied
+    if (!target && G.skills[name] && checkEntityForBuff(character, name)) return false; // checks if this is already applied to yourself
     return parent.can_use(name);  // checks the cooldown
 }
 
