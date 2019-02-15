@@ -1,7 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target, combat, pendingReboot, tackling,
-    primary, lastPos, traveling, targetSetAt, targetArray, eventMap;
+    primary, lastPos, traveling, targetSetAt, targetArray, eventMap, eventCoords;
 let lowLevelCount = 0;
 let lowLevelTotalCount = 0;
 let state;
@@ -325,19 +325,25 @@ function on_game_event(event) {
             lastCombat = Date.now();
             lastRealTarget = Date.now();
             currentTarget = event.name;
-            primary = undefined;
+            primary = eventTarget;
             traveling = true;
             stop();
         } else if (event.map) {
-            whisperParty('An event mob spawned on a different map, lets go kill a ' + G.monsters[event.name].name);
             lastCombat = Date.now();
             lastRealTarget = Date.now();
             currentTarget = event.name;
             primary = undefined;
             traveling = true;
             eventMap = event.map;
+            eventCoords = {x: event.x, y: event.y};
             stop();
-            return shibMove(event.map);
+            if (character.map === event.map) {
+                whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
+                return shibMove({x: eventCoords.x, y: eventCoords.y, map: event.map});
+            } else if (eventCoords.x && eventCoords.y) {
+                whisperParty('An event mob spawned on a different map, lets go kill a ' + G.monsters[event.name].name);
+                return shibMove({x: eventCoords.x, y: eventCoords.y, map: event.map});
+            }
         }
     }
 }
