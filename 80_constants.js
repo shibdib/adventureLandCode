@@ -8,7 +8,7 @@ let pveCharacters = [
 ];
 
 // Avoid attacking these
-let avoidMtypes = ['scorpion'];
+let avoidMtypes = ['scorpion', 'phoenix'];
 // Avoid going here
 let avoidMaps = ["tunnel"];
 // Event targets
