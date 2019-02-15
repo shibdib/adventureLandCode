@@ -416,7 +416,7 @@ function combineItems() {
                 currentTask = undefined;
                 craftingLevel = undefined;
                 lastBankCheck = undefined;
-                lastAttemptedCrafting = Date.now();
+                if (Math.random() > 0.5) lastAttemptedCrafting = Date.now(); else lastAttemptedCrafting = undefined;
             } else if (withdraw) {
                 let append = 0;
                 if (craftingLevel) append = craftingLevel;
