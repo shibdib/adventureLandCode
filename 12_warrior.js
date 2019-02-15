@@ -31,7 +31,7 @@ setInterval(function () {
 
 //Other Task Loop
 setInterval(function () {
-    if (!state || state === 1) return;
+    if (!state) return;
     stateTasks(state);
 }, 2000);
 

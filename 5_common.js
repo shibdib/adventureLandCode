@@ -45,8 +45,6 @@ function stateController(state) {
 //State tasks
 function stateTasks(state) {
     let combat;
-    // STAT YOUR GEAR!!
-    if (state !== 4 && !statItems()) return;
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         let tod = deathTime[character.name];
