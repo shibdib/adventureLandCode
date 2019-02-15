@@ -19,13 +19,8 @@ function stateController(state = 1) {
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
     else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + (60000 * 30) < Date.now())) {
-        if (state !== 4 && !lastBankGearCheck && Math.random() > 0.2) {
-            lastBankGearCheck = Date.now();
-            new_state = 1;
-        } else {
-            if (state !== 4) whisperParty('Headed to the bank to gear up.');
-            new_state = 4;
-        }
+        if (state !== 4) whisperParty('Headed to the bank to gear up.');
+        new_state = 4;
     } //POTIONS
     else if (potionCheck()) {
         if (state !== 3) whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
