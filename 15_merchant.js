@@ -97,7 +97,7 @@ function exchangeStuff() {
 
 // Buy items for crafting
 function buyBaseItems() {
-    if (lastRestock + 90000 > Date.now()) return;
+    if (lastRestock + 10000 > Date.now()) return;
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
     items:
@@ -160,7 +160,7 @@ function sellExcessToNPC() {
                 continue;
             }
             let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
-            if (G.items[cleanName] && bankDetails[key] > 3 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName)) {
+            if (G.items[cleanName] && bankDetails[key] > 5 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName)) {
                 if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
                     name: cleanName,
                     level: level
