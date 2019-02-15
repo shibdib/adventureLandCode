@@ -5,6 +5,8 @@ let deathTime = {};
 
 function stateController(state) {
     if (!state) state = 10;
+    // Don't re-gear every respawn
+    if (!lastBankGearCheck && Math.random() > 0.6) lastBankGearCheck = Date.now();
     //KIA
     if (isPvP()) grieferTracking();
     if (character.rip) {
