@@ -6,6 +6,7 @@ function depositGold(amount = character.gold - 5000) {
         return false;
     } else {
         bank_deposit(amount);
+        return true;
     }
 }
 
@@ -35,6 +36,7 @@ function depositItems(potions = false) {
             if (itemInfo.type === 'stand') continue;
             bank_store(key);
         }
+        return true;
     }
 }
 

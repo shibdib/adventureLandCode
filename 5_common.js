@@ -59,8 +59,7 @@ function stateTasks(state) {
     } // DEAD
     if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
-        depositGold();
-        depositItems();
+        if (depositGold() && depositItems()) stateController(1);
         return true;
     }
     if (state === 3) { // POTION PICKUP
