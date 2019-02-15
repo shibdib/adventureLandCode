@@ -17,7 +17,7 @@ setInterval(function () {
 
 //Other Task Loop
 setInterval(function () {
-    if (!state) return;
+    if (!state || combat) return;
     stateTasks(state);
 }, 2000);
 
