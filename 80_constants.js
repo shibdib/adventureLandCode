@@ -196,5 +196,6 @@ let states = {
     9: 'merchantTasks',
     10: 'rest',
     11: 'accounting',
+    12: 'stating',
     99: 'dead'
 };
