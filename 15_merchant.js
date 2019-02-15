@@ -153,7 +153,11 @@ function sellExcessToNPC() {
             if (key === 'gold') continue;
             let level = parseInt(key[key.length - 1]);
             let cleanName = key.slice(0, -1);
-            if (item_grade({name: cleanName, level: level})) continue;
+            try {
+                if (item_grade({name: cleanName, level: level})) continue;
+            } catch(e) {
+                continue;
+            }
             let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
             if (G.items[cleanName] && bankDetails[key] > 3 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName)) {
                 if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
