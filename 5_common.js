@@ -18,7 +18,7 @@ function stateController(state = 1) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
-    else if (!lastBankGearCheck || lastBankGearCheck + (60000 * 30) < Date.now()) {
+    else if ((!isPvP() && !lastBankGearCheck) || lastBankGearCheck + (60000 * 30) < Date.now()) {
         if (state !== 4) whisperParty('Headed to the bank to gear up.');
         new_state = 4;
     } //POTIONS
@@ -30,6 +30,7 @@ function stateController(state = 1) {
     }
     //If state changed set it and announce
     if (state !== new_state) {
+        if (!lastBankGearCheck && new_state !== 4) lastBankGearCheck = Date.now();
         if (character.ctype === 'rogue') stop('invis');
         game_log("--- NEW STATE " + states[new_state] + " ---");
         state = new_state;
