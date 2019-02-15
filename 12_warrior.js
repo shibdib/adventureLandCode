@@ -71,6 +71,7 @@ function farm() {
     // Get array of mtypes
     if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
         targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
+        whisperParty('NEW MTYPE ARRAY: ' + JSON.stringify(targetArray));
     }
     // Find a mtype to kill
     if (!currentTarget && targetArray) {
@@ -137,7 +138,7 @@ function farm() {
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (parent.party_list.includes(primary.target) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior') {
+            if (get_target_of(primary) && parent.party_list.includes(primary.target) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior') {
                 combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
