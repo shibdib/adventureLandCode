@@ -54,7 +54,8 @@ function stateTasks(state) {
     } // DEAD
     if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
-        if (depositGold() && depositItems()) stateController(1);
+        depositGold();
+        depositItems();
         return true;
     }
     if (state === 3) { // POTION PICKUP
@@ -62,10 +63,7 @@ function stateTasks(state) {
         return true;
     }
     if (state === 4) { // GEAR
-        if (gearIssue()) {
-            lastBankGearCheck = Date.now();
-            stateController(1);
-        }
+        if (gearIssue()) lastBankGearCheck = Date.now();
         return true;
     }
 }
