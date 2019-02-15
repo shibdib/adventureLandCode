@@ -152,8 +152,10 @@ function partyDPS() {
 
 // Check if entity has a buff
 function checkEntityForBuff(entity, buff) {
-    if (!entity.s) return false;
-    return Object.keys(entity.s).includes(buff);
+    let s = false;
+    if (entity.s) s = Object.keys(entity.s).includes(buff);
+    let overall = Object.keys(entity).includes(buff);
+    return s || overall;
 }
 
 // Get all characters within range
