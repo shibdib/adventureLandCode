@@ -129,9 +129,3 @@ function realmSwap(pvp = false) {
     if (pvp) names = names.concat(pvpNames);
     change_server(random_one(serverRegions), random_one(names));
 }
-//Chance for a realm swap every hour
-setInterval(function () {
-    if (Math.random() > 0.6) {
-        realmSwap(true);
-    }
-}, 60000 * 60);

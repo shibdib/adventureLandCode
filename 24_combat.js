@@ -74,7 +74,7 @@ function getEasyKills(oneShot = true) {
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
 // monster every run as multiple monsters typically meet the criteria so make sure to cache the target or edit this to return the same.
-function findBestMonster(minXp, lastTarget) {
+function findBestMonster(minXp, lastTarget, array = false) {
     let sorted, monsterSpawns;
     let healsPerSecond = partyHPS() * 0.95;
     // Make G.maps an array
@@ -106,6 +106,7 @@ function findBestMonster(minXp, lastTarget) {
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
     game_log(JSON.stringify(sorted))
+    if (array) return sorted;
     return random_one(sorted);
 }
 
@@ -215,8 +216,8 @@ function storeHostilePlayer(hostile, act = 'target') {
     if (parent.entities[hostile]) hostile = parent.entities[hostile];
     if (!parent.party_list.includes(hostile.name) && !parent.friends.includes(hostile.owner) && hostile && hostile.name) {
         if (!hostilePlayers[hostile.owner]) {
-            pm(hostile.name, 'You have been marked hostile for 30 minutes.')
-            whisperParty(hostile.name + ' is now hostile!!')
+            pm(hostile.name, 'You have been marked hostile for 30 minutes.');
+            whisperParty(hostile.name + ' is now hostile!!');
         }
         hostilePlayers[hostile.owner] = {time: Date.now(), act: act};
         localStorage.setItem('hostilePlayers', JSON.stringify(hostilePlayers));

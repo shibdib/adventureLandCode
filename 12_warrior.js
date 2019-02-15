@@ -1,7 +1,9 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, lastTarget, targetSetAt;
+let currentTarget, target, combat, pendingReboot, tackling,
+    primary, lastPos, traveling, targetSetAt, targetArray, eventMap;
 let lowLevelCount = 0;
+let lowLevelTotalCount = 0;
 let state = stateController();
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
@@ -9,6 +11,11 @@ let lastRealTarget = Date.now();
 //State Controller
 setInterval(function () {
     state = stateController(state);
+    if (lowLevelCount >= 10) {
+        whisperParty('We encountered too many low level mobs, going to rotate realms');
+        lowLevelTotalCount = 0;
+        return realmSwap();
+    }
 }, 5000);
 
 //CM Location Loop
@@ -27,7 +34,6 @@ setInterval(function () {
 setInterval(function () {
     if (character.rip && state !== 99) {
         if (currentTarget) {
-            lastTarget = currentTarget;
             currentTarget = undefined;
         }
         primary = undefined;
@@ -50,29 +56,36 @@ function farm() {
     loot();
     potionController();
     if (character.party) combat = checkPartyAggro(); else return kite();
+    // Handle switching maps for an event
+    if (!combat && eventMap && eventMap !== character.map) {
+        return shibMove(eventMap);
+    } else if (eventMap && eventMap === character.map) {
+        eventMap = undefined;
+    }
     // Hardshell when health is low
     if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
     if (isPvP() && waitForHealer() && !combat) return;
+    // Get array of mtypes
+    if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
+        targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
+    }
     // Find a mtype to kill
-    if (!currentTarget && !party_aggro && character.party && partyHPS() > 100) {
-        target = findBestMonster(75 * (character.level / 2), lastTarget);
-        if (target) {
-            targetSetAt = Date.now();
-            lastCombat = Date.now();
-            lastRealTarget = Date.now();
-            lastTarget = currentTarget;
-            currentTarget = target;
-            primary = undefined;
-            traveling = true;
-            lowLevelCount = 0;
-            game_log('New target is a ' + target);
-            whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
-            if (Math.random() > 0.9) parent.d_text('Lets go kill ' + G.monsters[currentTarget].name + "'s.", character, {color: "#354de8"});
-            return stop();
-        }
+    if (!currentTarget && targetArray) {
+        currentTarget = random_one(targetArray);
+        targetSetAt = Date.now();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        traveling = true;
+        lowLevelCount = 0;
+        game_log('New target is a ' + currentTarget);
+        whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
+        targetArray = targetArray.filter((m) => m !== currentTarget);
+        game_log(JSON.stringify(targetArray));
+        return stop();
     }
     // Handle target refreshing
     refreshTarget();
@@ -171,63 +184,55 @@ function refreshTarget() {
     if ((!currentTarget || waitForHealer(325, true)) && (targetSetAt + (60000 * 5) < Date.now())) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 5) {
+        game_log('Overfarm');
         whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
-        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         lowLevelCount = 0;
+        lowLevelTotalCount++;
         traveling = true;
         return shibMove('main');
     }
     // We haven't seen our actual target in awhile
     if (lastRealTarget + (60000 * 3.5) < Date.now()) {
+        game_log('NoSee');
         whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
-        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         traveling = true;
+        lowLevelCount = 0;
         return shibMove('main');
     }
     // If it's been a REALLY long time we probably bugged out so refresh
     if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
+        game_log('10-Mins');
         whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
-        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         traveling = true;
+        lowLevelCount = 0;
         return shibMove('main');
     }
     // It's crowded time to move on
     if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
+        game_log('TooMany');
         whisperParty('There is too many people farming here, so I will look for a new target.');
         stop();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
-        lastTarget = currentTarget;
         primary = undefined;
         currentTarget = undefined;
         traveling = true;
-        return shibMove('main');
-    }
-    // PVP server, dont farm near other players
-    if (!smart.moving && isPvP() && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length) {
-        whisperParty('Do no want to farm near another player on this realm, switching target.');
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        lastTarget = currentTarget;
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
+        lowLevelCount = 0;
         return shibMove('main');
     }
 }
@@ -312,14 +317,22 @@ function on_game_event(event) {
         let eventTarget = get_nearest_monster({type: event.name});
         if (eventTarget) {
             whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
-            stop();
             lastCombat = Date.now();
             lastRealTarget = Date.now();
             currentTarget = event.name;
-            lastTarget = undefined;
             primary = undefined;
             traveling = true;
-            return shibMove('main');
+            stop();
+        } else if (event.map) {
+            whisperParty('An event mob spawned on a different map, lets go kill a ' + G.monsters[event.name].name);
+            lastCombat = Date.now();
+            lastRealTarget = Date.now();
+            currentTarget = event.name;
+            primary = undefined;
+            traveling = true;
+            eventMap = event.map;
+            stop();
+            return shibMove(event.map);
         }
     }
 }
