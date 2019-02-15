@@ -434,9 +434,9 @@ function combineItems() {
 //Crafting
 function crafting(task, componentSlot, scrollSlot) {
     if (currentTask === 'combine' || currentTask === 'upgrade') {
-        let scrollsMerchant = getNpc("newupgrade");
+        let upgradeMerchant = getNpc("newupgrade");
         let distanceToMerchant = null;
-        if (scrollsMerchant != null) distanceToMerchant = distanceToPoint(scrollsMerchant.position[0], scrollsMerchant.position[1]);
+        if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
         if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
         if (distanceToMerchant != null && distanceToMerchant < 155) {
             if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);

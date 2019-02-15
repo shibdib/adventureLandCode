@@ -28,13 +28,13 @@ function buyPotions(amount) {
 }
 
 //Buy scrolls
-function buyScroll(type) {
+function buyScroll(type, amount = 1) {
     let scrollsMerchant = getNpc("scrolls");
     let distanceToMerchant = null;
     if (scrollsMerchant != null) distanceToMerchant = distanceToPoint(scrollsMerchant.position[0], scrollsMerchant.position[1]);
     if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "scrolls"});
     if (distanceToMerchant != null && distanceToMerchant < 155) {
-        buy(type, 1);
+        buy(type, amount);
     }
 }
 

@@ -212,6 +212,50 @@ function getPotions() {
     }
 }
 
+// Stat items
+let statItem = {};
+let classScrolls = {warrior: 'strscroll', priest: 'intscroll', mage: 'intscroll', rogue: 'dexscroll', ranger: 'dexscroll'};
+function statItems() {
+    if (!statItem[character.name]) {
+        for (let slot of Object.keys(character.slots)) {
+            let item = character.slots[slot];
+            let properties = item_properties(item);
+            if (!properties) continue;
+            if (properties.stat) {
+                let grade = item_grade(item);
+                let amount = 1;
+                if (grade === 1) amount = 10; else if (grade === 2) amount = 100;
+                statItem[character.name] = {slot: slot, amount: amount, name: item.name, level: properties.level};
+                unequip(statItem[character.name].slot);
+                show_json(statItem[character.name])
+                return false;
+            }
+        }
+        return true;
+    } else if (statItem[character.name].equip) {
+        equip(getInventorySlot(statItem[character.name].name, false, statItem[character.name].level));
+        statItem[character.name]= undefined
+        return false;
+    } else if (getInventorySlot(classScrolls[character.ctype]) && character.items[getInventorySlot(classScrolls[character.ctype])].q >= statItem[character.name].amount) {
+        let upgradeMerchant = getNpc("newupgrade");
+        let distanceToMerchant = null;
+        if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            upgrade(getInventorySlot(statItem[character.name].name, false, statItem[character.name].level), getInventorySlot(classScrolls[character.ctype]));
+            statItem[character.name].equip = true;
+        }
+        return false;
+    } else if (character.gold < 8000 * statItem[character.name].amount) {
+        withdrawGold((8000 * statItem[character.name].amount) - character.gold);
+        return false;
+    } else {
+        buyScroll(classScrolls[character.ctype], statItem[character.name].amount);
+        statItem[character.name].unequip = true;
+        return false;
+    }
+}
+
 //Clear outdate scores
 if (!localStorage.getItem('gearVersion') || localStorage.getItem('gearVersion') !== attributeVersion) {
     localStorage.removeItem('gearScore');

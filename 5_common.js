@@ -65,7 +65,7 @@ function stateTasks(state) {
         return true;
     }
     if (state === 4) { // GEAR
-        if (gearIssue()) {
+        if (gearIssue() && statItems()) {
             lastBankGearCheck = Date.now();
             stateController(1);
         }
