@@ -74,7 +74,7 @@ function waitForHealer(range = 300, silent = false) {
                 if (!healerNotify) {
                     if (!silent) game_log('Healer Range.');
                     if (!silent) whisperParty('Waiting on our healer ' + member + '.');
-                    if (isPvP()) moveToTarget(entity);
+                    if (isPvP()) moveToTarget(entity, 0, 0, false);
                 }
                 healerNotify = true;
                 return true;

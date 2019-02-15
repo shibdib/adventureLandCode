@@ -1,6 +1,6 @@
 // Handle moving to a target
 // TODO: send_cm/on_cm stuff for map change
-function moveToTarget(target, min = 0, max = character.range * 0.9) {
+function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps = true) {
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
     // If range is good stay
@@ -10,7 +10,7 @@ function moveToTarget(target, min = 0, max = character.range * 0.9) {
     // If moving continue
     if (smart.moving) return;
     // Handle different map
-    if (getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
+    if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
