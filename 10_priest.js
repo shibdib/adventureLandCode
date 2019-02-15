@@ -1,7 +1,7 @@
 game_log("---Priest Script Start---");
 load_code(2);
 let combat;
-let state = stateController();
+let state;
 
 //State Controller
 setInterval(function () {

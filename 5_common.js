@@ -3,7 +3,8 @@ let lastBankGearCheck, new_state, deathCooldown;
 let deathTracker = 0;
 let deathTime = {};
 
-function stateController(state = 1) {
+function stateController(state) {
+    if (!state) state = 10;
     //KIA
     if (isPvP()) grieferTracking();
     if (character.rip) {

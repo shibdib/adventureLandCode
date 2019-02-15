@@ -1,7 +1,7 @@
 game_log("---Rogue Script Start---");
 load_code(2);
 let combat;
-let state = stateController();
+let state;
 
 //State Controller
 setInterval(function () {

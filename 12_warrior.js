@@ -4,16 +4,14 @@ let currentTarget, target, combat, pendingReboot, tackling,
     primary, lastPos, traveling, targetSetAt, targetArray, eventMap;
 let lowLevelCount = 0;
 let lowLevelTotalCount = 0;
-let state = stateController();
+let state;
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
 
 //State Controller
 setInterval(function () {
     if (character.rip && state !== 99) {
-        if (currentTarget) {
-            currentTarget = undefined;
-        }
+        if (currentTarget) currentTarget = undefined;
         primary = undefined;
         state = 99;
     }

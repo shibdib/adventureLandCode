@@ -248,7 +248,12 @@ function statItems() {
             let item = character.slots[slot];
             let properties = item_properties(item);
             if (!properties) continue;
-            if (properties.stat) {
+            if (properties.stat || G.items[item.name].stat) {
+                if (!properties.stat) {
+                    if ((character.ctype === 'rogue' || character.ctype === 'ranger') && properties['dex']) continue;
+                    if ((character.ctype === 'priest' || character.ctype === 'mage') && properties['int']) continue;
+                    if (character.ctype === 'warrior' && properties['str']) continue;
+                }
                 let grade = item_grade(item);
                 let amount = 1;
                 if (grade === 1) amount = 10; else if (grade === 2) amount = 100;
