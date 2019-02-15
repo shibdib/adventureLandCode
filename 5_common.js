@@ -14,6 +14,10 @@ function stateController(state) {
             whisperParty('I died');
         }
         new_state = 99;
+    } //STATING ITEMS
+    else if (!statItems()) {
+        if (state !== 12) whisperParty('Need to re-stat this gear, 1 sec.');
+        new_state = 12;
     } //BANKING
     else if (state !== 4 && (character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
@@ -22,10 +26,6 @@ function stateController(state) {
     else if ((!isPvP() && !lastBankGearCheck) || lastBankGearCheck + (60000 * 30) < Date.now()) {
         if (state !== 4) whisperParty('Headed to the bank to gear up.');
         new_state = 4;
-    } //STATING ITEMS
-    else if (!statItems()) {
-        if (state !== 11) whisperParty('Need to re-stat this gear, 1 sec.');
-        new_state = 11;
     } //POTIONS
     else if (potionCheck()) {
         if (state !== 3) whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
@@ -69,7 +69,7 @@ function stateTasks(state) {
         if (gearIssue()) lastBankGearCheck = Date.now();
         return true;
     }
-    if (state === 11) { // GEAR
+    if (state === 12) { // GEAR
         if (statItems()) lastBankGearCheck = Date.now();
         return true;
     }
