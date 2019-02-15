@@ -130,7 +130,7 @@ let partyTracker = {};
 function refreshCharacters(force = false) {
     let count = Object.keys(get_active_characters()).length;
     // If we're missing people refresh
-    if (count < 3 || force) {
+    if (count < 4 || force) {
         stop();
         whisperParty('Going to refresh the party, one second...');
         //Stops all
