@@ -171,6 +171,7 @@ function bestItemEquip(item, bank = true) {
                 } else {
                     game_log('Equipping ' + itemInfo.name + '.');
                 }
+                unequip(slot);
                 equip(getInventorySlot(item.name, false, item_properties(item).level));
                 return true;
             }
@@ -199,6 +200,7 @@ function bestItemEquip(item, bank = true) {
             } else {
                 game_log('Equipping ' + itemInfo.name + '.');
             }
+            unequip(itemSlot);
              equip(getInventorySlot(item.name, false, item_properties(item).level));
              return true;
         } else if (twoHander && getGearScore(character.ctype, item.name, item_properties(item).level) > (getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level))) {
