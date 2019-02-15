@@ -272,7 +272,7 @@ setInterval(function () {
     refreshCharacters();
     // Handles sending invites
     for (let char of pveCharacters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || character.class === 'merchant') continue;
+        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || char.class === 'merchant') continue;
         send_party_invite(char.name);
     }
 }, 5000);

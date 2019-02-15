@@ -90,13 +90,8 @@ function getInventorySlot(search, multiple = false, level = 0) {
 let requestOnce;
 function getPotions() {
     if (moveToMerchant()) {
-        let merchant;
         if (parent.party_list.length > 0) {
-            for (let id in parent.party_list) {
-                let member = parent.party_list[id];
-                let entity = parent.entities[member];
-                if (entity && entity.ctype === 'merchant') merchant = entity;
-            }
+            let merchant = parent.entities['Shibmerch'];
             if (merchant) {
                 let need = {};
                 for (let type_id in buyThesePotions) {

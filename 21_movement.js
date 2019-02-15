@@ -54,14 +54,7 @@ function moveToLeader(min = 20, max = 25) {
 
 // Handle moving to merchant
 function moveToMerchant(min = 1, max = 125) {
-    let merchant;
-    if (parent.party_list.length > 0) {
-        for (let id in parent.party_list) {
-            let member = parent.party_list[id];
-            let entity = parent.entities[member];
-            if (entity && entity.ctype === 'merchant') merchant = entity;
-        }
-    }
+    let merchant = parent.entities['Shibmerch'];
     if (!merchant) {
         shibMove('main');
         return false;
