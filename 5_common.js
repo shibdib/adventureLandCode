@@ -52,7 +52,6 @@ function stateTasks(state) {
         if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
         return true;
     } // DEAD
-    if (state === 1 || combat) return false; // FARM
     if (state === 2) { // GOLD RICH
         depositGold();
         depositItems();

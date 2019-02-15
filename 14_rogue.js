@@ -5,14 +5,21 @@ let state = stateController();
 
 //State Controller
 setInterval(function () {
-    state = stateController(state);
+    if (character.rip && state !== 99) state = 99;
+    if (combat) state = 1; else state = stateController(state);
 }, 5000);
 
-//Primary Loop
+//Combat Loop
 setInterval(function () {
-    if (!state) return;
-    if (!stateTasks(state)) farm();
+    if (!state || state !== 1) return;
+    farm();
 }, 250);
+
+//Other Task Loop
+setInterval(function () {
+    if (!state || state === 1) return;
+    stateTasks(state);
+}, 2000);
 
 //Fast Loop
 setInterval(function () {

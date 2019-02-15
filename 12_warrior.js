@@ -10,13 +10,32 @@ let lastRealTarget = Date.now();
 
 //State Controller
 setInterval(function () {
-    state = stateController(state);
-    if (lowLevelCount >= 10) {
+    if (character.rip && state !== 99) {
+        if (currentTarget) {
+            currentTarget = undefined;
+        }
+        primary = undefined;
+        state = 99;
+    }
+    if (combat) state = 1; else state = stateController(state);
+    if (lowLevelTotalCount >= 10) {
         whisperParty('We encountered too many low level mobs, going to rotate realms');
         lowLevelTotalCount = 0;
         return realmSwap();
     }
 }, 5000);
+
+//Combat Loop
+setInterval(function () {
+    if (!state || state !== 1) return;
+    farm();
+}, 250);
+
+//Other Task Loop
+setInterval(function () {
+    if (!state || state === 1) return;
+    stateTasks(state);
+}, 2000);
 
 //CM Location Loop
 //Only sends details to people it cant see
@@ -29,19 +48,6 @@ setInterval(function () {
         send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
     }
 }, 5000);
-
-//Primary Loop
-setInterval(function () {
-    if (character.rip && state !== 99) {
-        if (currentTarget) {
-            currentTarget = undefined;
-        }
-        primary = undefined;
-        state = 99;
-    }
-    if (!state) return;
-    if (!stateTasks(state)) farm();
-}, 250);
 
 //Fast Loop
 setInterval(function () {
