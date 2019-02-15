@@ -64,11 +64,12 @@ function gearIssue() {
                             else {
                                 itemSlot = 'mainhand'
                             }
+                        } else {
+                            // Not allowed SHIELDS
+                            if (itemSlot === 'offhand' && !G.classes[character.ctype].offhand.includes(itemInfo.type)) continue;
+                            // Not allowed MAINHAND TYPES
+                            if (itemSlot === 'mainhand' && !G.classes[character.ctype].mainhand.includes(itemInfo.type) && !G.classes[character.ctype].doublehand.includes(itemInfo.type)) continue;
                         }
-                        // Not allowed SHIELDS
-                        if (itemSlot === 'offhand' && !G.classes[character.ctype].offhand.includes(itemInfo.type)) continue;
-                        // Not allowed MAINHAND TYPES
-                        if (itemSlot === 'mainhand' && !G.classes[character.ctype].mainhand.includes(itemInfo.type) && !G.classes[character.ctype].doublehand.includes(itemInfo.type)) continue;
                         let replacementScore = getGearScore(character.ctype, item);
                         if (replacementScore <= 15) continue;
                         // Handle single slot
