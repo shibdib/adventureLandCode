@@ -83,12 +83,12 @@ function gearIssue() {
                                 let slottedItem = bestSetup[character.name][itemSlot];
                                 // If slot is empty equip
                                 if (!slottedItem) {
-                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue;
                                 }
                                 let slottedScore = getGearScore(character.ctype, slottedItem);
                                 if (replacementScore > slottedScore) {
-                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue;
                                 }
                             } else {
@@ -96,7 +96,7 @@ function gearIssue() {
                                 let offSlottedItem = bestSetup[character.name]['offhand'];
                                 // If slot is empty equip
                                 if (!mainSlottedItem && !offSlottedItem) {
-                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue;
                                 }
                                 let mainSlottedScore = 0;
@@ -104,7 +104,7 @@ function gearIssue() {
                                 let offSlottedScore = 0;
                                 if (offSlottedItem) offSlottedScore = getGearScore(character.ctype, offSlottedItem);
                                 if (replacementScore > mainSlottedScore + offSlottedScore) {
-                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue;
                                 }
                             }
@@ -114,12 +114,12 @@ function gearIssue() {
                                 let slottedItem = bestSetup[character.name][slot];
                                 // If slot is empty equip
                                 if (!slottedItem) {
-                                    bestSetup[character.name][slot] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name][slot] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue currentTab;
                                 }
                                 let slottedScore = getGearScore(character.ctype, slottedItem);
                                 if (replacementScore > slottedScore) {
-                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level, bankTab: key, bankSlot: packKey};
                                     continue currentTab;
                                 }
                             }
@@ -130,7 +130,7 @@ function gearIssue() {
             return false;
         } else if (!bestSetup[character.name].withdrawn) {
             for (let item of Object.values(bestSetup[character.name])) {
-                withdrawItem(item.name, item.level);
+                bankItemWithdraw(item.bankSlot, item.bankTab);
             }
             bestSetup[character.name].withdrawn = true;
             return false;
