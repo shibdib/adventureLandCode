@@ -222,7 +222,7 @@ function bestItemEquip(item, bank = true) {
 }
 
 //Clear outdate scores
-if (localStorage.getItem('gearVersion') && localStorage.getItem('gearVersion') !== attributeVersion) {
+if (!localStorage.getItem('gearVersion') || localStorage.getItem('gearVersion') !== attributeVersion) {
     localStorage.removeItem('gearScore');
     localStorage.removeItem('gearVersion');
     localStorage.setItem('gearVersion', attributeVersion);
