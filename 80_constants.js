@@ -64,14 +64,14 @@ let sellLevelList = [{item: 'quiver', level: 5}, {item: 'helmet', level: 5}, {it
 // These items are not equipped
 let ignoredItems = ['cupid'];
 // Change to force update of gear score
-let attributeVersion = 3;
+let attributeVersion = 4;
 // Stat weights (1-10)
 let attributeWeights = {
     'priest': {
         "dex": 0,
         "int": 10,
         "vit": 3,
-        "str": 1,
+        "str": 0,
         "attack": 10,
         "armor": 0,
         "speed": 2,
@@ -82,15 +82,15 @@ let attributeWeights = {
         "rpiercing": 7,
         "apiercing": 0,
         "lifesteal": 1,
-        "stat": 2,
+        "stat": 5,
         "hp": 3,
         "mp": 6
     },
     'mage': {
-        "dex": 1,
+        "dex": 0,
         "int": 10,
         "vit": 3,
-        "str": 1,
+        "str": 0,
         "attack": 10,
         "armor": 1,
         "speed": 2,
@@ -101,13 +101,13 @@ let attributeWeights = {
         "rpiercing": 8,
         "apiercing": 0,
         "lifesteal": 1,
-        "stat": 2,
+        "stat": 5,
         "hp": 3,
         "mp": 6
     },
     'ranger': {
         "dex": 10,
-        "int": 1,
+        "int": 0,
         "vit": 5,
         "str": 2,
         "attack": 9,
@@ -120,7 +120,7 @@ let attributeWeights = {
         "rpiercing": 0,
         "apiercing": 5,
         "lifesteal": 1,
-        "stat": 2,
+        "stat": 5,
         "hp": 3,
         "mp": 1
     },
@@ -139,15 +139,15 @@ let attributeWeights = {
         "rpiercing": 0,
         "apiercing": 5,
         "lifesteal": 7,
-        "stat": 2,
+        "stat": 5,
         "hp": 6,
         "mp": 1
     },
     'rogue': {
         "dex": 10,
         "int": 0,
-        "vit": 3,
-        "str": 4,
+        "vit": 2,
+        "str": 3,
         "attack": 9,
         "armor": 2,
         "speed": 8,

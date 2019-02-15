@@ -65,7 +65,12 @@ function gearIssue() {
                                 itemSlot = 'mainhand'
                             }
                         }
-                        let replacementScore = getGearScore(character.ctype, item.name, item_properties(item).level);
+                        // Not allowed SHIELDS
+                        if (itemSlot === 'offhand' && !G.classes[character.ctype].offhand.includes(itemInfo.type)) continue;
+                        // Not allowed MAINHAND TYPES
+                        if (itemSlot === 'mainhand' && !G.classes[character.ctype].mainhand.includes(itemInfo.type) && !G.classes[character.ctype].doublehand.includes(itemInfo.type)) continue;
+                        let replacementScore = getGearScore(character.ctype, item);
+                        if (replacementScore <= 15) continue;
                         // Handle single slot
                         if (!Array.isArray(itemSlot)) {
                             if (!twoHander) {
@@ -76,7 +81,7 @@ function gearIssue() {
                                     bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
                                     continue;
                                 }
-                                let slottedScore = getGearScore(character.ctype, slottedItem.name, slottedItem.level);
+                                let slottedScore = getGearScore(character.ctype, slottedItem);
                                 if (replacementScore > slottedScore) {
                                     bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
                                     continue;
@@ -90,9 +95,9 @@ function gearIssue() {
                                     continue;
                                 }
                                 let mainSlottedScore = 0;
-                                if (mainSlottedItem) mainSlottedScore = getGearScore(character.ctype, mainSlottedItem.name, mainSlottedItem.level);
+                                if (mainSlottedItem) mainSlottedScore = getGearScore(character.ctype, mainSlottedItem);
                                 let offSlottedScore = 0;
-                                if (offSlottedScore) offSlottedScore = getGearScore(character.ctype, offSlottedScore.name, offSlottedScore.level);
+                                if (offSlottedItem) offSlottedScore = getGearScore(character.ctype, offSlottedItem);
                                 if (replacementScore > mainSlottedScore + offSlottedScore) {
                                     bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level};
                                     continue;
@@ -107,7 +112,7 @@ function gearIssue() {
                                     bestSetup[character.name][slot] = {name: item.name, level: item_properties(item).level};
                                     continue currentTab;
                                 }
-                                let slottedScore = getGearScore(character.ctype, slottedItem.name, slottedItem.level);
+                                let slottedScore = getGearScore(character.ctype, slottedItem);
                                 if (replacementScore > slottedScore) {
                                     bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
                                     continue currentTab;
@@ -130,8 +135,25 @@ function gearIssue() {
             }
             bestSetup[character.name].equipped = true;
             return false;
+        } else if (!bestSetup[character.name].doubleCheckWithdraw) {
+            for (let slot of Object.keys(character.slots)) {
+                if (!character.slots[slot] && bestSetup[character.name][slot]) {
+                    withdrawItem(bestSetup[character.name][slot].name, bestSetup[character.name][slot].level);
+                }
+            }
+            bestSetup[character.name].doubleCheckWithdraw = true;
+            return false;
+        } else if (!bestSetup[character.name].doubleCheckEquipped) {
+            for (let slot of Object.keys(character.slots)) {
+                if (!character.slots[slot] && bestSetup[character.name][slot] && getInventorySlot(bestSetup[character.name][slot].name, false, bestSetup[character.name][slot].level)) {
+                    equip(getInventorySlot(bestSetup[character.name][slot].name, false, bestSetup[character.name][slot].level))
+                }
+            }
+            bestSetup[character.name].doubleCheckEquipped = true;
+            return false;
         } else {
             bestSetup[character.name] = undefined;
+            shibMove('main');
             return true;
         }
     }
@@ -263,33 +285,21 @@ if (!localStorage.getItem('gearVersion') || localStorage.getItem('gearVersion') 
 }
 
 //Gear Score
-function getGearScore(ctype, item, level = 0) {
-    if (!G.items[item] || !attributeWeights[ctype]) return;
-    if (!localStorage.getItem('gearScore')) return computeGearScore(ctype, item, level);
-    let stored = JSON.parse(localStorage.getItem('gearScore'));
-    let storedName = item + level;
-    if (stored[storedName]) return stored[storedName][ctype]; else return computeGearScore(ctype, item, level);
-}
-
-//Determine Gear Score
-function computeGearScore(ctype, item, level) {
-    let stored = {};
-    if (localStorage.getItem('gearScore')) stored = JSON.parse(localStorage.getItem('gearScore'));
-    let storedName = item + level;
-    let details = G.items[item];
-    if (!details) return;
-    stored[storedName] = {};
-    for (let key of Object.keys(attributeWeights)) {
-        let weights = attributeWeights[key];
-        let base = 0;
-        for (let atr of Object.keys(weights)) {
-            let itemAtr = details[atr] || 0;
-            let levelSteps = 0;
-            if (details['upgrade']) levelSteps = details['upgrade'][atr] || 0; else if (details['compound']) levelSteps = details['compound'][atr] || 0;
-            base += (weights[atr] * (itemAtr + (levelSteps * level)));
-        }
-        stored[storedName][key] = base
+function getGearScore(ctype, item) {
+    if (!attributeWeights[ctype]) return;
+    let Gdetails = G.items[item.name];
+    let properties = item_properties(item);
+    let level = item_properties(item).level;
+    game_log(1)
+    if (!Gdetails || !properties) return;
+    game_log(2)
+    let weights = attributeWeights[ctype];
+    let score = 0;
+    for (let atr of Object.keys(weights)) {
+        let itemAtr = properties[atr] || 0;
+        let levelSteps = 0;
+        if (Gdetails['upgrade']) levelSteps = Gdetails['upgrade'][atr] || 0; else if (Gdetails['compound']) levelSteps = Gdetails['compound'][atr] || 0;
+        score += (weights[atr] * (itemAtr + (levelSteps * level)));
     }
-    localStorage.setItem('gearScore', JSON.stringify(stored));
-    return stored[storedName][ctype];
+    return score
 }

@@ -14,7 +14,7 @@ function stateController(state = 1) {
         }
         new_state = 99;
     } //BANKING
-    else if ((character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
+    else if (state !== 4 && (character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
@@ -44,7 +44,7 @@ function stateController(state = 1) {
 function stateTasks(state) {
     let combat;
     // STAT YOUR GEAR!!
-    if (!statItems()) return;
+    if (state !== 4 && !statItems()) return;
     if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         let tod = deathTime[character.name];
