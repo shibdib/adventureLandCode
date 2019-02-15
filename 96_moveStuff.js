@@ -153,7 +153,7 @@ function bfs() {
                 }
             });
         }
-
+        smart.use_town = true;
         if(smart.use_town) qpush({map:current.map,x:map.spawns[0][0],y:map.spawns[0][1],town:true}); // "town"
 
         shuffle(moves);
