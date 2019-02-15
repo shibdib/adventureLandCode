@@ -2,8 +2,9 @@ game_log("---Merchant Script Start---");
 load_code(2);
 let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, craftingItem,
     currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock,
-    buyCooldown;
-let spendingAmount = 10000000;
+    buyCooldown, deathCooldown;
+let deathTracker = 0;
+let deathTime = {};
 let getItems = [];
 let sellItems = [];
 
@@ -576,4 +577,79 @@ function cachePriceInfo() {
     }
     localStorage.removeItem('priceDetails');
     localStorage.setItem('priceDetails', JSON.stringify(priceDetails));
+}
+
+////MERCHANT TASK
+
+//State tasks
+function merchantStateTasks(state) {
+    if (state !== 9) closeStand();
+    if (state === 99) {
+        let tod = deathTime[character.name];
+        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
+        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
+        return true;
+    } // DEAD
+    if (state === 12) { // WALLET REFILL
+        withdrawGold(spendingAmount - character.gold);
+        return true;
+    }
+    if (state === 8) { // POTION RESTOCK
+        restockPotions(targetPotionAmount * 4);
+        return true;
+    }
+    if (state === 2) { // Deposits
+        depositGold();
+        depositItems();
+        return true;
+    }
+    if (state === 9) { // MERCHANT SALES
+        sell();
+        return;
+    }
+    if (state === 11) { // ACCOUNTING
+        bookKeeping();
+        if (localStorage.getItem('bankDetails') && lastBankCheck) {
+            lastBankCheck = Date.now();
+        } else {
+            return true;
+        }
+    }
+}
+
+// State controller
+function merchantStateController(state) {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (itemCount('mpot1') < targetPotionAmount * 2 || itemCount('hpot1') < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
+    if (bankDetails) {
+        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
+    }
+    let new_state = 9;
+    //KIA
+    if (character.rip) {
+        if (state !== 99) {
+            deathTime[character.name] = Date.now();
+            if (isPvP()) deathTracker++;
+            whisperParty('I died');
+        }
+        new_state = 99;
+    } //ACCOUNTING
+    else if (!bankDetails || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
+        new_state = 11;
+    } //NO POORS
+    else if (character.gold < spendingAmount * 0.25) {
+        new_state = 12;
+    } // Deposits
+    else if (character.gold >= spendingAmount * 2) {
+        new_state = 2;
+    }   //POTION RESTOCK
+    else if (potionsNeeded) {
+        new_state = 8;
+    }
+    //If state changed set it and announce
+    if (state !== new_state) {
+        game_log("--- NEW STATE " + states[new_state] + " ---");
+        state = new_state;
+    }
+    return state;
 }

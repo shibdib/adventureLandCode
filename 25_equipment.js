@@ -9,18 +9,7 @@ let specialSlots = {
     'ring': ['ring1', 'ring2'],
     'earring': ['earring1', 'earring2']
 };
-
-// Cycles thru inventory and equips bis
-let checked = [];
-function equipBIS() {
-    for (let key in character.items) {
-        let item = character.items[key];
-        if (!item || checked.includes(item.name)) continue;
-        checked.push(item.name);
-        if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
-        bestItemEquip(item, false);
-    }
-}
+let bestSetup = {};
 
 //Get gear and make sure all slots are filled
 function gearIssue() {
@@ -28,21 +17,123 @@ function gearIssue() {
         shibMove('bank');
         return false;
     } else {
-        for (let key in Object.values(character.user)) {
-            let slot = Object.values(character.user)[key];
-            if (!slot || !slot.length) continue;
-            for (let packKey in slot) {
-                let item = slot[packKey];
-                if (!item || checked.includes(item.name+item.level)) continue;
-                checked.push(item.name+item.level);
-                // Get poison
-                if ((character.ctype === 'rogue' || character.ctype === 'hunter') && item.name === 'poison' && !getInventorySlot(item.name)) withdrawItem(item.name);
-                if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
-                bestItemEquip(getHighestLevel(item.name));
+        if (!bestSetup[character.name]) {
+            bestSetup[character.name] = {};
+        } else if (!bestSetup[character.name].naked) {
+            getNaked();
+            bestSetup[character.name].naked = true;
+            return false;
+        } else if (!bestSetup[character.name].deposit) {
+            depositItems();
+            bestSetup[character.name].deposit = true;
+            return false;
+        } else if (!bestSetup[character.name].getBest) {
+            for (let key in Object.values(character.user)) {
+                let slot = Object.values(character.user)[key];
+                if (!slot || !slot.length) continue;
+                currentTab:
+                    for (let packKey in slot) {
+                        let twoHander;
+                        let item = slot[packKey];
+                        if (!item || ignoredItems.includes(item.name)) continue;
+                        if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
+                        // Get highest level of item so as not to waste time
+                        //item = getHighestLevel(item.name);
+                        // Add item to checked array
+                        //checked.push(item.name);
+                        // Get info
+                        let itemInfo = G.items[item.name];
+                        // Check if slot doesn't match type
+                        let itemSlot = itemInfo.type;
+                        if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
+                        // Handle weapons
+                        if (itemInfo.type === 'weapon') {
+                            // Not allowed
+                            if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && !G.classes[character.ctype].doublehand.includes(itemInfo.wtype) && !G.classes[character.ctype].offhand.includes(itemInfo.wtype)) continue;
+                            // Either hand
+                            if (G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)){
+                                itemSlot = ['mainhand', 'offhand']
+                            } // 2 hander
+                            else if (G.classes[character.ctype].doublehand.includes(itemInfo.wtype)) {
+                                twoHander = true;
+                                itemSlot = 'mainhand'
+                            } // Offhand only?
+                            else if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)) {
+                                itemSlot = 'offhand'
+                            } // All other
+                            else {
+                                itemSlot = 'mainhand'
+                            }
+                        }
+                        let replacementScore = getGearScore(character.ctype, item.name, item_properties(item).level);
+                        // Handle single slot
+                        if (!Array.isArray(itemSlot)) {
+                            if (!twoHander) {
+                                // Get currently slotted item
+                                let slottedItem = bestSetup[character.name][itemSlot];
+                                // If slot is empty equip
+                                if (!slottedItem) {
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    continue;
+                                }
+                                let slottedScore = getGearScore(character.ctype, slottedItem.name, slottedItem.level);
+                                if (replacementScore > slottedScore) {
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    continue;
+                                }
+                            } else {
+                                let mainSlottedItem = bestSetup[character.name]['mainhand'];
+                                let offSlottedItem = bestSetup[character.name]['offhand'];
+                                // If slot is empty equip
+                                if (!mainSlottedItem && !offSlottedItem) {
+                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level};
+                                    continue;
+                                }
+                                let mainSlottedScore = 0;
+                                if (mainSlottedItem) mainSlottedScore = getGearScore(character.ctype, mainSlottedItem.name, mainSlottedItem.level);
+                                let offSlottedScore = 0;
+                                if (offSlottedScore) offSlottedScore = getGearScore(character.ctype, offSlottedScore.name, offSlottedScore.level);
+                                if (replacementScore > mainSlottedScore + offSlottedScore) {
+                                    bestSetup[character.name]['mainhand'] = {name: item.name, level: item_properties(item).level};
+                                    continue;
+                                }
+                            }
+                        } else {
+                            for (let slot of itemSlot) {
+                                // Get currently slotted item
+                                let slottedItem = bestSetup[character.name][slot];
+                                // If slot is empty equip
+                                if (!slottedItem) {
+                                    bestSetup[character.name][slot] = {name: item.name, level: item_properties(item).level};
+                                    continue currentTab;
+                                }
+                                let slottedScore = getGearScore(character.ctype, slottedItem.name, slottedItem.level);
+                                if (replacementScore > slottedScore) {
+                                    bestSetup[character.name][itemSlot] = {name: item.name, level: item_properties(item).level};
+                                    continue currentTab;
+                                }
+                            }
+                        }
+                    }
             }
+            bestSetup[character.name].getBest = true;
+            return false;
+        } else if (!bestSetup[character.name].withdrawn) {
+            for (let item of Object.values(bestSetup[character.name])) {
+                withdrawItem(item.name, item.level);
+            }
+            bestSetup[character.name].withdrawn = true;
+            return false;
+        } else if (!bestSetup[character.name].equipped) {
+            for (let item of Object.values(bestSetup[character.name])) {
+                equip(getInventorySlot(item.name, false, item.level))
+            }
+            bestSetup[character.name].equipped = true;
+            return false;
+        } else {
+            bestSetup[character.name] = undefined;
+            return true;
         }
-        depositItems();
-        return true;
     }
 }
 
@@ -86,6 +177,12 @@ function getInventorySlot(search, multiple = false, level = 0) {
     return undefined;
 }
 
+function getNaked() {
+    for (let slot of parent.character_slots) {
+        unequip(slot);
+    }
+}
+
 //Pick Up Potions
 let requestOnce;
 function getPotions() {
@@ -110,114 +207,6 @@ function getPotions() {
                     pm(merchant.name, 'Send potions please!');
                     requestOnce = Date.now();
                 }
-            }
-        }
-    }
-}
-
-// Grabs an item from the bank if it's potentially better;
-function bestItemEquip(item, bank = true) {
-    let twoHander;
-    if (!item || ignoredItems.includes(item.name)) return;
-    let itemInfo = G.items[item.name];
-    // Check if slot doesn't match type
-    let itemSlot = itemInfo.type;
-    if (specialSlots[itemInfo.type]) itemSlot = specialSlots[itemInfo.type];
-    // Handle weapons
-    if (itemInfo.type === 'weapon') {
-        // Not allowed
-        if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && !G.classes[character.ctype].doublehand.includes(itemInfo.wtype) && !G.classes[character.ctype].offhand.includes(itemInfo.wtype)) return;
-        // Either hand
-        if (G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)){
-            itemSlot = ['mainhand', 'offhand']
-        } // 2 hander
-        else if (G.classes[character.ctype].doublehand.includes(itemInfo.wtype)) {
-            twoHander = true;
-            itemSlot = 'mainhand'
-        } // Offhand only?
-        else if (!G.classes[character.ctype].mainhand.includes(itemInfo.wtype) && G.classes[character.ctype].offhand.includes(itemInfo.wtype)) {
-            itemSlot = 'offhand'
-        } // All other
-        else {
-            itemSlot = 'mainhand'
-        }
-    }
-    let replacementScore = getGearScore(character.ctype, item.name, item_properties(item).level);
-    // Handle holding a 2 hander
-    if ((itemSlot === 'offhand' || (Array.isArray(itemSlot) && itemSlot.includes('offhand'))) && character.slots['mainhand'] && G.classes[character.ctype].doublehand && G.classes[character.ctype].doublehand.includes(G.items[character.slots['mainhand'].name].wtype)) return;
-    // Handle ears and rings
-    if (Array.isArray(itemSlot)) {
-        for (let slot of itemSlot) {
-            // Get currently slotted item
-            let slottedItem = character.slots[slot];
-            // If not a slottable item continue main
-            if (slottedItem === undefined) return;
-            // If slot is empty equip
-            if (slottedItem === null) {
-                if (bank) {
-                    withdrawItem(item.name, item_properties(item).level);
-                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-                } else {
-                    game_log('Equipping ' + itemInfo.name + '.');
-                }
-                equip(getInventorySlot(item.name, false, item_properties(item).level));
-                return;
-            }
-            // Compare gear score to slotted
-            if (replacementScore > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
-                if (bank) {
-                    withdrawItem(item.name, item_properties(item).level);
-                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-                } else {
-                    game_log('Equipping ' + itemInfo.name + '.');
-                }
-                unequip(slot);
-                equip(getInventorySlot(item.name, false, item_properties(item).level));
-                return true;
-            }
-        }
-    } else {
-        // Get currently slotted item
-        let slottedItem = character.slots[itemSlot];
-        // If not a slottable item return
-        if (slottedItem === undefined) return;
-        // If slot is empty equip
-        if (slottedItem === null) {
-            if (bank) {
-                withdrawItem(item.name, item_properties(item).level);
-                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-            } else {
-                game_log('Equipping ' + itemInfo.name + '.');
-            }
-            equip(getInventorySlot(item.name, false, item_properties(item).level));
-            return true;
-        }
-        // Compare gear score to slotted
-        if (!twoHander && replacementScore > getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level)) {
-            if (bank) {
-                withdrawItem(item.name, item_properties(item).level);
-                game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-            } else {
-                game_log('Equipping ' + itemInfo.name + '.');
-            }
-            unequip(itemSlot);
-             equip(getInventorySlot(item.name, false, item_properties(item).level));
-             return true;
-        } else if (twoHander && getGearScore(character.ctype, item.name, item_properties(item).level) > (getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level))) {
-            let mainHandScore = getGearScore(character.ctype, slottedItem.name, item_properties(slottedItem).level);
-            let offHandItem = character.slots['offhand'];
-            let offHandScore = 0;
-            if (offHandItem) offHandScore = getGearScore(character.ctype, offHandItem.name, item_properties(offHandItem).level);
-            if (replacementScore > (offHandScore + mainHandScore) * 0.8) {
-                if (bank) {
-                    withdrawItem(item.name, item_properties(item).level);
-                    game_log('Grabbing ' + itemInfo.name + ' from the bank.');
-                } else {
-                    game_log('Equipping ' + itemInfo.name + '.');
-                }
-                unequip('mainhand');
-                unequip('offhand');
-                equip(getInventorySlot(item.name, false, item_properties(item).level));
             }
         }
     }

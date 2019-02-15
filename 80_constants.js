@@ -23,6 +23,7 @@ let filterWord = ['gold', 'killed', 'speed'];
 let targetPotionAmount = 500;
 
 // Merchant stuff
+let spendingAmount = 10000000;
 // Target for upgrades
 let normalLevelTarget = 8;
 let highLevelTarget = 5;
@@ -63,18 +64,18 @@ let sellLevelList = [{item: 'quiver', level: 5}, {item: 'helmet', level: 5}, {it
 // These items are not equipped
 let ignoredItems = ['cupid'];
 // Change to force update of gear score
-let attributeVersion = 2;
+let attributeVersion = 3;
 // Stat weights (1-10)
 let attributeWeights = {
     'priest': {
-        "dex": 1,
+        "dex": 0,
         "int": 10,
         "vit": 3,
         "str": 1,
-        "attack": 9,
-        "armor": 1,
+        "attack": 10,
+        "armor": 0,
         "speed": 2,
-        "range": 7,
+        "range": 8,
         "crit": 2,
         "evasion": 1,
         "resistance": 5,

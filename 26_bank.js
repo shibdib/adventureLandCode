@@ -40,6 +40,17 @@ function depositItems(potions = false) {
     }
 }
 
+//Drop off all items
+function depositItem(slot) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
+        bank_store(slot);
+        return true;
+    }
+}
+
 //Withdraw Item
 function withdrawItem(target, level = undefined) {
     if (character.map !== 'bank') {
@@ -84,4 +95,32 @@ function getHighestLevel(itemName) {
         }
     }
     return best;
+}
+
+// Improved bank_store by Shibdib
+function bank_store(num) {
+    // Shibdib update 02/15/2019 - This will now iterate thru all tabs so if the first one if full but others aren't it will find a slot
+    if(!character.bank) return game_log("Not inside the bank");
+    if(!character.items[num]) return game_log("No item in that spot");
+    let pack;
+    let bankSlot = -1;
+    bankTabs:
+        for (let key of Object.keys(character.bank)) {
+            let bankTab = character.bank[key];
+            // Skip the gold tab
+            if (!Array.isArray(bankTab)) continue;
+            for (let slot in bankTab) {
+                // If items are stackable do so and break
+                if (can_stack(bankTab[slot],character.items[num])) {
+                    pack = key;
+                    bankSlot = slot;
+                    break bankTabs;
+                } else if (!bankTab[slot]) {
+                    pack = key;
+                    break bankTabs;
+                }
+            }
+        }
+    if (!pack) return game_log("Bank is full!");
+    parent.socket.emit("bank",{operation:"swap",pack:pack,str:bankSlot,inv:num});
 }
