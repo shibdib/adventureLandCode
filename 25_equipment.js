@@ -27,7 +27,11 @@ function gearIssue() {
             depositItems();
             bestSetup[character.name].deposit = true;
             return false;
-        } else if (!bestSetup[character.name].getBest) {
+        } else if (!bestSetup[character.name].deposit2) {
+            depositItems();
+            bestSetup[character.name].deposit2 = true;
+            return false;
+        }  else if (!bestSetup[character.name].getBest) {
             for (let key in Object.values(character.user)) {
                 let slot = Object.values(character.user)[key];
                 if (!slot || !slot.length) continue;

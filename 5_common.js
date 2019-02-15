@@ -18,7 +18,7 @@ function stateController(state = 1) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
-    else if ((countEmptyGear() >= 15 || !lastBankGearCheck || lastBankGearCheck + (60000 * 30) < Date.now())) {
+    else if (!lastBankGearCheck || lastBankGearCheck + (60000 * 30) < Date.now()) {
         if (state !== 4) whisperParty('Headed to the bank to gear up.');
         new_state = 4;
     } //POTIONS
