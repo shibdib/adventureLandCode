@@ -22,7 +22,8 @@ let classInventory = {
     'rogue': ['poison'],
     'ranger': ['poison'],
     'priest': [],
-    'mage': []
+    'mage': [],
+    'merchant': []
 };
 
 // Filter words from log
