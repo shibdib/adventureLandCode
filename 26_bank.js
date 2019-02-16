@@ -76,6 +76,7 @@ function withdrawItem(target, level = undefined) {
 
 // No function for withdrawing
 function bankItemWithdraw(key, pack) {
+    character.bank[pack][key] = undefined;
     parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
 }
 
