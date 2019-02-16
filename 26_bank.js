@@ -98,29 +98,39 @@ function getHighestLevel(itemName) {
 }
 
 // Improved bank_store by Shibdib
-function bank_store(num) {
-    // Shibdib update 02/15/2019 - This will now iterate thru all tabs so if the first one if full but others aren't it will find a slot
+let usedSlots = {};
+
+function bank_store(inventorySlot) {
+    // Shibdib update 02/16/2019 - This will now iterate thru all packs
+    // Old way would not look beyond the first pack that had any open slots
     if(!character.bank) return game_log("Not inside the bank");
-    if(!character.items[num]) return game_log("No item in that spot");
+    if (!character.items[inventorySlot]) return game_log("No item in that spot");
+    if (usedSlots.age && usedSlots.age + 100 < Date.now()) usedSlots = {}; else if (!usedSlots.age) usedSlots.age = Date.now();
     let pack;
     let bankSlot = -1;
     bankTabs:
         for (let key of Object.keys(character.bank)) {
-            let bankTab = character.bank[key];
+            let bankPack = character.bank[key];
+            let usedTabSlots = usedSlots[key] || [];
             // Skip the gold tab
-            if (!Array.isArray(bankTab)) continue;
-            for (let slot in bankTab) {
+            if (!Array.isArray(bankPack)) continue;
+            for (let slot in bankPack) {
                 // If items are stackable do so and break
-                if (can_stack(bankTab[slot],character.items[num])) {
+                if (can_stack(bankPack[slot], character.items[inventorySlot])) {
                     pack = key;
                     bankSlot = slot;
+                    usedTabSlots.push(slot);
+                    usedSlots[key] = usedTabSlots;
                     break bankTabs;
-                } else if (!bankTab[slot]) {
+                } else if (!bankPack[slot] && !usedTabSlots.includes(slot)) {
                     pack = key;
+                    bankSlot = slot;
+                    usedTabSlots.push(slot);
+                    usedSlots[key] = usedTabSlots;
                     break bankTabs;
                 }
             }
         }
     if (!pack) return game_log("Bank is full!");
-    parent.socket.emit("bank",{operation:"swap",pack:pack,str:bankSlot,inv:num});
+    parent.socket.emit("bank", {operation: "swap", pack: pack, str: bankSlot, inv: inventorySlot});
 }
