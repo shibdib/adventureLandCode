@@ -67,7 +67,19 @@ function farm() {
         // Only invis if near baddies
         if (nearbyAggressors(100, true).length && can_use('invis')) use('invis'); else stop('invis');
         // Speedy rogue
-        if (can_use('rspeed', character)) use('rspeed', character);
+        if (can_use('rspeed', character)) {
+            use('rspeed', character);
+        } else {
+            let slowParty = speedParty();
+            if (slowParty) use('rspeed', slowParty);
+        }
         moveToLeader();
+    }
+}
+
+function speedParty() {
+    for (let key in parent.party_list) {
+        let member = parent.entities[parent.party_list[key]];
+        if (member && can_use('rspeed')) return member;
     }
 }
