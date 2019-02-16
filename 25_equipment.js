@@ -162,7 +162,7 @@ function gearIssue() {
                                 if (slottedItem) {
                                     let slottedScore = getGearScore(character.ctype, slottedItem);
                                     if (replacementScore > slottedScore) {
-                                        bestSetup[character.name][itemSlot] = {
+                                        bestSetup[character.name][slot] = {
                                             name: item.name,
                                             level: item_properties(item).level,
                                             bankTab: Object.keys(character.user)[key],
