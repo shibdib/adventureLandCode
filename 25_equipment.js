@@ -178,22 +178,6 @@ function gearIssue() {
             }
             bestSetup[character.name].equipped = true;
             return false;
-        } else if (!bestSetup[character.name].doubleCheckWithdraw) {
-            for (let slot of Object.keys(character.slots)) {
-                if (!character.slots[slot] && bestSetup[character.name][slot]) {
-                    withdrawItem(bestSetup[character.name][slot].name, bestSetup[character.name][slot].level);
-                }
-            }
-            bestSetup[character.name].doubleCheckWithdraw = true;
-            return false;
-        } else if (!bestSetup[character.name].doubleCheckEquipped) {
-            for (let slot of Object.keys(character.slots)) {
-                if (!character.slots[slot] && bestSetup[character.name][slot] && getInventorySlot(bestSetup[character.name][slot].name, false, bestSetup[character.name][slot].level)) {
-                    equip(getInventorySlot(bestSetup[character.name][slot].name, false, bestSetup[character.name][slot].level))
-                }
-            }
-            bestSetup[character.name].doubleCheckEquipped = true;
-            return false;
         } else {
             bestSetup[character.name] = undefined;
             shibMove('main');

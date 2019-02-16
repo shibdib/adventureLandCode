@@ -1,4 +1,3 @@
-let lastPack = {};
 function smart_move(destination, on_done, tp = false) {
     smart.use_town = tp;
     smart.map="";
@@ -16,11 +15,9 @@ function smart_move(destination, on_done, tp = false) {
                 (shuffle(G.maps[name].monsters) || []).forEach(function (pack) {
                     if (pack.type !== destination.to || G.maps[name].ignore || G.maps[name].instance || avoidMaps.includes(name)) return;
                     if (pack.boundaries) {
-                        if (lastPack[pack.type] && lastPack[pack.type] > pack.boundaries.length) lastPack[pack.type] = undefined;
-                        let lastPackPathed = lastPack[pack.type] || 0;
-                        let boundary = pack.boundaries[pack.last % pack.boundaries.length];
-                        lastPackPathed++;
-                        lastPack[pack.type] = lastPackPathed;
+                        pack.last = pack.last || 0;
+                        let boundary = shuffle(pack.boundaries);
+                        pack.last++;
                         smart.map = boundary[0];
                         smart.x = (boundary[1] + boundary[3]) / 2;
                         smart.y = (boundary[2] + boundary[4]) / 2;

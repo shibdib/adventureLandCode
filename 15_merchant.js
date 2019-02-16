@@ -22,6 +22,11 @@ setInterval(function () {
     if (!merchantStateTasks(state)) merchantTaskManager();
 }, 1500);
 
+// Update your data
+setInterval(function () {
+    updateCharacterData();
+}, 5000);
+
 //MERCHANT TASKS
 function merchantTaskManager() {
     potionController();

@@ -21,11 +21,10 @@ setInterval(function () {
     stateTasks(state);
 }, 2000);
 
-//Fast Loop
+// Update your data
 setInterval(function () {
-    // Update your data
     updateCharacterData();
-}, 75);
+}, 5000);
 
 function farm() {
     loot();

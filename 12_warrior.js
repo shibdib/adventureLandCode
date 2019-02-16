@@ -47,11 +47,10 @@ setInterval(function () {
     }
 }, 5000);
 
-//Fast Loop
+// Update your data
 setInterval(function () {
-    // Update your data
     updateCharacterData();
-}, 75);
+}, 5000);
 
 //Primary loop
 function farm() {

@@ -122,7 +122,7 @@ function shibMove(destination, onComplete = undefined, tp = undefined) {
 // Stay safe
 let nearestHostile = {};
 function kite(target = undefined) {
-    let nearbyHostiles = nearbyAggressors(250, true).filter((a) => !a.target && !a.rip);
+    let nearbyHostiles = nearbyAggressors(150, true).filter((a) => !a.target && !a.rip);
     if (!nearbyHostiles.length) return false;
     if (target) {
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
