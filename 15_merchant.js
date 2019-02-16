@@ -167,7 +167,7 @@ function sellExcessToNPC() {
             let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
             let exchange = [];
             Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
-            if (G.items[cleanName] && bankDetails[key] > 5 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
+            if (G.items[cleanName] && bankDetails[key] > 3 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
                 if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
                     name: cleanName,
                     level: level
