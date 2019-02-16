@@ -56,7 +56,7 @@ function moveToLeader(min = 20, max = 25) {
 function moveToMerchant(min = 1, max = 125) {
     let merchant = parent.entities['Shibmerch'];
     if (!merchant) {
-        shibMove('main');
+        shibMove('main', undefined, true);
         return false;
     }
     let range = distanceToPoint(merchant.real_x, merchant.real_y) + 0.1;
@@ -113,9 +113,9 @@ function moveToCoords(x, y) {
 }
 
 // smart_move wrapper
-function shibMove(destination, second = undefined) {
+function shibMove(destination, onComplete = undefined, tp = undefined) {
     if (!is_moving(character)){
-        smart_move(destination, second);
+        smart_move(destination, onComplete, tp);
     }
 }
 
