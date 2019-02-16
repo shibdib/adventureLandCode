@@ -1,4 +1,4 @@
-
+// Functions that don't fit elsewhere
 
 // Handle CM cases
 function on_cm(name,data) {

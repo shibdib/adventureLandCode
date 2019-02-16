@@ -1,7 +1,7 @@
 // Improved runners (Some include functions)
 
 // Improved equip
-// Removes the item from your character.slots
+// Removes the item from your character.items (Inventory)
 // Helps when equipping multiple of the same item (rings/earrings)
 function equip(num, slot) {
     character.items[num] = undefined;
