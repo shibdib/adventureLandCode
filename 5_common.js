@@ -120,6 +120,7 @@ function potionCheck() {
 //PVP Death tracking
 function grieferTracking() {
     if (deathTracker >= 3) {
+        deathTracker = 0;
         realmSwap(pvp = false);
     }
 }

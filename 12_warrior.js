@@ -158,7 +158,11 @@ function farm() {
             }
         }
     } else {
-        if (nearbyAggressors(175, true).length) kite(); else if (currentTarget) shibMove(currentTarget);
+        if (nearbyAggressors(250, true).length) {
+            kite();
+        } else if (currentTarget) {
+            shibMove(currentTarget);
+        }
         tackling = undefined;
     }
 }
