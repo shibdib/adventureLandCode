@@ -76,7 +76,6 @@ function farm() {
         whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
         targetArray = targetArray.filter((m) => m !== currentTarget);
         game_log(JSON.stringify(targetArray));
-        return stop();
     }
     // Handle various target declarations
     let mainTarget;
