@@ -13,13 +13,17 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 250);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
+    loot();
+    potionController();
+    // Use track on pvp servers
+    if (isPvP() && can_use('track')) use('track');
     if (!state) return;
     stateTasks(state);
-}, 2000);
+}, 3000);
 
 // Update your data
 setInterval(function () {
@@ -27,8 +31,6 @@ setInterval(function () {
 }, 5000);
 
 function farm() {
-    loot();
-    potionController();
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
@@ -45,8 +47,6 @@ function farm() {
     } else {
         return moveToLeader(character.range * 0.5, character.range * 0.7);
     }
-    // Use track on pvp servers
-    if (isPvP() && can_use('track')) use('track');
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (target) {
         if (in_attack_range(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
@@ -73,6 +73,6 @@ function farm() {
             if (nearbyAggressors(150, true).length) kite(); else moveToTarget(target, character.range * 0.5, character.range * 0.7);
         }
     } else {
-        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.1, character.range * 0.15);
+        if (!kite()) moveToLeader(character.range * 0.1, character.range * 0.15);
     }
 }

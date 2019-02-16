@@ -13,13 +13,22 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 250);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
+    loot();
+    potionController();
+    // Speedy rogue
+    if (can_use('rspeed', character)) {
+        use('rspeed', character);
+    } else {
+        let slowParty = speedParty();
+        if (slowParty) use('rspeed', slowParty);
+    }
     if (!state) return;
     stateTasks(state);
-}, 2000);
+}, 3000);
 
 // Update your data
 setInterval(function () {
@@ -27,8 +36,6 @@ setInterval(function () {
 }, 5000);
 
 function farm() {
-    loot();
-    potionController();
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
@@ -65,13 +72,6 @@ function farm() {
     } else {
         // Only invis if near baddies
         if (nearbyAggressors(100, true).length && can_use('invis')) use('invis'); else stop('invis');
-        // Speedy rogue
-        if (can_use('rspeed', character)) {
-            use('rspeed', character);
-        } else {
-            let slowParty = speedParty();
-            if (slowParty) use('rspeed', slowParty);
-        }
         moveToLeader();
     }
 }

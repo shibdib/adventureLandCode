@@ -27,13 +27,24 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 250);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
+    loot();
+    potionController();
+    // Warcry
+    if (can_use('warcry')) use('warcry');
+    // Get array of mtypes
+    if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
+        targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
+        whisperParty('NEW MTYPE ARRAY: ' + JSON.stringify(targetArray));
+    }
+    // Handle target refreshing
+    refreshTarget();
     if (!state || combat) return;
     stateTasks(state);
-}, 2000);
+}, 3000);
 
 //CM Location Loop
 //Only sends details to people it cant see
@@ -56,8 +67,6 @@ setInterval(function () {
 function farm() {
     // Initial pos set
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
-    loot();
-    potionController();
     if (character.party) combat = checkPartyAggro(); else return kite();
     // Handle switching maps for an event
     if (!combat && eventMap && eventMap !== character.map) {
@@ -71,11 +80,6 @@ function farm() {
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
     if (isPvP() && waitForHealer() && !combat) return;
-    // Get array of mtypes
-    if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
-        targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
-        whisperParty('NEW MTYPE ARRAY: ' + JSON.stringify(targetArray));
-    }
     // Find a mtype to kill
     if (!currentTarget && targetArray) {
         currentTarget = random_one(targetArray);
@@ -91,8 +95,6 @@ function farm() {
         game_log(JSON.stringify(targetArray));
         return stop();
     }
-    // Handle target refreshing
-    refreshTarget();
     // Handle various target declarations
     let mainTarget;
     if (currentTarget) mainTarget = findLocalTargets(currentTarget);
@@ -127,8 +129,6 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
-        // Warcry
-        if (can_use('warcry')) use('warcry');
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
@@ -137,7 +137,6 @@ function farm() {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
-            if (Math.random() > 0.9) parent.d_text("KILL!", character, {color: "#A23720"});
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
@@ -148,19 +147,15 @@ function farm() {
                 if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
             } else if (!waitForHealer() || primary.target === character.name) {
                 combat = true;
-                if (Math.random() > 0.9) parent.d_text("GO TIME!", character, {color: "#A23720"});
                 tackle(primary);
             } else {
-                if (Math.random() > 0.9) parent.d_text("WAITING", character, {color: "#209CA2"});
                 primary = undefined;
                 kite();
             }
         }
     } else {
-        if (nearbyAggressors(250, true).length) {
-            kite();
-        } else if (currentTarget) {
-            shibMove(currentTarget);
+        if (!kite()) {
+            if (currentTarget) shibMove(currentTarget);
         }
         tackling = undefined;
     }

@@ -13,13 +13,22 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 250);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
+    let magiPortTarget = getMagiPortTarget();
+    if (magiPortTarget && can_use('magiport')) {
+        parent.d_text("MAGIPORT FOR "+ magiPortTarget + "!",character,{color:"#ffc230"});
+        if (character.mp < 900) use('use_mp'); else use('magiport', magiPortTarget);
+    } else
+    // Energize the party
+    if (can_use('energize')) energizeNeedy(); else if (can_use('blink') && blinkToLeader()) return;
+    loot();
+    potionController();
     if (!state) return;
     stateTasks(state);
-}, 2000);
+}, 3000);
 
 // Update your data
 setInterval(function () {
@@ -27,23 +36,13 @@ setInterval(function () {
 }, 5000);
 
 function farm() {
-    loot();
-    potionController();
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    // If you need to blink to leader do it
-    if (can_use('blink') && blinkToLeader()) return;
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
-    let magiPortTarget = getMagiPortTarget();
-    if (magiPortTarget && can_use('magiport')) {
-        parent.d_text("MAGIPORT FOR "+ magiPortTarget + "!",character,{color:"#ffc230"});
-        if (character.mp < 900) use('use_mp'); else use('magiport', magiPortTarget);
-    } else if (target) {
-        // Energize the party
-        if (can_use('energize')) energizeNeedy();
+    if (target) {
         if (can_attack(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {

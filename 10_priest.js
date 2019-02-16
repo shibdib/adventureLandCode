@@ -13,13 +13,15 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 250);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
+    loot();
+    potionController(true);
     if (!state || combat) return;
     stateTasks(state);
-}, 2000);
+}, 3000);
 
 // Update your data
 setInterval(function () {
@@ -27,8 +29,6 @@ setInterval(function () {
 }, 5000);
 
 function farm() {
-    loot();
-    potionController(true);
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
