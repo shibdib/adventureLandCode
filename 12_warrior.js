@@ -247,12 +247,37 @@ function tackle(target, slowMove = true) {
     if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
         if (can_use('charge') && parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
-        if (can_attack(target)) smartAttack(target);
+        if (can_attack(target)) {
+            stompControl();
+            smartAttack(target);
+        }
         if (slowMove) moveToTarget(target);
     } else {
         kite(target);
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
         if (can_attack(target)) attack(target);
+    }
+}
+
+// handle basher swap and stomp
+let lastStomp, stompReady;
+let originalWeapons = {};
+
+function stompControl() {
+    let basherSlot = getInventorySlot('basher');
+    if (stompReady) {
+        use('stomp')
+        let mainSlot = getInventorySlot(originalWeapons['mainHand']);
+        let offSlot = getInventorySlot(originalWeapons['offHand']);
+        equip(mainSlot);
+        equip(offSlot);
+        lastStomp = Date.now();
+    } else if (basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
+        originalWeapons['mainHand'] = character.slots['mainhand'].name;
+        originalWeapons['offHand'] = character.slots['offhand'].name;
+        unequip('offhand');
+        equip(basherSlot);
+        stompReady = true;
     }
 }
 

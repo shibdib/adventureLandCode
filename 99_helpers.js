@@ -254,9 +254,9 @@ function vulnerableItemsCheck() {
     let count = 0;
     for (let key in character.items) {
         let item = character.items[key];
-        if (!item || item === null) continue;
+        if (!item || item === null || classInventory[character.ctype].includes(item.name)) continue;
         if (item.v) count++;
-        if (item_grade(item)) count = 99;
+        if (item_grade(item) && item.v) count = 99;
     }
     return count;
 }
