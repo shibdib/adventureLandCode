@@ -93,7 +93,7 @@ function farm() {
     }
     // If you don't have a target find one
     if (!primary) {
-        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
+        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8
         if (getEntitiesTargeting()[0]) {
             stop('move');
             primary = getEntitiesTargeting()[0];
@@ -105,14 +105,12 @@ function farm() {
             if (mainTarget.level <= 2) lowLevelCount++; else lowLevelCount = 0;
         } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
-        } else if (!readyToPull) {
-            use_hp_or_mp();
         }
     }
-    // Handle stomping things
-    stompControl();
     // If you have a target deal with it
     if (primary) {
+        // Handle stomping things
+        stompControl();
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
@@ -181,7 +179,7 @@ function refreshTarget() {
         lowLevelCount = 0;
         lowLevelTotalCount++;
         traveling = true;
-        return shibMove('main');
+        return;
     }
     // We haven't seen our actual target in awhile
     if (lastRealTarget + (60000 * 3.5) < Date.now()) {
@@ -194,7 +192,7 @@ function refreshTarget() {
         currentTarget = undefined;
         traveling = true;
         lowLevelCount = 0;
-        return shibMove('main');
+        return;
     }
     // If it's been a REALLY long time we probably bugged out so refresh
     if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
@@ -207,7 +205,7 @@ function refreshTarget() {
         currentTarget = undefined;
         traveling = true;
         lowLevelCount = 0;
-        return shibMove('main');
+        return;
     }
     // It's crowded time to move on
     if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
@@ -220,7 +218,7 @@ function refreshTarget() {
         currentTarget = undefined;
         traveling = true;
         lowLevelCount = 0;
-        return shibMove('main');
+        return;
     }
 }
 
@@ -246,7 +244,7 @@ let originalWeapons = {};
 
 function stompControl() {
     // If you bashed you need to re-equip
-    if (reEquip) {
+    if (reEquip || (!stompReady && originalWeapons['mainHand'])) {
         let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
         equip(mainSlot);
         if (originalWeapons['offHand']) {
@@ -264,6 +262,7 @@ function stompControl() {
     if (!stompReady && getEntitiesTargeting().length < 2 && primary.hp < primary.max_hp * 0.15) return;
     let basherSlot = getInventorySlot('basher');
     if (stompReady) {
+        unequip('offhand');
         equip(basherSlot);
         use('stomp');
         lastStomp = Date.now();
@@ -278,7 +277,6 @@ function stompControl() {
                 name: character.slots['offhand'].name,
                 level: character.slots['offhand'].level
             };
-            unequip('offhand');
         }
         stompReady = true;
     }
