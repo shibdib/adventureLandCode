@@ -1,3 +1,4 @@
+let lastPack = {};
 function smart_move(destination, on_done) {
     smart.map="";
     if(is_string(destination)) destination={to:destination};
@@ -14,9 +15,11 @@ function smart_move(destination, on_done) {
                 (shuffle(G.maps[name].monsters) || []).forEach(function (pack) {
                     if (pack.type !== destination.to || G.maps[name].ignore || G.maps[name].instance || avoidMaps.includes(name)) return;
                     if (pack.boundaries) {
-                        pack.last = pack.last || 0;
+                        if (lastPack[pack.type] && lastPack[pack.type] > pack.boundaries.length) lastPack[pack.type] = undefined;
+                        let lastPackPathed = lastPack[pack.type] || 0;
                         let boundary = pack.boundaries[pack.last % pack.boundaries.length];
-                        pack.last++;
+                        lastPackPathed++;
+                        lastPack[pack.type] = lastPackPathed;
                         smart.map = boundary[0];
                         smart.x = (boundary[1] + boundary[3]) / 2;
                         smart.y = (boundary[2] + boundary[4]) / 2;
@@ -153,7 +156,6 @@ function bfs() {
                 }
             });
         }
-        smart.use_town = true;
         if(smart.use_town) qpush({map:current.map,x:map.spawns[0][0],y:map.spawns[0][1],town:true}); // "town"
 
         shuffle(moves);
