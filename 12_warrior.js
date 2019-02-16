@@ -46,23 +46,6 @@ setInterval(function () {
     stateTasks(state);
 }, 3000);
 
-//CM Location Loop
-//Only sends details to people it cant see
-setInterval(function () {
-    for (let key of parent.party_list) {
-        let entity = parent.entities[key];
-        if (entity) continue;
-        let type = 'moving';
-        if (primary) if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
-        send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
-    }
-}, 5000);
-
-// Update your data
-setInterval(function () {
-    updateCharacterData();
-}, 5000);
-
 //Primary loop
 function farm() {
     // Initial pos set
@@ -127,6 +110,8 @@ function farm() {
             use_hp_or_mp();
         }
     }
+    // Handle stomping things
+    stompControl();
     // If you have a target deal with it
     if (primary) {
         if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
@@ -184,7 +169,7 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 function refreshTarget() {
     // No target or waiting for healer check
-    if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget]) return;
+    if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget] || targetSetAt + 35000 > Date.now()) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 5) {
         game_log('Overfarm');
@@ -247,10 +232,7 @@ function tackle(target, slowMove = true) {
     if (!kite(target)) {
         if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
         if (can_use('charge') && parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
-        if (can_attack(target)) {
-            stompControl();
-            smartAttack(target);
-        }
+        if (can_attack(target)) smartAttack(target);
         if (slowMove) moveToTarget(target);
     } else {
         kite(target);
@@ -260,23 +242,39 @@ function tackle(target, slowMove = true) {
 }
 
 // handle basher swap and stomp
-let lastStomp, stompReady;
+let lastStomp, stompReady, reEquip;
 let originalWeapons = {};
 
 function stompControl() {
-    let basherSlot = getInventorySlot('basher');
-    if (stompReady) {
-        use('stomp')
-        let mainSlot = getInventorySlot(originalWeapons['mainHand']);
-        let offSlot = getInventorySlot(originalWeapons['offHand']);
+    // If you bashed you need to re-equip
+    if (reEquip) {
+        let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
+        let offSlot = getInventorySlot(originalWeapons['offHand'].name, false, originalWeapons['offHand'].level);
         equip(mainSlot);
         equip(offSlot);
         lastStomp = Date.now();
-    } else if (basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
-        originalWeapons['mainHand'] = character.slots['mainhand'].name;
-        originalWeapons['offHand'] = character.slots['offhand'].name;
-        unequip('offhand');
+        reEquip = undefined;
+        stompReady = undefined;
+        return;
+    }
+    // Don't bash without a target
+    if (!primary) return;
+    // Don't bash when not needed
+    if (!stompReady && getEntitiesTargeting().length < 2 && primary.hp < primary.max_hp * 0.15) return;
+    let basherSlot = getInventorySlot('basher');
+    if (stompReady) {
         equip(basherSlot);
+        use('stomp');
+        lastStomp = Date.now();
+        reEquip = true;
+    } else if (basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
+        originalWeapons['mainHand'] = {
+            name: character.slots['mainhand'].name,
+            level: character.slots['mainhand'].level
+        };
+        originalWeapons['offHand'] = {name: character.slots['offhand'].name, level: character.slots['offhand'].level};
+        unequip('offhand');
+        unequip('mainHand');
         stompReady = true;
     }
 }
@@ -347,6 +345,7 @@ function on_game_event(event) {
             whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
             lastCombat = Date.now();
             lastRealTarget = Date.now();
+            lowLevelCount = 0;
             currentTarget = event.name;
             primary = eventTarget;
             traveling = true;
@@ -354,6 +353,7 @@ function on_game_event(event) {
         } else if (event.map) {
             lastCombat = Date.now();
             lastRealTarget = Date.now();
+            lowLevelCount = 0;
             currentTarget = event.name;
             primary = undefined;
             traveling = true;
@@ -373,8 +373,25 @@ function on_game_event(event) {
 
 // Add manual target refresh
 /**
-add_bottom_button(3, 'Refresh Target', function () {
+ add_bottom_button(3, 'Refresh Target', function () {
     lastTarget = currentTarget;
     currentTarget = undefined;
     whisperParty('Manual target refresh requested..');
 });**/
+
+//CM Location Loop
+//Only sends details to people it cant see
+setInterval(function () {
+    for (let key of parent.party_list) {
+        let entity = parent.entities[key];
+        if (entity) continue;
+        let type = 'moving';
+        if (primary) if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
+        send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
+    }
+}, 5000);
+
+// Update your data
+setInterval(function () {
+    updateCharacterData();
+}, 5000);
