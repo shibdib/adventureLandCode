@@ -197,150 +197,152 @@ function gearIssue() {
 }
 
 //Looks for weapon type equipped
-    function checkForWeaponType(type) {
-        for (let slot of Object.values(character.slots)) {
-            if (slot && slot.name && G.items[slot.name].wtype && G.items[slot.name].wtype === type) return true;
-        }
+function checkForWeaponType(type) {
+    for (let slot of Object.values(character.slots)) {
+        if (slot && slot.name && G.items[slot.name].wtype && G.items[slot.name].wtype === type) return true;
     }
+}
 
 //Count empty gear slots
-    function countEmptyGear() {
-        let count = 0;
-        for (let slot of Object.values(character.slots)) {
-            if (!slot) count += 1;
-        }
-        return count;
+function countEmptyGear() {
+    let count = 0;
+    for (let slot of Object.values(character.slots)) {
+        if (!slot) count += 1;
     }
+    return count;
+}
 
 //Looks for item in inventory
-    function getInventorySlot(search, multiple = false, level = 0) {
-        if (!multiple) {
-            for (let key in character.items) {
-                let item = character.items[key];
-                if (!item) continue;
-                if (item.name === search && item_properties(item).level === level) {
-                    if (character.items[key].name === search) return key;
-                }
+function getInventorySlot(search, multiple = false, level = 0) {
+    if (!multiple) {
+        for (let key in character.items) {
+            let item = character.items[key];
+            if (!item) continue;
+            if (item.name === search && item_properties(item).level === level) {
+                if (character.items[key].name === search) return key;
             }
-        } else {
-            let slots = [];
-            for (let key in character.items) {
-                let item = character.items[key];
-                if (!item) continue;
-                if (item.name === search && item_properties(item).level === level) {
-                    if (character.items[key].name === search) slots.push(key);
-                }
-            }
-            return slots;
         }
-        return undefined;
+    } else {
+        let slots = [];
+        for (let key in character.items) {
+            let item = character.items[key];
+            if (!item) continue;
+            if (item.name === search && item_properties(item).level === level) {
+                if (character.items[key].name === search) slots.push(key);
+            }
+        }
+        return slots;
     }
+    return undefined;
+}
 
-    function getNaked() {
-        for (let slot of parent.character_slots) {
-            unequip(slot);
-        }
+function getNaked() {
+    for (let slot of parent.character_slots) {
+        unequip(slot);
     }
+}
 
 //Pick Up Potions
-    let requestOnce;
+let requestOnce;
 
-    function getPotions() {
-        if (moveToMerchant()) {
-            if (parent.party_list.length > 0) {
-                let merchant = parent.entities['Shibmerch'];
-                if (merchant) {
-                    let need = {};
-                    for (let type_id in buyThesePotions) {
-                        let type = buyThesePotions[type_id];
-                        let item_def = parent.G.items[type];
-                        if (item_def != null) {
-                            if (itemCount(type) < targetPotionAmount) {
-                                need['type'] = 'potionRequest';
-                                need['potion'] = type;
-                                need['amount'] = targetPotionAmount - itemCount(type);
-                            }
+function getPotions() {
+    if (moveToMerchant()) {
+        if (parent.party_list.length > 0) {
+            let merchant = parent.entities['Shibmerch'];
+            if (merchant) {
+                let need = {};
+                for (let type_id in buyThesePotions) {
+                    let type = buyThesePotions[type_id];
+                    let item_def = parent.G.items[type];
+                    if (item_def != null) {
+                        if (itemCount(type) < targetPotionAmount) {
+                            need['type'] = 'potionRequest';
+                            need['potion'] = type;
+                            need['amount'] = targetPotionAmount - itemCount(type);
                         }
                     }
-                    if (Object.keys(need).length && (!requestOnce || requestOnce + 10000 < Date.now())) {
-                        send_cm(merchant.name, need);
-                        pm(merchant.name, 'Send potions please!');
-                        requestOnce = Date.now();
-                    }
+                }
+                if (Object.keys(need).length && (!requestOnce || requestOnce + 10000 < Date.now())) {
+                    send_cm(merchant.name, need);
+                    pm(merchant.name, 'Send potions please!');
+                    requestOnce = Date.now();
                 }
             }
         }
     }
+}
 
 // Stat items
-    let statItem = {};
-    let classScrolls = {
-        warrior: 'strscroll',
-        priest: 'intscroll',
-        mage: 'intscroll',
-        rogue: 'dexscroll',
-        ranger: 'dexscroll'
-    };
+let statItem = {};
+let classScrolls = {
+    warrior: 'strscroll',
+    priest: 'intscroll',
+    mage: 'intscroll',
+    rogue: 'dexscroll',
+    ranger: 'dexscroll'
+};
 
-    function statItems() {
-        if (!statItem[character.name]) {
-            for (let slot of Object.keys(character.slots)) {
-                let item = character.slots[slot];
-                let properties = item_properties(item);
-                if (!properties) continue;
-                if (properties.stat || G.items[item.name].stat) {
-                    if (!properties.stat) {
-                        if ((character.ctype === 'rogue' || character.ctype === 'ranger') && properties['dex']) continue;
-                        if ((character.ctype === 'priest' || character.ctype === 'mage') && properties['int']) continue;
-                        if (character.ctype === 'warrior' && properties['str']) continue;
-                    }
-                    let grade = item_grade(item);
-                    let amount = 1;
-                    if (grade === 1) amount = 10; else if (grade === 2) amount = 100;
-                    statItem[character.name] = {slot: slot, amount: amount, name: item.name, level: properties.level};
-                    unequip(statItem[character.name].slot);
-                    return false;
+function statItems() {
+    if (!statItem[character.name]) {
+        for (let slot of Object.keys(character.slots)) {
+            let item = character.slots[slot];
+            let properties = item_properties(item);
+            if (!properties) continue;
+            if (properties.stat || G.items[item.name].stat) {
+                if (!properties.stat) {
+                    if ((character.ctype === 'rogue' || character.ctype === 'ranger') && properties['dex']) continue;
+                    if ((character.ctype === 'priest' || character.ctype === 'mage') && properties['int']) continue;
+                    if (character.ctype === 'warrior' && properties['str']) continue;
                 }
+                let grade = item_grade(item);
+                let amount = 1;
+                if (grade === 1) amount = 10; else if (grade === 2) amount = 100;
+                statItem[character.name] = {slot: slot, amount: amount, name: item.name, level: properties.level};
+                unequip(statItem[character.name].slot);
+                return false;
             }
-            return true;
-        } else if (statItem[character.name].equip) {
-            equip(getInventorySlot(statItem[character.name].name, false, statItem[character.name].level));
-            statItem[character.name] = undefined
-            return false;
-        } else if (getInventorySlot(classScrolls[character.ctype]) && character.items[getInventorySlot(classScrolls[character.ctype])].q >= statItem[character.name].amount) {
-            let upgradeMerchant = getNpc("newupgrade");
-            let distanceToMerchant = null;
-            if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
-            if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
-            if (distanceToMerchant != null && distanceToMerchant < 155) {
-                upgrade(getInventorySlot(statItem[character.name].name, false, statItem[character.name].level), getInventorySlot(classScrolls[character.ctype]));
-                statItem[character.name].equip = true;
-            }
-            return false;
-        } else if (character.gold < 8000 * statItem[character.name].amount) {
-            withdrawGold((8000 * statItem[character.name].amount) - character.gold);
-            return false;
-        } else {
-            buyScroll(classScrolls[character.ctype], statItem[character.name].amount);
-            statItem[character.name].unequip = true;
-            return false;
         }
+        return true;
+    } else if (statItem[character.name].equip) {
+        equip(getInventorySlot(statItem[character.name].name, false, statItem[character.name].level));
+        statItem[character.name] = undefined;
+        return false;
+    } else if (getInventorySlot(classScrolls[character.ctype]) && character.items[getInventorySlot(classScrolls[character.ctype])].q >= statItem[character.name].amount) {
+        let upgradeMerchant = getNpc("newupgrade");
+        let distanceToMerchant = null;
+        if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            let gearSlot = getInventorySlot(statItem[character.name].name, false, statItem[character.name].level);
+            let scrollSlot = getInventorySlot(classScrolls[character.ctype]);
+            if (gearSlot && scrollSlot) upgrade(gearSlot, scrollSlot);
+            statItem[character.name].equip = true;
+        }
+        return false;
+    } else if (character.gold < 8000 * statItem[character.name].amount) {
+        withdrawGold((8000 * statItem[character.name].amount) - character.gold);
+        return false;
+    } else {
+        buyScroll(classScrolls[character.ctype], statItem[character.name].amount);
+        statItem[character.name].unequip = true;
+        return false;
     }
+}
 
 //Gear Score
-    function getGearScore(ctype, item) {
-        if (!attributeWeights[ctype]) return;
-        let Gdetails = G.items[item.name];
-        let properties = item_properties(item);
-        let level = item_properties(item).level;
-        if (!Gdetails || !properties) return;
-        let weights = attributeWeights[ctype];
-        let score = 0;
-        for (let atr of Object.keys(weights)) {
-            let itemAtr = properties[atr] || 0;
-            let levelSteps = 0;
-            if (Gdetails['upgrade']) levelSteps = Gdetails['upgrade'][atr] || 0; else if (Gdetails['compound']) levelSteps = Gdetails['compound'][atr] || 0;
-            score += (weights[atr] * (itemAtr + (levelSteps * level)));
-        }
-        return score
+function getGearScore(ctype, item) {
+    if (!attributeWeights[ctype]) return;
+    let Gdetails = G.items[item.name];
+    let properties = item_properties(item);
+    let level = item_properties(item).level;
+    if (!Gdetails || !properties) return;
+    let weights = attributeWeights[ctype];
+    let score = 0;
+    for (let atr of Object.keys(weights)) {
+        let itemAtr = properties[atr] || 0;
+        let levelSteps = 0;
+        if (Gdetails['upgrade']) levelSteps = Gdetails['upgrade'][atr] || 0; else if (Gdetails['compound']) levelSteps = Gdetails['compound'][atr] || 0;
+        score += (weights[atr] * (itemAtr + (levelSteps * level)));
     }
+    return score
+}
