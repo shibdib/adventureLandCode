@@ -16,6 +16,15 @@ let eventMobs = ['snowman', 'goblin', 'pinkgoo'];
 // Loot targets (These will always be in the array of possibles as they drop something worthwhile.
 let lootTargets = ['tortoise', 'poisio'];
 
+// Items to have in the inventories of each class
+let classInventory = {
+    'warrior': ['basher'],
+    'rogue': ['poison'],
+    'ranger': ['poison'],
+    'priest': [],
+    'mage': []
+};
+
 // Filter words from log
 let filterWord = ['gold', 'killed', 'speed'];
 

@@ -9,6 +9,7 @@ let specialSlots = {
     'ring': ['ring1', 'ring2'],
     'earring': ['earring1', 'earring2']
 };
+
 let bestSetup = {};
 
 //Get gear and make sure all slots are filled
@@ -40,6 +41,17 @@ function gearIssue() {
                         let twoHander;
                         let item = slot[packKey];
                         if (!item || ignoredItems.includes(item.name)) continue;
+                        // Inventory items
+                        if (classInventory[character.ctype].includes(item.name)) {
+                            let inventory = bestSetup[character.name]['inventory'] || [];
+                            inventory.push({
+                                name: item.name,
+                                bankTab: Object.keys(character.user)[key],
+                                bankSlot: packKey
+                            });
+                            bestSetup[character.name]['inventory'] = inventory;
+                            continue;
+                        }
                         if (G.items[item.name] && !equipTypes.includes(G.items[item.name].type)) continue;
                         // Get highest level of item so as not to waste time
                         //item = getHighestLevel(item.name);
@@ -168,12 +180,16 @@ function gearIssue() {
             return false;
         } else if (!bestSetup[character.name].withdrawn) {
             for (let item of Object.values(bestSetup[character.name])) {
-                bankItemWithdraw(item.bankSlot, item.bankTab);
+                if (item.bankSlot) bankItemWithdraw(item.bankSlot, item.bankTab);
+                if (Array.isArray(item)) {
+                    item.forEach((i) => bankItemWithdraw(i.bankSlot, i.bankTab));
+                }
             }
             bestSetup[character.name].withdrawn = true;
             return false;
         } else if (!bestSetup[character.name].equipped) {
             for (let item of Object.values(bestSetup[character.name])) {
+                if (classInventory[character.ctype].includes(item.name)) continue;
                 equip(getInventorySlot(item.name, false, item.level))
             }
             bestSetup[character.name].equipped = true;
