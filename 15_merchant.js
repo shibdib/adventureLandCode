@@ -253,10 +253,13 @@ function passiveMerchant() {
         if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
             let append = passiveSale.level;
             if (!passiveSale.level) append = '';
-            let multi = passiveSale.level;
+            let scrollCost = passiveSale.level * 70000;
+            if (G.items[passiveSale.item].compound) scrollCost = passiveSale.level * 600000;
             if (passiveSale.level === 0) multi = 1;
-            let price = (G.items[passiveSale.item].g * 4.25) * multi;
-            if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) price = round(priceDetails[passiveSale.item + append].savg);
+            let rawPrice = G.items[passiveSale.item].g + scrollCost;
+            let historicalPrice, price;
+            if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) historicalPrice = round(priceDetails[passiveSale.item + append].savg);
+            if (!historicalPrice || historicalPrice < rawPrice) price = rawPrice; else price = historicalPrice;
             trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
             whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
             passiveSale = {};
@@ -279,11 +282,12 @@ function passiveMerchant() {
             for (let key of Object.keys(bankDetails)) {
                 let level = parseInt(key[key.length - 1]);
                 let cleanName = key.slice(0, -1);
+                if (!G.items[cleanName]) continue;
                 if (listedItems.includes(cleanName)) continue;
                 if (level < normalLevelTarget - 1) continue;
                 let amount = bankDetails[key];
                 let minimum = 1;
-                if (G.items[cleanName].compound) minimum = 3;
+                if (G.items[cleanName] && G.items[cleanName].compound) minimum = 3;
                 if (amount > minimum) {
                     passiveSale.item = cleanName;
                     passiveSale.level = level;
@@ -491,6 +495,7 @@ function bookKeeping() {
                     //destroy_item();
                     continue;
                 }
+                if (!item_properties(banker)) continue;
                 let level = item_properties(banker).level;
                 if (!level) level = 0;
                 let quantity = banker.q || 1;
