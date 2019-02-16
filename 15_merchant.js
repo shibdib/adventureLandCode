@@ -275,6 +275,21 @@ function passiveMerchant() {
                     }
                 }
             }
+            // Sell high level items in excess
+            for (let key of Object.keys(bankDetails)) {
+                let level = parseInt(key[key.length - 1]);
+                let cleanName = key.slice(0, -1);
+                if (level < normalLevelTarget - 1) continue;
+                let amount = bankDetails[key];
+                let minimum = 1;
+                if (G.items[cleanName].compound) minimum = 3;
+                if (amount > minimum) {
+                    passiveSale.item = cleanName;
+                    passiveSale.level = level;
+                    currentTask = 'getPassiveItem';
+                    return;
+                }
+            }
             for (let item of buyTargets) {
                 let append = item.level;
                 if (!item.level) append = '';
