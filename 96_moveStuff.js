@@ -38,14 +38,14 @@ function smart_move(destination, on_done, tp = false) {
             smart.x=G.maps[smart.map].spawns[0][0];
             smart.y=G.maps[smart.map].spawns[0][1];
         }
-        else if(destination.to=="upgrade" || destination.to=="compound") smart.map="main",smart.x=-204,smart.y=-129; if (character.map === 'main') smart.use_town = true;
-        else if(destination.to=="exchange") smart.map="main",smart.x=-26,smart.y=-432; if (character.map === 'main') smart.use_town = true;
+        else if(destination.to=="upgrade" || destination.to=="compound") smart.map="main",smart.x=-204,smart.y=-129; if (character.map === 'main' && distanceToPoint(-204,-129) > 450) smart.use_town = true;
+        else if(destination.to=="exchange") smart.map="main",smart.x=-26,smart.y=-432; if (character.map === 'main' && distanceToPoint(-26,-432) > 450) smart.use_town = true;
         else if(destination.to=="potions" && character.map=="halloween") smart.map="halloween",smart.x=149,smart.y=-182;
         else if(destination.to=="potions" && in_arr(character.map,["winterland","winter_inn","winter_cave"])) smart.map="winter_inn",smart.x=-84,smart.y=-173;
-        else if(destination.to=="potions") smart.map="main",smart.x=56,smart.y=-122; if (character.map === 'main') smart.use_town = true
-        else if(destination.to=="scrolls") smart.map="main",smart.x=-465,smart.y=-71; if (character.map === 'main') smart.use_town = true
-        else if(destination.to=="stands") smart.map="main",smart.x=-186,smart.y=691; if (character.map === 'main') smart.use_town = true // Added
-        else if(destination.to=="shells") smart.map="main",smart.x=-1499,smart.y=629; if (character.map === 'main') smart.use_town = true // Added
+        else if(destination.to=="potions") smart.map="main",smart.x=56,smart.y=-122; if (character.map === 'main' && distanceToPoint(56,-122) > 450) smart.use_town = true;
+        else if(destination.to=="scrolls") smart.map="main",smart.x=-465,smart.y=-71; if (character.map === 'main' && distanceToPoint(-465,-71) > 450) smart.use_town = true;
+        else if(destination.to=="stands") smart.map="main",smart.x=-186,smart.y=691; if (character.map === 'main' && distanceToPoint(-186,691) > 450) smart.use_town = true; // Added
+        else if(destination.to=="shells") smart.map="main",smart.x=-1499,smart.y=629; if (character.map === 'main' && distanceToPoint(-1499,629) > 450) smart.use_town = true; // Added
     }
     if (!smart.map) {
         //game_log("Unrecognized","#CF5B5B");
