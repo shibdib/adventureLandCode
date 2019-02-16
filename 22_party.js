@@ -199,6 +199,8 @@ function updateCharacterData() {
     currentData[character.name] = {
         name: character.name,
         ctype: character.ctype,
+        slots: character.slots,
+        items: character.items,
         hp: character.hp,
         maxHp: character.max_hp,
         mp: character.mp,
