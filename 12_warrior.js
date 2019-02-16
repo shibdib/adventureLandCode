@@ -184,7 +184,7 @@ function getSecondary() {
 // Refresh your target if the spawn is empty
 function refreshTarget() {
     // No target or waiting for healer check
-    if ((!currentTarget || waitForHealer(325, true)) && (targetSetAt + (60000 * 5) < Date.now())) return;
+    if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget]) return;
     // We're only fighting low level main targets, time to rotate to let them build up
     if (lowLevelCount && lowLevelCount >= 5) {
         game_log('Overfarm');

@@ -168,7 +168,7 @@ function sellExcessToNPC() {
             let exchange = [];
             Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
             let limit = 2;
-            if (G.items[cleanName].compound) limit = 4;
+            if (G.items[cleanName].compound || level >= normalLevelTarget) limit = 4;
             if (G.items[cleanName] && bankDetails[key] > limit && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
                 if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
                     name: cleanName,
