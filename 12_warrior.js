@@ -249,9 +249,11 @@ function stompControl() {
     // If you bashed you need to re-equip
     if (reEquip) {
         let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
-        let offSlot = getInventorySlot(originalWeapons['offHand'].name, false, originalWeapons['offHand'].level);
         equip(mainSlot);
-        equip(offSlot);
+        if (originalWeapons['offHand']) {
+            let offSlot = getInventorySlot(originalWeapons['offHand'].name, false, originalWeapons['offHand'].level);
+            equip(offSlot);
+        }
         lastStomp = Date.now();
         reEquip = undefined;
         stompReady = undefined;
@@ -272,9 +274,13 @@ function stompControl() {
             name: character.slots['mainhand'].name,
             level: character.slots['mainhand'].level
         };
-        originalWeapons['offHand'] = {name: character.slots['offhand'].name, level: character.slots['offhand'].level};
-        unequip('offhand');
-        unequip('mainHand');
+        if (character.slots['offhand']) {
+            originalWeapons['offHand'] = {
+                name: character.slots['offhand'].name,
+                level: character.slots['offhand'].level
+            };
+            unequip('offhand');
+        }
         stompReady = true;
     }
 }
