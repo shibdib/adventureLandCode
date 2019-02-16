@@ -86,7 +86,7 @@ function gearIssue() {
                                     bestSetup[character.name][itemSlot] = {
                                         name: item.name,
                                         level: item_properties(item).level,
-                                        bankTab: key,
+                                        bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
                                     continue;
@@ -96,7 +96,7 @@ function gearIssue() {
                                     bestSetup[character.name][itemSlot] = {
                                         name: item.name,
                                         level: item_properties(item).level,
-                                        bankTab: key,
+                                        bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
                                     continue;
@@ -109,7 +109,7 @@ function gearIssue() {
                                     bestSetup[character.name]['mainhand'] = {
                                         name: item.name,
                                         level: item_properties(item).level,
-                                        bankTab: key,
+                                        bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
                                     continue;
@@ -122,7 +122,7 @@ function gearIssue() {
                                     bestSetup[character.name]['mainhand'] = {
                                         name: item.name,
                                         level: item_properties(item).level,
-                                        bankTab: key,
+                                        bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
                                     continue;
@@ -138,7 +138,7 @@ function gearIssue() {
                                     bestSetup[character.name][slot] = {
                                         name: item.name,
                                         level: item_properties(item).level,
-                                        bankTab: key,
+                                        bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
                                     continue currentTab;
@@ -153,7 +153,7 @@ function gearIssue() {
                                         bestSetup[character.name][itemSlot] = {
                                             name: item.name,
                                             level: item_properties(item).level,
-                                            bankTab: key,
+                                            bankTab: Object.keys(character.user)[key],
                                             bankSlot: packKey
                                         };
                                         continue currentTab;
