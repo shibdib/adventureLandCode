@@ -1,15 +1,4 @@
-//Improved can_use runner
-function can_use(name, target = undefined) {
-    if (G.skills[name] && G.skills[name].class && !in_arr(character.ctype,G.skills[name].class)) return false; // checks the class
-    if (G.skills[name] && G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
-    if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
-    if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
-    if (G.skills[name] && G.skills[name].consume && !getInventorySlot(G.skills[name].consume)) return false; // checks for consumable
-    if (target && G.skills[name] && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
-    if (target && G.skills[name] && checkEntityForBuff(target, name)) return false; // checks if this is already applied
-    if (!target && G.skills[name] && checkEntityForBuff(character, name)) return false; // checks if this is already applied to yourself
-    return parent.can_use(name);  // checks the cooldown
-}
+
 
 // Handle CM cases
 function on_cm(name,data) {
@@ -51,16 +40,6 @@ function sendPartyCM(data) {
 
 function registerHandler(event, handler) {
     parent.socket.on(event, handler);
-}
-
-// Fix party runners
-function on_party_request(name) {
-    accept_party_request(name);
-}
-
-// Fix party runners
-function on_party_invite(name) {
-    accept_party_invite(name);
 }
 
 // Character DPS

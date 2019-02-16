@@ -96,34 +96,3 @@ function getHighestLevel(itemName) {
     }
     return best;
 }
-
-// Improved bank_store by Shibdib
-function bank_store(inventorySlot) {
-    // Shibdib update 02/16/2019 - This will now iterate thru all packs
-    // Old way would not look beyond the first pack that had any open slots
-    if(!character.bank) return game_log("Not inside the bank");
-    if (!character.items[inventorySlot]) return game_log("No item in that spot");
-    let pack;
-    let bankSlot = -1;
-    bankTabs:
-        for (let key of Object.keys(character.bank)) {
-            let bankPack = character.bank[key];
-            // Skip the gold tab
-            if (!Array.isArray(bankPack)) continue;
-            for (let slot in bankPack) {
-                // If items are stackable do so and break
-                if (can_stack(bankPack[slot], character.items[inventorySlot])) {
-                    pack = key;
-                    bankSlot = slot;
-                    break bankTabs;
-                } else if (!bankPack[slot]) {
-                    pack = key;
-                    bankSlot = slot;
-                    bankPack[slot] = 'holder';
-                    break bankTabs;
-                }
-            }
-        }
-    if (!pack) return game_log("Bank is full!");
-    parent.socket.emit("bank", {operation: "swap", pack: pack, str: bankSlot, inv: inventorySlot});
-}

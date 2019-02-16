@@ -28,10 +28,6 @@ function gearIssue() {
             depositItems();
             bestSetup[character.name].deposit = true;
             return false;
-        } else if (!bestSetup[character.name].deposit2) {
-            depositItems();
-            bestSetup[character.name].deposit2 = true;
-            return false;
         } else if (!bestSetup[character.name].getBest) {
             for (let key in Object.values(character.user)) {
                 let slot = Object.values(character.user)[key];
@@ -181,9 +177,7 @@ function gearIssue() {
         } else if (!bestSetup[character.name].withdrawn) {
             for (let item of Object.values(bestSetup[character.name])) {
                 if (item.bankSlot) bankItemWithdraw(item.bankSlot, item.bankTab);
-                if (Array.isArray(item)) {
-                    item.forEach((i) => bankItemWithdraw(i.bankSlot, i.bankTab));
-                }
+                if (Array.isArray(item)) item.forEach((i) => bankItemWithdraw(i.bankSlot, i.bankTab));
             }
             bestSetup[character.name].withdrawn = true;
             return false;
@@ -333,22 +327,13 @@ function gearIssue() {
         }
     }
 
-//Clear outdate scores
-    if (!localStorage.getItem('gearVersion') || localStorage.getItem('gearVersion') !== attributeVersion) {
-        localStorage.removeItem('gearScore');
-        localStorage.removeItem('gearVersion');
-        localStorage.setItem('gearVersion', attributeVersion);
-    }
-
 //Gear Score
     function getGearScore(ctype, item) {
         if (!attributeWeights[ctype]) return;
         let Gdetails = G.items[item.name];
         let properties = item_properties(item);
         let level = item_properties(item).level;
-        game_log(1)
         if (!Gdetails || !properties) return;
-        game_log(2)
         let weights = attributeWeights[ctype];
         let score = 0;
         for (let atr of Object.keys(weights)) {
