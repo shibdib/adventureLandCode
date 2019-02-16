@@ -105,6 +105,8 @@ function farm() {
             if (mainTarget.level <= 2) lowLevelCount++; else lowLevelCount = 0;
         } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
+        } else if (!readyToPull) {
+            if (character.hp < character.max_hp * 0.8 && can_use('use_hp')) use('use_hp'); else if (can_use('use_mp')) use('use_mp')
         }
     }
     // If you have a target deal with it
