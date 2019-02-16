@@ -34,6 +34,7 @@ function smart_move(destination, on_done, tp = false) {
             }
         } else if (G.maps[destination.to || destination.map]) {
             smart.map=destination.to||destination.map;
+            if (smart.map === 'main' && character.map === 'main') smart.use_town = true;
             smart.x=G.maps[smart.map].spawns[0][0];
             smart.y=G.maps[smart.map].spawns[0][1];
         }
