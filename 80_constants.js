@@ -26,8 +26,8 @@ let targetPotionAmount = 500;
 let spendingAmount = 10000000;
 // Target for upgrades
 let normalLevelTarget = 8;
-let highLevelTarget = 5;
-let epicLevelTarget = 3;
+let highLevelTarget = 8;
+let epicLevelTarget = 5;
 
 // The merchant will attempt to combine these to the target level
 let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
