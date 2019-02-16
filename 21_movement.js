@@ -120,20 +120,17 @@ function shibMove(destination, second = undefined) {
 }
 
 // Stay safe
+let nearestHostile = {};
 function kite(target = undefined) {
     let nearbyHostiles = nearbyAggressors(250, true).filter((a) => !a.target && !a.rip);
-    let multi = 1.2;
+    if (!nearbyHostiles.length) return false;
     if (target) {
-        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
     } else if ((character.ctype === 'rogue' || character.ctype === 'warrior') && get_target()) {
-        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== get_target().id);
     } else if (character.ctype === 'warrior' && getEntitiesTargeting()[0]) {
-        multi = 1;
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== getEntitiesTargeting()[0].id);
     }
-    if (!nearbyHostiles.length) return;
     // Check if we should move
     let currentClosestAvoid, nearest;
     for (let avoid of nearbyHostiles) {
@@ -143,25 +140,26 @@ function kite(target = undefined) {
             currentClosestAvoid = currentAvoidRange;
         }
     }
+    if (!nearestHostile[character.name]) nearestHostile[character.name] = nearest.id;
     let avoidRange = 45;
     if (is_monster(nearest) && G.monsters[nearest.mtype].range > avoidRange) avoidRange = G.monsters[nearest.mtype].range;
-    if (!nearest || currentClosestAvoid >= avoidRange * multi) {
+    if (!nearest || currentClosestAvoid >= avoidRange * 1.1) {
         character.kiting = undefined;
-        return;
+        return false;
     }
     let x, y;
-    if (character.kiting && is_moving(character)) return true; else character.kiting = undefined;
-    draw_circle(nearest.x, nearest.y, 90 * multi, 1, '#b30000');
-    if (character.x > nearest.x) x = 90 * multi; else x = -90 * multi;
-    if (character.y > nearest.y) y = 90 * multi; else y = -90 * multi;
-    x += getRndInteger(-15, 15);
-    y += getRndInteger(-15, 15);
+    if (character.kiting && is_moving(character) && nearestHostile[character.name] === nearest.id) return true; else character.kiting = undefined;
+    nearestHostile[character.name] = nearest.id;
+    draw_circle(nearest.x, nearest.y, 90 * 1.1, 1, '#b30000');
+    if (character.x > nearest.x) x = 90 * 1.1; else x = -90 * 1.1;
+    if (character.y > nearest.y) y = 90 * 1.1; else y = -90 * 1.1;
+    x += getRndInteger(-5, 5);
+    y += getRndInteger(-5, 5);
     if (can_move_to(character.x + x, character.y + y)) {
         if (smart.moving) stop('move');
-        draw_line(character.x, character.y, character.x + x, character.y + y)
+        draw_line(character.x, character.y, character.x + x, character.y + y);
         character.kiting = true;
         moveToCoords(character.x + x, character.y + y);
-        return true;
     } else {
         for (let a = 0; a < 100; a++) {
             x += getRndInteger(-25, 25);
@@ -171,10 +169,10 @@ function kite(target = undefined) {
                 draw_line(character.x, character.y, character.x + x, character.y + y);
                 character.kiting = true;
                 moveToCoords(character.x + x, character.y + y);
-                return true;
             }
         }
     }
+    return true;
 }
 
 // Calc angle for kiting https://gist.github.com/conorbuck/2606166
