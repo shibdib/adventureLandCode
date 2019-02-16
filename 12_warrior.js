@@ -139,7 +139,7 @@ function farm() {
         }
     } else {
         if (!kite()) {
-            if (currentTarget) shibMove(currentTarget);
+            if (currentTarget && !get_nearest_monster({type: currentTarget})) shibMove(currentTarget); else kite();
         }
         tackling = undefined;
     }
