@@ -21,6 +21,11 @@ function on_cm(name,data) {
         if (slot) send_item(parent.entities[name], slot, data['amount']);
         pm(name, data['amount'] + ' ' + data['potion'] + ' sent.')
     }
+    // Party CM Standard
+    if (data.type === 'combatLocation') {
+        if (!parent.combatLocation) parent.combatLocation = {};
+        parent.combatLocation[name] = data;
+    }
     // Map changes
     if (data.type === 'mapChange') {
         stop('move');
@@ -30,8 +35,8 @@ function on_cm(name,data) {
     if (data.type === 'requestMap') {
         localStorage.setItem('leaderMap', character.map);
     }
-    game_log("Received a code message from: "+name);
-    game_log(JSON.stringify(data));
+    //game_log("Received a code message from: "+name);
+    //game_log(JSON.stringify(data));
 }
 
 // Send CM to party
