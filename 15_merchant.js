@@ -31,7 +31,7 @@ function merchantTaskManager() {
         return shibMove('bank')
     } else if (!sellExcessToNPC()) {
         if (standCheck()) return;
-        if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 25000 < Date.now()) {
+        if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 5000 < Date.now()) {
             exchangeStuff();
         } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
             combineItems();
@@ -106,7 +106,7 @@ function buyBaseItems() {
         let totalCount = 0;
         for (let l = 0; l < normalLevelTarget; l++) {
             totalCount += (itemCount(item, l) || 0) + (bankDetails[item + l] || 0);
-            if (totalCount >= 1) {
+            if (totalCount >= 4) {
                 need = false;
                 continue items;
             }
@@ -160,7 +160,9 @@ function sellExcessToNPC() {
                 continue;
             }
             let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
-            if (G.items[cleanName] && bankDetails[key] > 5 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName)) {
+            let exchange = [];
+            Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
+            if (G.items[cleanName] && bankDetails[key] > 5 && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
                 if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
                     name: cleanName,
                     level: level
@@ -326,7 +328,7 @@ function combineItems() {
     if (!craftingItem) {
         // Chance we skip this time
         if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
-        for (let l = 0; l < normalLevelTarget; l++) {
+        for (let l = 0; l <= normalLevelTarget; l++) {
             for (let item of combineTargets) {
                 if (item_grade({
                     name: item,
