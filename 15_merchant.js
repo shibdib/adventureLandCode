@@ -279,6 +279,7 @@ function passiveMerchant() {
             for (let key of Object.keys(bankDetails)) {
                 let level = parseInt(key[key.length - 1]);
                 let cleanName = key.slice(0, -1);
+                if (listedItems.includes(cleanName)) continue;
                 if (level < normalLevelTarget - 1) continue;
                 let amount = bankDetails[key];
                 let minimum = 1;
