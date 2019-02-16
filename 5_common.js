@@ -8,13 +8,13 @@ function stateController(state) {
     // Don't re-gear every respawn
     if (state !== 4 && !lastBankGearCheck && Math.random() > 0.6) lastBankGearCheck = Date.now();
     //KIA
-    if (isPvP()) grieferTracking();
     if (character.rip) {
         if (state !== 99) {
             deathTime[character.name] = Date.now();
             if (isPvP()) deathTracker++;
             whisperParty('I died');
         }
+        if (isPvP()) grieferTracking();
         new_state = 99;
     } //STATING ITEMS
     else if (!statItems()) {
