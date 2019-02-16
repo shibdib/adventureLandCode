@@ -1,5 +1,6 @@
 let lastPack = {};
-function smart_move(destination, on_done) {
+function smart_move(destination, on_done, tp = false) {
+    smart.use_town = tp;
     smart.map="";
     if(is_string(destination)) destination={to:destination};
     if(is_number(destination)) destination={x:destination,y:on_done},on_done=null;
