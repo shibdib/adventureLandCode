@@ -248,16 +248,19 @@ function getNpc(name) {
     return null;
 }
 
+// Place stand
 function placeStand() {
     if (is_moving(character)) return;
     let slot = getInventorySlot('stand0');
     parent.socket.emit("merchant", {num: slot});
 }
 
+// close your stand
 function closeStand() {
     parent.socket.emit("merchant", {close: 1});
 }
 
+// Checks if realm is pvp
 function isPvP() {
     return !!(parent.is_pvp || get_map().pvp);
 }
