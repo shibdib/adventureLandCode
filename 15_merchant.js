@@ -30,19 +30,18 @@ function merchantTaskManager() {
         closeStand();
         set_message('Fleeing');
         return shibMove('bank')
-    } else if (!sellExcessToNPC()) {
-        if (standCheck()) return;
-        if (exchangeTarget) {
-            exchangeStuff();
-        } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
-            combineItems();
-        } else {
-            if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
-            if (!sellItemsToPlayers() && !buyFromPlayers()) {
-                placeStand();
-                buyBaseItems();
-                passiveMerchant();
-            }
+    }
+    if (standCheck()) return;
+    if (exchangeTarget) {
+        exchangeStuff();
+    } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
+        combineItems();
+    } else {
+        if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+        if (!sellItemsToPlayers() && !buyFromPlayers()) {
+            placeStand();
+            buyBaseItems();
+            passiveMerchant();
         }
     }
 }
