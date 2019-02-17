@@ -22,16 +22,30 @@ function on_party_invite(name) {
 //Improved can_use runner
 //Performs many more checks
 //Includes some custom functions
+let cooldowns = {};
 function can_use(name, target = undefined) {
-    if (G.skills[name] && G.skills[name].class && !in_arr(character.ctype, G.skills[name].class)) return false; // checks the class
-    if (G.skills[name] && G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
-    if (G.skills[name] && G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
-    if (G.skills[name] && G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
-    if (G.skills[name] && G.skills[name].consume && !getInventorySlot(G.skills[name].consume)) return false; // checks for consumable
-    if (target && G.skills[name] && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
-    if (target && G.skills[name] && checkEntityForBuff(target, name)) return false; // checks if this is already applied
-    if (!target && G.skills[name] && checkEntityForBuff(character, name)) return false; // checks if this is already applied to yourself
-    return parent.can_use(name);  // checks the cooldown
+    if (!G.skills[name]) return game_log('Not a skill');
+    if (G.skills[name].class && !in_arr(character.ctype, G.skills[name].class)) return false; // checks the class
+    if (G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
+    if (G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp
+    if (G.skills[name].wtype && !checkForWeaponType(G.skills[name].wtype)) return false; // checks for weapon
+    if (G.skills[name].consume && !getInventorySlot(G.skills[name].consume)) return false; // checks for consumable
+    if (target && G.skills[name].range && parent.distance(character, target) > G.skills[name].range) return false; // checks for range
+    if (target && checkEntityForBuff(target, name)) return false; // checks if this is already applied
+    if (!target && checkEntityForBuff(character, name)) return false; // checks if this is already applied to yourself
+    if (cooldowns[name] && cooldowns[name] + G.skills[name].cooldown > Date.now()) return false; // Better cooldown check
+}
+
+//Improved Use
+function use(name, target) {
+    if (isNaN(name)) {
+        if (!target) target = get_target();
+        if (!can_use(name, target)) return;
+        parent.use_skill(name, target);
+        cooldowns[name] = Date.now();
+    } else {
+        equip(name);
+    }
 }
 
 // Improved bank_store by Shibdib

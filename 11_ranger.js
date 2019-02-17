@@ -20,7 +20,7 @@ setInterval(function () {
     loot();
     potionController();
     // Use track on pvp servers
-    if (isPvP() && can_use('track')) use('track');
+    if (isPvP()) use('track');
     if (!state) return;
     stateTasks(state);
 }, 3000);

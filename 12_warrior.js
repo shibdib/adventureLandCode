@@ -38,9 +38,9 @@ setInterval(function () {
     // Handle stomping things
     stompControl();
     // Warcry
-    if (can_use('warcry')) use('warcry');
+    use('warcry');
     // Hardshell when health is low
-    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
+    if (character.hp < character.max_hp * 0.5) use('hardshell');
     // Get array of mtypes
     if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
         targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
@@ -113,7 +113,7 @@ function farm() {
         } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
         } else if (!readyToPull) {
-            if (character.hp < character.max_hp * 0.8 && can_use('use_hp')) use('use_hp'); else if (can_use('use_mp')) use('use_mp')
+            if (character.hp < character.max_hp * 0.8) use('use_hp'); else use('use_mp')
         }
     }
     // If you have a target deal with it
@@ -233,13 +233,13 @@ function tackle(target, slowMove = true) {
     lastCombat = Date.now();
     tackling = true;
     if (!kite(target)) {
-        if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
-        if (can_use('charge') && parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
+        if (target.target !== character.name) use('taunt', target);
+        if (parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
         if (can_attack(target)) smartAttack(target);
         if (slowMove) moveToTarget(target);
     } else {
         kite(target);
-        if (can_use('taunt', target) && target.target !== character.name) use('taunt', target);
+        if (target.target !== character.name) use('taunt', target);
         if (can_attack(target)) attack(target);
     }
 }

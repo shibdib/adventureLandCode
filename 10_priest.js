@@ -39,11 +39,11 @@ function farm() {
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // If tank target is a kitey player CURSE THEM!!!!
-    if (target && is_character(target) && (target.ctype === 'mage' || target.ctype === 'ranger') && can_use('curse', target)) use('curse', target);
+    if (target && is_character(target) && (target.ctype === 'mage' || target.ctype === 'ranger')) use('curse', target);
     // Do Damage if possible
     if (!mostHurtMember && target && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(target) || canOneShot(target))) {
         parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
-        if (can_use('curse', target)) use('curse', target);
+        use('curse', target);
         if (can_attack(target)) attack(target);
         kite();
     }
