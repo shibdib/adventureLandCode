@@ -30,8 +30,6 @@ setInterval(function () {
     if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
-    // Handle stomping things
-    stompControl();
     // Warcry
     use('warcry');
     // Hardshell when health is low
@@ -116,13 +114,12 @@ function farm() {
     // If you have a target deal with it
     if (primary) {
         if (get_target_of(primary) === character || !waitForHealer()) {
+            // Handle stomping things
+            stompControl();
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
-            if (currentTarget && secondaryTarget && get_target_of(primary) === character = &&
-            !traveling;
-        )
-            {
+            if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling) {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
