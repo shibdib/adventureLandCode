@@ -110,7 +110,7 @@ function farm() {
         } else if (readyToPull && opportunisticTarget && !traveling) {
             primary = opportunisticTarget;
         } else if (!readyToPull) {
-            if (character.hp < character.max_hp * 0.8) use('use_hp'); else use('use_mp')
+            if (character.hp < character.max_hp * 0.8) useHealthPotion(); else useManaPotion()
         }
     }
     // If you have a target deal with it

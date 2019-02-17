@@ -107,7 +107,7 @@ function gearIssue() {
                                         bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
-                                    continue;
+
                                 }
                             } else {
                                 let mainSlottedItem = bestSetup[character.name]['mainhand'];
@@ -133,7 +133,7 @@ function gearIssue() {
                                         bankTab: Object.keys(character.user)[key],
                                         bankSlot: packKey
                                     };
-                                    continue;
+
                                 }
                             }
                         } else {
@@ -328,4 +328,23 @@ function getGearScore(ctype, item) {
         score += (weights[atr] * (itemAtr + (levelSteps * level)));
     }
     return score
+}
+
+//Potions
+let potionCooldowns = {};
+
+function useHealthPotion() {
+    let slot = getInventorySlot('hpot1');
+    if (!slot || (potionCooldowns['hpot1'] || potionCooldowns['hpot1'] + 2000 > Date.now())) return false;
+    use(slot);
+    potionCooldowns['hpot1'] = Date.now();
+    return true;
+}
+
+function useManaPotion() {
+    let slot = getInventorySlot('mpot1');
+    if (!slot || (potionCooldowns['mpot1'] || potionCooldowns['mpot1'] + 2000 > Date.now())) return false;
+    use(slot);
+    potionCooldowns['mpot1'] = Date.now();
+    return true;
 }
