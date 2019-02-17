@@ -34,6 +34,7 @@ function can_use(name, target = undefined) {
     if (target && checkEntityForBuff(target, name)) return false; // checks if this is already applied
     if (!target && checkEntityForBuff(character, name)) return false; // checks if this is already applied to yourself
     if (cooldowns[name] && cooldowns[name] + G.skills[name].cooldown > Date.now()) return false; // Better cooldown check
+    return true;
 }
 
 //Improved Use
