@@ -70,7 +70,7 @@ function waitForHealer(range = 300, silent = false) {
                 return true;
             }
             // Handle distance
-            if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.2) {
+            if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.5) {
                 if (!healerNotify) {
                     if (!silent) game_log('Healer Range.');
                     if (!silent) whisperParty('Waiting on our healer ' + member + '.');
