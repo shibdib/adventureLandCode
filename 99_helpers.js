@@ -91,7 +91,7 @@ function getMonsterDPS(input, mitigate = false) {
 
 // Get defense rating
 function getDefenseRating(input) {
-    (damage_multiplier(armor) + Evasion + damage_multiplier(resistance) + Reflection )/ 2
+    (damage_multiplier(armor) + Evasion + damage_multiplier(resistance) + Reflection) / 2;
     // Handle entity
     if (input.level) {
         if (!mitigate) return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
@@ -217,10 +217,9 @@ function sortEntitiesByXp(array) {
 
 //Returns the number of items in your inventory for a given item name;
 function itemCount(name, level = 0) {
-    let count = character.items.filter(item => item != null && item.name === name && item_properties(item).level === level).reduce(function (a, b) {
+    return character.items.filter(item => item != null && item.name === name && item_properties(item).level === level).reduce(function (a, b) {
         return a + (b["q"] || 1);
     }, 0);
-    return count;
 }
 
 //Returns how many inventory slots have not yet been filled.

@@ -27,7 +27,7 @@ function stateController(state) {
     } //GEAR (Chance this is skipped on startup)
     else if ((!isPvP() && !lastBankGearCheck) || lastBankGearCheck + (60000 * 30) < Date.now() || countEmptyGear() > 5) {
         // Doesn't always need to happen
-        if (lastBankGearCheck && Math.random() < 0.7) {
+        if (!lastBankGearCheck || Math.random() < 0.7) {
             if (state !== 4) whisperParty('Headed to the bank to gear up.');
             new_state = 4;
         } else {
@@ -55,8 +55,6 @@ function stateController(state) {
 
 //State tasks
 function stateTasks(state) {
-    let combat;
-    if (character.ctype === 'priest' || character.ctype === 'warrior') combat = checkPartyAggro(); else combat = getEntitiesTargeting().length > 0;
     if (state === 99) {
         let tod = deathTime[character.name];
         if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;

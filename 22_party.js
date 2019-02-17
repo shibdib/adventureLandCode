@@ -116,7 +116,7 @@ function whisperParty(message, sendPublic = false) {
 }
 // Queued message loop
 setInterval(function () {
-    if (messageQueue.length && lastSent + 5000 <= Date.now()) {
+    if (messageQueue.length && lastSent + 1000 <= Date.now()) {
         if (parent.party_list.length > 0) {
             lastSent = Date.now();
             say('/p ' + messageQueue[0]);

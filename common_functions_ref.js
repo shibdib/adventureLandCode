@@ -1533,4 +1533,4 @@ function rough_size(d) {
         }
     }
     return b
-};
+}

@@ -8,7 +8,7 @@ var character={
     // Added this wrapper so instead of using .real_x and .real_y on all entities, .x and .y's can be used uniformly
     "note":"This is a proxy object, the real character is in parent.character",
     "properties":["x","y"],
-}
+};
 
 Object.defineProperty(character,'x',{get:function(){return parent.character.real_x;},set:function(){game_log("You can't set coordinates manually, use the move(x,y) function!");}});
 Object.defineProperty(character,'y',{get:function(){return parent.character.real_y;},set:function(){game_log("You can't set coordinates manually, use the move(x,y) function!");}});
@@ -23,13 +23,13 @@ server={
     pvp:parent.is_pvp, // true for PVP servers, use is_pvp() for maps
     region:parent.server_region, // "EU", "US", "ASIA"
     id:parent.server_identifier, // "I", "II", "PVP", "TEST"
-}
+};
 
 game={
     platform:parent.is_electron&&"electron"||"web", // "electron" for Steam, Mac clients, "web" for https://adventure.land
     graphics:!parent.no_graphics, // if game.graphics is false, don't draw stuff to the game in your Code
     html:!parent.no_html, // if game.html is false, this character is loaded in [CODE] mode
-}
+};
 
 //#NOTE: Most new features are experimental - for #feedback + suggestions: https://discord.gg/X4MpntA [05/01/18]
 
@@ -715,7 +715,7 @@ function add_top_button(id,value,fn)
         buttons[id]={value:value,fn:function(){},place:"top"};
         parent.$(".codebuttons").append("<div class='gamebutton codebutton"+id+"' data-id='"+id+"' onclick='code_button_click(this)'>BUTTON</div> ")
     }
-    if(fn) set_button_onclick(id,fn)
+    if (fn) set_button_onclick(id, fn);
     if(value) set_button_value(id,value);
 }
 
@@ -726,7 +726,7 @@ function add_bottom_button(id,value,fn)
         buttons[id]={value:value,fn:function(){},place:"bottom"};
         parent.$(".codebbuttons").append("<div class='gamebutton gamebutton-small codebutton"+id+"' data-id='"+id+"' onclick='code_button_click(this)'>BUTTON</div> ")
     }
-    if(fn) set_button_onclick(id,fn)
+    if (fn) set_button_onclick(id, fn);
     if(value) set_button_value(id,value);
 }
 
@@ -794,7 +794,7 @@ game.trigger=function(event,args){
         if(l.event==event || l.event=="all")
         {
             try{
-                if(l.event=="all") l.f(event,args)
+                if (l.event == "all") l.f(event, args);
                 else l.f(args,event);
             }
             catch(e)
@@ -900,7 +900,9 @@ function pget(name)
 
 function load_code(name,onerror) // onerror can be a function that will be executed if load_code fails
 {
-    if(!onerror) onerror=function(){ game_log("load_code: Failed to load","#E13758"); }
+    if (!onerror) onerror = function () {
+        game_log("load_code: Failed to load", "#E13758");
+    };
     var xhrObj = new XMLHttpRequest();
     xhrObj.open('GET',"/code.js?name="+encodeURIComponent(name)+"&timestamp="+(new Date().getTime()), false);
     xhrObj.send('');

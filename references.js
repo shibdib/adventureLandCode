@@ -279,7 +279,7 @@ let char_obj = {
     "appearing": false,
     "target": null,
     "code": false
-}
+};
 //Skills
 let skills_ref = {
     "use_town": {
@@ -2458,7 +2458,7 @@ let monsters_ref = {
             "charge": 32,
             "max_hp": 80000
     }
-}
+};
 //Items
 let items_ref = {
     "harbringer": {
@@ -6965,7 +6965,7 @@ let items_ref = {
         "buy": true,
         "id": "wine"
     }
-}
+};
 //NPCs
 let npc_ref = {
     "items6": {
@@ -8356,7 +8356,7 @@ let npc_ref = {
         "type": "static",
         "id": "lichteaser"
     }
-}
+};
 //Classes
 let class_ref = {
     "merchant": {
@@ -8665,7 +8665,7 @@ let class_ref = {
         "main_stat": "int",
         "damage_type": "magical"
     }
-}
+};
 //Conditions
 let conditions_ref = {
     "tarot_5swords": {
@@ -9545,7 +9545,7 @@ let conditions_ref = {
         "type": "tarot",
         "minor": "5_cups"
     }
-}
+};
 //Craft
 let craft_ref = {
     "stealthcape": {
@@ -9821,7 +9821,7 @@ let craft_ref = {
     ],
         "cost": 20000
 }
-}
+};
 //Functions
 let functions_ref = [
     "accept_party_invite",
@@ -9933,7 +9933,7 @@ let functions_ref = [
     "use_hp_or_mp",
     "use_skill",
     "xmove"
-]
+];
 //Parent
 let parent_ref = [
     "postMessage",
@@ -11036,7 +11036,7 @@ let parent_ref = [
     "count",
     "times",
     "chest"
-]
+];
 //Socket callbacks
 let socket_ref = {
     "$connecting": [
@@ -11230,4 +11230,4 @@ let socket_ref = {
     "$track": [
     null
 ]
-}
+};

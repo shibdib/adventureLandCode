@@ -119,7 +119,6 @@ function passiveMerchant() {
             if (!passiveSale.level) append = '';
             let scrollCost = passiveSale.level * 70000;
             if (G.items[passiveSale.item].compound) scrollCost = passiveSale.level * 600000;
-            if (passiveSale.level === 0) multi = 1;
             let rawPrice = G.items[passiveSale.item].g + scrollCost;
             let historicalPrice, price;
             if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) historicalPrice = round(priceDetails[passiveSale.item + append].savg);
@@ -628,7 +627,7 @@ setInterval(function () {
 function cachePriceInfo() {
     if (character.map !== 'main') return;
     let priceDetails = JSON.parse(localStorage.getItem('priceDetails')) || {};
-    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.stand);
+    let merchants = Object.values(parent.entities).filter(mob => is_character(mob) && mob.ctype === "merchant" && mob.stand);
     for (let merchant of merchants) {
         for (let s = 1; s <= 16; s++) {
             let slot = merchant.slots['trade' + s];

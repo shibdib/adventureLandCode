@@ -156,7 +156,7 @@ function fade_out_blink(b, a) {
         }
         if (b == 10 || is_hidden()) {
             if (a == character) {
-                return
+
             }
         } else {
             a.real_alpha -= 0.1;
@@ -172,7 +172,7 @@ function fade_out_magiport(b, a) {
         }
         if (b == 15 || is_hidden()) {
             if (a == character) {
-                return
+
             }
         } else {
             a.real_alpha -= 0.05;
@@ -6029,4 +6029,3 @@ function electron_add_webview(a) {
     }
     $("body").append("<webview src='" + a + "' style='position: fixed; top: 0px; left: 0px; bottom: 0px; right: 0px' disablewebsecurity nodeintegration></webview>")
 }
-;

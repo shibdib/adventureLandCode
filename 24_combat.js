@@ -20,7 +20,7 @@ function findLeaderTarget() {
     let target = get_target_of(get_player(character.party));
     if (!target) return;
     if (parent.party_list.length) {
-        for (id in parent.party_list) {
+        for (let id in parent.party_list) {
             let member = parent.party_list[id];
             if (member === target.name) return;
         }
@@ -59,7 +59,7 @@ function findAdds(attack = 0.07) {
         && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
         && parent.distance(character, mob) <= 175);
     //Order monsters by distance.
-    return sortEntitiesByDistance(adds).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));;
+    return sortEntitiesByDistance(adds).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
 }
 
 // Attack easy to kill things
@@ -69,7 +69,7 @@ function getEasyKills(oneShot = true) {
         && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
         && parent.distance(character, mob) <= 175);
     //Order monsters by distance.
-    return sortEntitiesByDistance(easyKill).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));;
+    return sortEntitiesByDistance(easyKill).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
 }
 
 // Returns the best monster based off of a minXp var and relative attack power. This is slightly random and will usually return a different
@@ -91,9 +91,9 @@ function findBestMonster(minXp, lastTarget, array = false) {
     for (let x = 0; x < 150; x++) {
         // Filter out duplicates, then filter out targets based on maxAttack/xp and some other things that cause outliers
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
-        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) * 1.05 < healsPerSecond
+        sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < healsPerSecond
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn <= 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 99)
-        && G.monsters[m].respawn < 15000);
+            && G.monsters[m].respawn < 60000);
         if (sorted.length > 4) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
@@ -105,7 +105,7 @@ function findBestMonster(minXp, lastTarget, array = false) {
     // If it finds something it returns a random entity in the top half of the list
     // Uncomment the below and comment the other return to get the same return every time
     // return sorted[0];
-    game_log(JSON.stringify(sorted))
+    game_log(JSON.stringify(sorted));
     if (array) return sorted;
     return random_one(sorted);
 }
@@ -142,24 +142,20 @@ function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
 
 // This tries to deal with combined damage;
 function smartAttack(target = get_target()) {
-    if (character.range < 40) {
-        for (let id in parent.party_list) {
-            let member = parent.party_list[id];
-            let entity = parent.entities[member];
-            if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distanceToPoint(entity.real_x, entity.real_y) + 0.1 < 45) {
-                for (let x = 0; x < 50; x++) {
-                    let xChange = getRndInteger(-5, 5);
-                    let yChange = getRndInteger(-5, 5);
-                    if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-                        let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
-                        let newTargetRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-                        if (newRange > 40 && newTargetRange <= character.range) moveToCoords(character.real_x + xChange, character.real_y + yChange);
-                    }
+    if (!target) return;
+    for (let name of parent.party_list) {
+        let entity = parent.entities[name];
+        if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distanceToPoint(entity.real_x, entity.real_y) + 0.1 < 45) {
+            for (let x = 0; x < 50; x++) {
+                let xChange = getRndInteger(-5, 5);
+                let yChange = getRndInteger(-5, 5);
+                if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
+                    let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
+                    let newTargetRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
+                    if (newRange > 40 && newTargetRange <= character.range) moveToCoords(character.real_x + xChange, character.real_y + yChange);
                 }
             }
         }
-    } else {
-        move(character.real_x+5,character.real_y);
     }
     attack(target);
 }

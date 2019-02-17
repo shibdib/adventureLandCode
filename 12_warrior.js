@@ -224,7 +224,7 @@ function refreshTarget() {
         currentTarget = undefined;
         traveling = true;
         lowLevelCount = 0;
-        return;
+
     }
 }
 
@@ -318,7 +318,7 @@ let combatSet;
 setInterval(function () {
     let speed = character.speed;
     if (parent.party_list.length) {
-        for (id in parent.party_list) {
+        for (let id in parent.party_list) {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (!entity || member === character.name || entity.ctype === 'merchant') continue;
