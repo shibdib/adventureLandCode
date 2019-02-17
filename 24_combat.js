@@ -125,7 +125,7 @@ function nearbyAggressors(range = 215, highRisk) {
 
 // Check if a target is too close to another hostile with rage
 function nearbyAggressor(target) {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(target, mob) <= 75);
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.id !== target.id && G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(target, mob) <= 75);
     if (aggressiveMonsters.length) return true;
 }
 
