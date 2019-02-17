@@ -36,6 +36,8 @@ setInterval(function () {
 }, 5000);
 
 function farm() {
+    // If you get aggro from a monster try to invis flash to lose it
+    if (getEntitiesTargeting()[0] && is_monster(getEntitiesTargeting()[0])) use('invis');
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
     let leader = get_player(character.party);
