@@ -95,6 +95,7 @@ function farm() {
     }
     // If you don't have a target find one
     if (!primary) {
+        tackling = undefined;
         let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
         if (getEntitiesTargeting()[0]) {
             primary = getEntitiesTargeting()[0];
@@ -112,7 +113,7 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
-        if (get_target_of(primary) === character || !waitForHealer()) {
+        if (tackling || get_target_of(primary) === character || !waitForHealer()) {
             // Handle stomping things
             stompControl();
             combat = true;
