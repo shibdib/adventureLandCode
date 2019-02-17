@@ -49,8 +49,12 @@ function findLocalTargets(type, returnArray = false) {
         if (nearbyPlayers.length) return sortEntitiesByDistance(nearbyPlayers)[0];
     }
     if (!potentialTargets.length) return false;
-    //Order monsters by distance and xp.
-    potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => ((b.xp * 3) - parent.distance(character, b)) - ((a.xp * 3) - parent.distance(character, a)));
+    //Order monsters by distance and xp if they don't have aggro otherwise just distance.
+    if (!G.monsters[type].rage) {
+        potentialTargets = sortEntitiesByDistance(potentialTargets).sort((a, b) => ((b.xp * 3) - parent.distance(character, b)) - ((a.xp * 3) - parent.distance(character, a)));
+    } else {
+        potentialTargets = sortEntitiesByDistance(potentialTargets);
+    }
     if (!returnArray) return potentialTargets[0]; else return potentialTargets;
 }
 
