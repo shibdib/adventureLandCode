@@ -100,7 +100,7 @@ function farm() {
     }
     // If you don't have a target find one
     if (!primary) {
-        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8
+        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
         if (getEntitiesTargeting()[0]) {
             stop('move');
             primary = getEntitiesTargeting()[0];
