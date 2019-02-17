@@ -10,12 +10,8 @@ let lastRealTarget = Date.now();
 
 //State Controller
 setInterval(function () {
-    if (character.rip && state !== 99) {
-        if (currentTarget) currentTarget = undefined;
-        primary = undefined;
-        state = 99;
-    }
-    if (combat) state = 1; else state = stateController(state);
+    if (character.rip && state !== 99) state = 99;
+    if (!character.rip && combat) state = 1; else state = stateController(state);
     if (lowLevelTotalCount >= 10) {
         whisperParty('We encountered too many low level mobs, going to rotate realms');
         lowLevelTotalCount = 0;
@@ -25,8 +21,7 @@ setInterval(function () {
 
 //Combat Loop
 setInterval(function () {
-    if (!state || state !== 1) return;
-    farm();
+    if (state && state === 1) farm();
 }, 750);
 
 //Other Task Loop

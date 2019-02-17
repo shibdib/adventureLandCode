@@ -106,7 +106,7 @@ function moveToCoords(x, y) {
         if (smart.moving) stop();
         move(x, y);
     } else if (is_moving(character)) {
-        return;
+
     } else {
         shibMove({x: x, y: y});
     }
@@ -122,7 +122,7 @@ function shibMove(destination, onComplete = undefined, tp = undefined) {
 // Stay safe
 let nearestHostile = {};
 function kite(target = undefined) {
-    let nearbyHostiles = nearbyAggressors(150, true).filter((a) => !a.target && !a.rip);
+    let nearbyHostiles = nearbyAggressors(200, true).filter((a) => !a.target && !a.rip);
     if (!nearbyHostiles.length) return false;
     if (target) {
         nearbyHostiles = nearbyHostiles.filter((h) => h.id !== target.id);
@@ -141,7 +141,7 @@ function kite(target = undefined) {
         }
     }
     if (!nearestHostile[character.name]) nearestHostile[character.name] = nearest.id;
-    let avoidRange = 45;
+    let avoidRange = 75;
     if (is_monster(nearest) && G.monsters[nearest.mtype].range > avoidRange) avoidRange = G.monsters[nearest.mtype].range;
     if (!nearest || currentClosestAvoid >= avoidRange * 1.1) {
         character.kiting = undefined;
