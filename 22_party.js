@@ -130,7 +130,7 @@ let partyTracker = {};
 function refreshCharacters(force = false) {
     let count = Object.keys(get_active_characters()).length;
     // If we're missing people refresh
-    if (count < 4 || force) {
+    if (count < 3 || force) {
         stop();
         whisperParty('Going to refresh the party, one second...');
         //Stops all
@@ -148,8 +148,10 @@ function refreshCharacters(force = false) {
         let tank = shuffle(pveCharacters.filter((c) => c.role === 'tank'))[0];
         if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot); else load_code(tank.slot);
         //Merchant
+        /** MERCHANT NOW RUNS SEPARATE ON US1
         let merchant = shuffle(pveCharacters.filter((c) => c.role === 'merchant'))[0];
         if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
+         **/
     } else {
         // Handle cases where party members go AWOL
         if (parent.party_list.length > 0) {
