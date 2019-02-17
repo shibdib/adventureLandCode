@@ -103,7 +103,7 @@ function totalInBank(name) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let count = 0;
     for (let l = 0; l < 12; l++) {
-        count += bankDetails[name + l];
+        if (bankDetails[name + l]) count += bankDetails[name + l];
     }
     return count;
 }

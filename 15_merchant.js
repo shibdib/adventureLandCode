@@ -32,9 +32,8 @@ function merchantTaskManager() {
         return shibMove('bank')
     }
     if (standCheck()) return;
-    if (exchangeTarget) {
-        exchangeStuff();
-    } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
+    if (exchangeStuff()) return;
+    if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
         combineItems();
     } else {
         if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
@@ -251,7 +250,7 @@ function exchangeStuff() {
                 exchangeTarget = item.item;
                 exchangeNpc = item.npc;
                 exchangeAmount = item.amount;
-                return;
+                return true;
             }
         }
     } else {
@@ -280,21 +279,25 @@ function exchangeStuff() {
             exchangeTarget = undefined;
             exchangeNpc = undefined;
         }
+        return true;
     }
 }
 
 // Buy items for crafting
 function buyBaseItems() {
-    if (lastRestock + 10000 > Date.now()) return;
+    if (lastRestock + 60000 * 20 > Date.now()) return;
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
+    let bought;
     for (let item of baseItems) {
         if (totalInBank(item) < 4) {
+            bought = true;
             set_message('Restocking');
             parent.d_text("BUYING!",character,{color:"#ff4130"});
             game_log('RESTOCK: Bought a ' + item + ' as we only had ' + totalInBank(item) + ' of them.');
             buy(item, 1);
         }
     }
+    if (bought) lastBankCheck = undefined;
     lastRestock = Date.now();
 }
 
