@@ -2,7 +2,7 @@ let storedDestination = {};
 function smart_move(destination, on_done) {
     if (storedDestination[character.name] && storedDestination[character.name] !== destination) {
         stop('move');
-    } else if (storedDestination[character.name] && storedDestination[character.name] === destination) {
+    } else if (storedDestination[character.name] && storedDestination[character.name] === destination && is_moving(character)) {
         return;
     }
     storedDestination[character.name] = destination;
