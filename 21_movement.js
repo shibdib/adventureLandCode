@@ -16,7 +16,7 @@ function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps =
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
     }
     // Handle close
-    if (target && (range > max || range < min || !range)) moveToCoords(target.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), target.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
+    if (target && (range > max || range < min || !range)) moveToCoords(character.real_x + (target.real_x - character.real_x) / 2, character.real_y + (target.real_y - character.real_y) / 2);
 }
 
 // Handle moving to party leader
@@ -49,7 +49,7 @@ function moveToLeader(min = 20, max = 25) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);
     }
     // Handle close
-    if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), leader.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), parent.party[character.party].y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
+    if (leader && (range > max || range < min || !range)) moveToCoords(character.real_x + (target.real_x - character.real_x) / 2, character.real_y + (target.real_y - character.real_y) / 2); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), parent.party[character.party].y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
 }
 
 // Handle moving to merchant
