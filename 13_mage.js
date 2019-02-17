@@ -54,10 +54,10 @@ function farm() {
             kite();
         } else {
             // If you need to kite do so, otherwise get in range
-            if (nearbyAggressors(150, true).length) kite(); else moveToTarget(target, character.range * 0.5, character.range * 0.7);
+            if (!kite()) moveToTarget(target, character.range * 0.5, character.range * 0.7);
         }
     } else {
-        if (nearbyAggressors(150, true).length) kite(); else moveToLeader(character.range * 0.1, character.range * 0.15);
+        if (!kite()) moveToLeader(character.range * 0.1, character.range * 0.15);
     }
 }
 
