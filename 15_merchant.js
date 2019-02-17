@@ -1,10 +1,10 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, lastAttemptedExchange, craftingItem,
-    currentTask, craftingLevel, exchangeTarget, exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock,
-    buyCooldown, deathCooldown;
+let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, craftingItem, currentTask, craftingLevel, exchangeTarget,
+    exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock, buyCooldown, deathCooldown;
 let deathTracker = 0;
 let deathTime = {};
+let passiveSale = {};
 let getItems = [];
 let sellItems = [];
 
@@ -22,11 +22,6 @@ setInterval(function () {
     if (!merchantStateTasks(state)) merchantTaskManager();
 }, 1500);
 
-// Update your data
-setInterval(function () {
-    updateCharacterData();
-}, 5000);
-
 //MERCHANT TASKS
 function merchantTaskManager() {
     potionController();
@@ -36,7 +31,7 @@ function merchantTaskManager() {
         return shibMove('bank')
     } else if (!sellExcessToNPC()) {
         if (standCheck()) return;
-        if (exchangeTarget || !lastAttemptedExchange || lastAttemptedExchange + 5000 < Date.now()) {
+        if (exchangeTarget) {
             exchangeStuff();
         } else if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
             combineItems();
@@ -48,135 +43,6 @@ function merchantTaskManager() {
                 passiveMerchant();
             }
         }
-    }
-}
-
-// NPC STUFF
-// Exchange Items
-function exchangeStuff() {
-    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (!bankDetails) return;
-    if (!exchangeTarget) {
-        for (let item of exchangeItems) {
-            let minimum = 1;
-            if (item.amount) minimum = item.amount;
-            if (bankDetails[item.item + 0] >= minimum) {
-                exchangeTarget = item.item;
-                exchangeNpc = item.npc;
-                exchangeAmount = item.amount;
-                lastAttemptedExchange = undefined;
-                return;
-            }
-        }
-        lastAttemptedExchange = Date.now();
-    } else {
-        closeStand();
-        set_message('Exchanging');
-        if (!exchangeAmount) exchangeAmount = 1;
-        if (itemCount(exchangeTarget) >= exchangeAmount) {
-            parent.d_text("EXCHANGE!",character,{color:"#ff4130"});
-            exchangeItem(exchangeTarget, exchangeNpc);
-        } else if (bankDetails[exchangeTarget + 0] >= exchangeAmount) {
-            let withdraw = withdrawItem(exchangeTarget);
-            if (withdraw === null) {
-                exchangeTarget = undefined;
-                exchangeNpc = undefined;
-                lastBankCheck = undefined;
-                lastAttemptedExchange = Date.now();
-            } else if (withdraw) {
-                if (bankDetails[exchangeTarget] - 1 === 0) {
-                    bankDetails[exchangeTarget] = undefined;
-                } else {
-                    bankDetails[exchangeTarget] -= 1;
-                }
-                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
-            }
-        } else {
-            lastBankCheck = undefined;
-            exchangeTarget = undefined;
-            exchangeNpc = undefined;
-            lastAttemptedExchange = Date.now();
-        }
-    }
-}
-
-// Buy items for crafting
-function buyBaseItems() {
-    if (lastRestock + 10000 > Date.now()) return;
-    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
-    items:
-    for (let item of baseItems) {
-        let need = true;
-        let totalCount = 0;
-        for (let l = 0; l < normalLevelTarget; l++) {
-            totalCount += (itemCount(item, l) || 0) + (bankDetails[item + l] || 0);
-            if (totalCount >= 4) {
-                need = false;
-                continue items;
-            }
-        }
-        set_message('Restocking');
-        parent.d_text("BUYING!",character,{color:"#ff4130"});
-        if (need) buy(item, 1);
-    }
-    lastRestock = Date.now();
-}
-
-// Sell overflow
-function sellExcessToNPC() {
-    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (!bankDetails) return;
-    // Set bank items for sale if overstocked
-    if (sellItems.length) {
-        if (character.map !== 'main') {
-            shibMove('main');
-            return true;
-        }
-        set_message('SellingNPC');
-        let slot = getInventorySlot(sellItems[0].name, false, sellItems[0].level);
-        parent.d_text("SELLING!",character,{color:"#ff4130"});
-        if (slot) sell(slot, 1);
-        sellItems.shift();
-        lastBankCheck = undefined;
-        return true;
-    } else if (getItems.length) {
-        closeStand();
-        switch (withdrawItem(getItems[0].name, getItems[0].level)) {
-            case true:
-                sellItems.push({name: getItems[0].name, level: getItems[0].level});
-                getItems.shift();
-                break;
-            case false:
-                break;
-            case null:
-                getItems.shift();
-                break;
-        }
-        return true;
-    } else {
-        for (let key of Object.keys(bankDetails)) {
-            if (key === 'gold') continue;
-            let level = parseInt(key[key.length - 1]);
-            let cleanName = key.slice(0, -1);
-            try {
-                if (item_grade({name: cleanName, level: level})) continue;
-            } catch(e) {
-                continue;
-            }
-            let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
-            let exchange = [];
-            Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
-            let limit = 2;
-            if (G.items[cleanName].compound || level >= normalLevelTarget) limit = 4;
-            if (G.items[cleanName] && bankDetails[key] > limit && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
-                if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
-                    name: cleanName,
-                    level: level
-                });
-            }
-        }
-        if (!getItems.length) return false;
     }
 }
 
@@ -229,7 +95,6 @@ function sellItemsToPlayers() {
 }
 
 // Handles the merchant stand
-let passiveSale = {};
 function passiveMerchant() {
     // No idle on pvp realms
     if (isPvP()) return lastAttemptedCrafting = undefined;
@@ -369,6 +234,123 @@ function buyFromPlayers() {
     return false;
 }
 
+// NPC STUFF
+// Exchange Items
+function exchangeStuff() {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (!bankDetails) return;
+    if (!exchangeTarget) {
+        for (let item of exchangeItems) {
+            let minimum = 1;
+            if (item.amount) minimum = item.amount;
+            if (bankDetails[item.item + 0] >= minimum) {
+                exchangeTarget = item.item;
+                exchangeNpc = item.npc;
+                exchangeAmount = item.amount;
+                return;
+            }
+        }
+    } else {
+        closeStand();
+        set_message('Exchanging');
+        if (!exchangeAmount) exchangeAmount = 1;
+        if (itemCount(exchangeTarget) >= exchangeAmount) {
+            parent.d_text("EXCHANGE!",character,{color:"#ff4130"});
+            exchangeItem(exchangeTarget, exchangeNpc);
+        } else if (bankDetails[exchangeTarget + 0] >= exchangeAmount) {
+            let withdraw = withdrawItem(exchangeTarget);
+            if (withdraw === null) {
+                exchangeTarget = undefined;
+                exchangeNpc = undefined;
+                lastBankCheck = undefined;
+            } else if (withdraw) {
+                if (bankDetails[exchangeTarget] - 1 === 0) {
+                    bankDetails[exchangeTarget] = undefined;
+                } else {
+                    bankDetails[exchangeTarget] -= 1;
+                }
+                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
+            }
+        } else {
+            lastBankCheck = undefined;
+            exchangeTarget = undefined;
+            exchangeNpc = undefined;
+        }
+    }
+}
+
+// Buy items for crafting
+function buyBaseItems() {
+    if (lastRestock + 10000 > Date.now()) return;
+    let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
+    for (let item of baseItems) {
+        if (totalInBank(item) < 4) {
+            set_message('Restocking');
+            parent.d_text("BUYING!",character,{color:"#ff4130"});
+            game_log('RESTOCK: Bought a ' + item + ' as we only had ' + totalInBank(item) + ' of them.');
+            buy(item, 1);
+        }
+    }
+    lastRestock = Date.now();
+}
+
+// Sell overflow
+function sellExcessToNPC() {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (!bankDetails) return;
+    // Set bank items for sale if overstocked
+    if (sellItems.length) {
+        if (character.map !== 'main') {
+            shibMove('main');
+            return true;
+        }
+        set_message('SellingNPC');
+        let slot = getInventorySlot(sellItems[0].name, false, sellItems[0].level);
+        parent.d_text("SELLING!",character,{color:"#ff4130"});
+        if (slot) sell(slot, 1);
+        sellItems.shift();
+        lastBankCheck = undefined;
+        return true;
+    } else if (getItems.length) {
+        closeStand();
+        switch (withdrawItem(getItems[0].name, getItems[0].level)) {
+            case true:
+                sellItems.push({name: getItems[0].name, level: getItems[0].level});
+                getItems.shift();
+                break;
+            case false:
+                break;
+            case null:
+                getItems.shift();
+                break;
+        }
+        return true;
+    } else {
+        for (let key of Object.keys(bankDetails)) {
+            if (key === 'gold') continue;
+            let level = parseInt(key[key.length - 1]);
+            let cleanName = key.slice(0, -1);
+            try {
+                if (item_grade({name: cleanName, level: level})) continue;
+            } catch(e) {
+                continue;
+            }
+            let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
+            let exchange = [];
+            Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
+            let limit = 2;
+            if (G.items[cleanName].compound || level >= normalLevelTarget) limit = 4;
+            if (G.items[cleanName] && bankDetails[key] > limit && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
+                if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
+                    name: cleanName,
+                    level: level
+                });
+            }
+        }
+        if (!getItems.length) return false;
+    }
+}
+
 //UPGRADING and COMBINING
 function combineItems() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
@@ -480,17 +462,18 @@ function combineItems() {
     }
 }
 
-//Crafting
-function crafting(task, componentSlot, scrollSlot) {
-    if (currentTask === 'combine' || currentTask === 'upgrade') {
-        let upgradeMerchant = getNpc("newupgrade");
+// Go buy a stand
+function standCheck() {
+    if (!getInventorySlot('stand0') && !localStorage.getItem('bankDetails')['stand0']) {
+        parent.d_text("WHERE DID MY STAND GO?!",character,{color:"#ff4130"});
+        let standsMerchant = getNpc("standmerchant");
         let distanceToMerchant = null;
-        if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
-        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (standsMerchant != null) distanceToMerchant = distanceToPoint(standsMerchant.position[0], standsMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "stands"});
         if (distanceToMerchant != null && distanceToMerchant < 155) {
-            if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
-            return true;
+            buy('stand0', 1);
         }
+        return true;
     }
 }
 
@@ -535,19 +518,78 @@ function bookKeeping() {
     }
 }
 
-// Go buy a stand
-function standCheck() {
-    if (!getInventorySlot('stand0') && !localStorage.getItem('bankDetails')['stand0']) {
-        parent.d_text("WHERE DID MY STAND GO?!",character,{color:"#ff4130"});
-        let standsMerchant = getNpc("standmerchant");
-        let distanceToMerchant = null;
-        if (standsMerchant != null) distanceToMerchant = distanceToPoint(standsMerchant.position[0], standsMerchant.position[1]);
-        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "stands"});
-        if (distanceToMerchant != null && distanceToMerchant < 155) {
-            buy('stand0', 1);
-        }
+////MERCHANT TASK MANAGER
+//State tasks
+function merchantStateTasks(state) {
+    if (state !== 9) closeStand();
+    if (state === 99) {
+        let tod = deathTime[character.name];
+        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
+        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
+        return true;
+    } // DEAD
+    if (state === 12) { // WALLET REFILL
+        withdrawGold(spendingAmount - character.gold);
         return true;
     }
+    if (state === 8) { // POTION RESTOCK
+        restockPotions(targetPotionAmount * 4);
+        return true;
+    }
+    if (state === 2) { // Deposits
+        depositGold();
+        depositItems();
+        return true;
+    }
+    if (state === 9) { // MERCHANT SALES
+        sell();
+        return;
+    }
+    if (state === 11) { // ACCOUNTING
+        bookKeeping();
+        if (localStorage.getItem('bankDetails') && lastBankCheck) {
+            lastBankCheck = Date.now();
+        } else {
+            return true;
+        }
+    }
+}
+
+// State controller
+function merchantStateController(state) {
+    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    if (itemCount('mpot1') < targetPotionAmount * 2 || itemCount('hpot1') < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
+    if (bankDetails) {
+        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
+    }
+    let new_state = 9;
+    //KIA
+    if (character.rip) {
+        if (state !== 99) {
+            deathTime[character.name] = Date.now();
+            if (isPvP()) deathTracker++;
+            whisperParty('I died');
+        }
+        new_state = 99;
+    } //ACCOUNTING
+    else if (!bankDetails || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
+        new_state = 11;
+    } //NO POORS
+    else if (character.gold < spendingAmount * 0.25) {
+        new_state = 12;
+    } // Deposits
+    else if (character.gold >= spendingAmount * 2) {
+        new_state = 2;
+    }   //POTION RESTOCK
+    else if (potionsNeeded) {
+        new_state = 8;
+    }
+    //If state changed set it and announce
+    if (state !== new_state) {
+        game_log("--- NEW STATE " + states[new_state] + " ---");
+        state = new_state;
+    }
+    return state;
 }
 
 // Luck loop
@@ -629,77 +671,7 @@ function cachePriceInfo() {
     localStorage.setItem('priceDetails', JSON.stringify(priceDetails));
 }
 
-////MERCHANT TASK
-
-//State tasks
-function merchantStateTasks(state) {
-    if (state !== 9) closeStand();
-    if (state === 99) {
-        let tod = deathTime[character.name];
-        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
-        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
-        return true;
-    } // DEAD
-    if (state === 12) { // WALLET REFILL
-        withdrawGold(spendingAmount - character.gold);
-        return true;
-    }
-    if (state === 8) { // POTION RESTOCK
-        restockPotions(targetPotionAmount * 4);
-        return true;
-    }
-    if (state === 2) { // Deposits
-        depositGold();
-        depositItems();
-        return true;
-    }
-    if (state === 9) { // MERCHANT SALES
-        sell();
-        return;
-    }
-    if (state === 11) { // ACCOUNTING
-        bookKeeping();
-        if (localStorage.getItem('bankDetails') && lastBankCheck) {
-            lastBankCheck = Date.now();
-        } else {
-            return true;
-        }
-    }
-}
-
-// State controller
-function merchantStateController(state) {
-    let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (itemCount('mpot1') < targetPotionAmount * 2 || itemCount('hpot1') < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
-    if (bankDetails) {
-        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
-    }
-    let new_state = 9;
-    //KIA
-    if (character.rip) {
-        if (state !== 99) {
-            deathTime[character.name] = Date.now();
-            if (isPvP()) deathTracker++;
-            whisperParty('I died');
-        }
-        new_state = 99;
-    } //ACCOUNTING
-    else if (!bankDetails || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
-        new_state = 11;
-    } //NO POORS
-    else if (character.gold < spendingAmount * 0.25) {
-        new_state = 12;
-    } // Deposits
-    else if (character.gold >= spendingAmount * 2) {
-        new_state = 2;
-    }   //POTION RESTOCK
-    else if (potionsNeeded) {
-        new_state = 8;
-    }
-    //If state changed set it and announce
-    if (state !== new_state) {
-        game_log("--- NEW STATE " + states[new_state] + " ---");
-        state = new_state;
-    }
-    return state;
-}
+// Update your data
+setInterval(function () {
+    updateCharacterData();
+}, 5000);
