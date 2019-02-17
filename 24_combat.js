@@ -152,7 +152,7 @@ function smartAttack(target = get_target()) {
     for (let name of parent.party_list) {
         if (name === character.name) continue;
         let entity = parent.entities[name];
-        if (entity && parent.distance(entity, character) + 0.1 < 45) {
+        if (entity && parent.distance(entity, character) + 0.1 < 35) {
             let x, y;
             if (character.x > entity.x) x = 5; else x = -5;
             if (character.y > entity.y) y = 5; else y = -5;
