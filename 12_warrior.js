@@ -209,10 +209,34 @@ function refreshTarget() {
     // No target or waiting for healer check
     if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget] || targetSetAt + 35000 > Date.now()) return;
     // We're only fighting low level main targets, time to rotate to let them build up
-    if (lowLevelCount && lowLevelCount >= 5) {
-        game_log('Overfarm');
-        whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
-        stop();
+    let refreshCase;
+    if (lowLevelCount && lowLevelCount >= 5) refreshCase = 'overFarm';
+    if (lastRealTarget + (60000 * 1.5) < Date.now()) refreshCase = 'noSee';
+    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) refreshCase = 'buggedTarget';
+    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) refreshCase = 'crowded';
+    if (refreshCase) {
+        switch (refreshCase) {
+            case 'overFarm': {
+                game_log('Overfarm');
+                whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
+                break;
+            }
+            case 'noSee': {
+                game_log('NoSee');
+                whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
+                break;
+            }
+            case 'buggedTarget': {
+                game_log('buggedTarget');
+                whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
+                break;
+            }
+            case 'crowded': {
+                game_log('crowded');
+                whisperParty('There is too many people farming here, so I will look for a new target.');
+                break;
+            }
+        }
         lastCombat = Date.now();
         lastRealTarget = Date.now();
         primary = undefined;
@@ -220,106 +244,8 @@ function refreshTarget() {
         lowLevelCount = 0;
         lowLevelTotalCount++;
         traveling = true;
-        return;
-    }
-    // We haven't seen our actual target in awhile
-    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
-        game_log('NoSee');
-        whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-        return;
-    }
-    // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
-        game_log('10-Mins');
-        whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-        return;
-    }
-    // It's crowded time to move on
-    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
-        game_log('TooMany');
-        whisperParty('There is too many people farming here, so I will look for a new target.');
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-
     }
 }
-
-///
-///
-/// OTHER LOOPS
-///
-///
-
-//Party Management (30s)
-setInterval(function () {
-    // If reboot is pending do it when out of combat
-    if (!combat && pendingReboot) {
-        updateCode();
-        load_code(12);
-        refreshCharacters(true);
-        pendingReboot = undefined;
-    }
-    // Handle restarting/starting other characters when needed
-    refreshCharacters();
-    // Handles sending invites
-    for (let char of pveCharacters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || char.class === 'merchant') continue;
-        send_party_invite(char.name);
-    }
-}, 5000);
-
-// Party Move Speed Management
-
-let combatSet;
-setInterval(function () {
-    let speed = character.speed;
-    if (parent.party_list.length) {
-        for (let id in parent.party_list) {
-            let member = parent.party_list[id];
-            let entity = parent.entities[member];
-            if (!entity || member === character.name || entity.ctype === 'merchant') continue;
-            if (entity.speed < speed) speed = entity.speed - 6;
-        }
-    }
-    if (!combatSet && (combat || primary)) {
-        combatSet = true;
-        cruise(9999);
-    } else if (!combat && !primary && speed !== character.speed) {
-        combatSet = undefined;
-        cruise(speed);
-    }
-}, 500);
-
-//Force reboot of character (1h)
-setInterval(function () {
-    // Update and reboot
-    if (!combat) {
-        updateCode();
-        load_code(12);
-        refreshCharacters(true);
-    } else {
-        pendingReboot = true;
-    }
-}, 60000 * 60);
 
 //Handle events
 function on_game_event(event) {
@@ -355,13 +281,63 @@ function on_game_event(event) {
     }
 }
 
-// Add manual target refresh
-/**
- add_bottom_button(3, 'Refresh Target', function () {
-    lastTarget = currentTarget;
-    currentTarget = undefined;
-    whisperParty('Manual target refresh requested..');
-});**/
+// Party Move Speed Management
+
+let combatSet;
+setInterval(function () {
+    let speed = character.speed;
+    if (parent.party_list.length) {
+        for (let id in parent.party_list) {
+            let member = parent.party_list[id];
+            let entity = parent.entities[member];
+            if (!entity || member === character.name || entity.ctype === 'merchant') continue;
+            if (entity.speed < speed) speed = entity.speed - 6;
+        }
+    }
+    if (!combatSet && (combat || primary)) {
+        combatSet = true;
+        cruise(9999);
+    } else if (!combat && !primary && speed !== character.speed) {
+        combatSet = undefined;
+        cruise(speed);
+    }
+}, 500);
+
+///
+///
+/// OTHER LOOPS
+///
+///
+
+//Party Management (30s)
+setInterval(function () {
+    // If reboot is pending do it when out of combat
+    if (!combat && pendingReboot) {
+        updateCode();
+        load_code(12);
+        refreshCharacters(true);
+        pendingReboot = undefined;
+    }
+    // Handle restarting/starting other characters when needed
+    refreshCharacters();
+    // Handles sending invites
+    for (let char of pveCharacters) {
+        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || char.class === 'merchant') continue;
+        send_party_invite(char.name);
+    }
+}, 5000);
+
+//Force reboot of character (1h)
+setInterval(function () {
+    // Update and reboot
+    if (!combat) {
+        updateCode();
+        load_code(12);
+        refreshCharacters(true);
+    } else {
+        pendingReboot = true;
+    }
+}, 60000 * 60);
 
 //CM Location Loop
 //Only sends details to people it cant see
