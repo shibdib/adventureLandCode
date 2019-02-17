@@ -26,8 +26,6 @@ let cooldowns = {};
 function can_use(name, target = undefined) {
     if (!G.skills[name]) return false;
     if (character.rip) return false;
-    if (name === 'use_hp' && character.hp === character.max_hp) return false;
-    if (name === 'use_mp' && character.mp === character.max_mp) return false;
     if (G.skills[name].class && !in_arr(character.ctype, G.skills[name].class)) return false; // checks the class
     if (G.skills[name].level && character.level < G.skills[name].level) return false; // checks the level
     if (G.skills[name].mp && character.mp < G.skills[name].mp) return false; // checks mp

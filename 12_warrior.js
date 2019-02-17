@@ -242,18 +242,19 @@ function tackle(target, slowMove = true) {
 }
 
 // handle basher swap and stomp
-let lastStomp, stompReady, reEquip;
+let lastStomp, stompReady, reEquip, equipped;
 let originalWeapons = {};
 
 function stompControl() {
     // If you bashed you need to re-equip
-    if (reEquip || (!stompReady && originalWeapons['mainHand'])) {
+    if (reEquip || (!stompReady && originalWeapons['mainHand'] && !equipped)) {
         let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
         equip(mainSlot);
         if (originalWeapons['offHand']) {
             let offSlot = getInventorySlot(originalWeapons['offHand'].name, false, originalWeapons['offHand'].level);
             equip(offSlot);
         }
+        equipped = true;
         lastStomp = Date.now();
         reEquip = undefined;
         stompReady = undefined;
@@ -265,6 +266,7 @@ function stompControl() {
     if (!stompReady && getEntitiesTargeting().length < 2 && primary.hp < primary.max_hp * 0.15) return;
     let basherSlot = getInventorySlot('basher');
     if (stompReady) {
+        equipped = false;
         unequip('offhand');
         equip(basherSlot);
         use('stomp');
