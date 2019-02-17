@@ -22,7 +22,7 @@ setInterval(function () {
 setInterval(function () {
     if (character.rip) state = 99;
     if (state && state === 1) farm();
-}, 750);
+}, 350);
 
 //Other Task Loop
 setInterval(function () {
