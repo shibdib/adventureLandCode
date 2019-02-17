@@ -111,6 +111,7 @@ function dpsmeterHitHandler(event) {
         var attacker = event.hid;
         var attacked = event.id;
         var attackerEntity = parent.entities[attacker];
+        if (!attackerEntity) return;
         if (attacker == character.name) attackerEntity = character;
         if ((attackerEntity.party != null || attacker == character.name) || attackerEntity.party == character.party) {
             if (event.damage != null) {
