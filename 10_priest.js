@@ -79,6 +79,6 @@ function farm() {
         if (lowHealth(1) && in_attack_range(lowHealth(1))) {
             heal(lowHealth(1));
         }
-        if (!kite()) moveToLeader(character.range * 0.1, character.range * 0.15);
+        if (!kite() && !target) moveToLeader(character.range * 0.1, character.range * 0.15);
     }
 }

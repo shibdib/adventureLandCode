@@ -33,8 +33,8 @@ function findLeaderTarget() {
 // Return all monsters targeting you
 function getEntitiesTargeting(target = character) {
     if (!target) target = character;
-    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target.name);
-    let playerAggro = Object.values(parent.entities).filter(player => isPvP() && is_character(player) && get_target_of(player) === target.name && checkIfHostile(player) && !player.rip);
+    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
+    let playerAggro = Object.values(parent.entities).filter(player => isPvP() && is_character(player) && get_target_of(player) === target && checkIfHostile(player) && !player.rip);
     if (playerAggro.length) return sortEntitiesByDistance(playerAggro); else return sortEntitiesByDistance(monsterAggro);
 }
 
@@ -150,16 +150,15 @@ function getPositionAtRange(target, desiredRangeMin, desiredRangeMax) {
 function smartAttack(target = get_target()) {
     if (!target) return;
     for (let name of parent.party_list) {
+        if (name === character.name) continue;
         let entity = parent.entities[name];
-        if (entity && (entity.ctype === 'rogue' || entity.ctype === 'warrior') && distanceToPoint(entity.real_x, entity.real_y) + 0.1 < 45) {
-            for (let x = 0; x < 50; x++) {
-                let xChange = getRndInteger(-5, 5);
-                let yChange = getRndInteger(-5, 5);
-                if (can_move_to(character.real_x + xChange, character.real_y + yChange)) {
-                    let newRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, entity.real_x, entity.real_y);
-                    let newTargetRange = distanceBetweenPoints(character.real_x + xChange, character.real_y + yChange, target.real_x, target.real_y);
-                    if (newRange > 40 && newTargetRange <= character.range) moveToCoords(character.real_x + xChange, character.real_y + yChange);
-                }
+        if (entity && parent.distance(entity, character) + 0.1 < 55) {
+            let x, y;
+            if (character.x > entity.x) x = 15; else x = -15;
+            if (character.y > entity.y) y = 15; else y = -15;
+            if (can_move_to(character.x + x, character.y + y)) {
+                parent.d_text('SHIFTING', character, {color: "#E83E1A"});
+                return move(character.x + x, character.y + y);
             }
         }
     }
