@@ -69,7 +69,7 @@ function stateTasks(state) {
         return true;
     }
     if (state === 3) { // POTION PICKUP
-        getPotions();
+        restockPotions(targetPotionAmount);
         return true;
     }
     if (state === 4) { // GEAR
@@ -109,17 +109,11 @@ function potionController(priest = false) {
 
 //Potion Check
 function potionCheck() {
-    let needPots;
-    for (let type_id in buyThesePotions) {
-        let type = buyThesePotions[type_id];
-        let item_def = parent.G.items[type];
-        if (item_def != null) {
-            if (itemCount(type) < targetPotionAmount * 0.1) {
-                needPots = true;
-            }
+    for (let potion in buyThesePotions) {
+        if (itemCount(parent.G.items[buyThesePotions[potion]]) < targetPotionAmount * 0.1) {
+            return true;
         }
     }
-    if (needPots) return true;
 }
 
 //PVP Death tracking

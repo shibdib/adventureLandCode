@@ -2,9 +2,8 @@ let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied
 
 //This function contains our logic during resupply runs
 function restockPotions(amount) {
-    if (getItems('hpot1') || getItems('mpot1')) {
-        depositItems(true);
-        return true;
+    if (character.gold < amount * 100) {
+        withdrawGold((amount * 200) - character.gold)
     } else {
         let potionMerchant = getNpc("fancypots");
         let distanceToMerchant = null;

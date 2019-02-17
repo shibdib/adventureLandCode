@@ -550,10 +550,6 @@ function merchantStateTasks(state) {
         withdrawGold(spendingAmount - character.gold);
         return true;
     }
-    if (state === 8) { // POTION RESTOCK
-        restockPotions(targetPotionAmount * 4);
-        return true;
-    }
     if (state === 2) { // Deposits
         depositGold();
         depositItems();
@@ -576,7 +572,6 @@ function merchantStateTasks(state) {
 // State controller
 function merchantStateController(state) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (bankDetails['mpot10'] < targetPotionAmount * 2 || bankDetails['hpot10'] < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
     if (bankDetails) {
         if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
     }
