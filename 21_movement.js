@@ -7,8 +7,6 @@ function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps =
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= 100) return stop();
-    // If moving continue
-    if (smart.moving) return;
     // Handle different map
     if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
@@ -35,10 +33,8 @@ function moveToLeader(min = 20, max = 25) {
         mapSwap[character.name] = undefined;
         return stop();
     }
-    // If moving continue
-    if (smart.moving) return;
     // Handle bank
-    if (parent.party[character.party].map === 'bank') return shibMove('main');
+    if (getCharacterData()[character.party].map === 'bank') return shibMove('main');
     // Handle different map
     if (getCharacterData()[character.party].map !== character.map) {
         mapSwap[character.name] = getCharacterData()[character.party].map;
@@ -114,9 +110,7 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, onComplete = undefined, tp = undefined) {
-    if (!is_moving(character)){
-        smart_move(destination, onComplete, tp);
-    }
+    smart_move(destination, onComplete, tp);
 }
 
 // Stay safe
