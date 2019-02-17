@@ -191,16 +191,18 @@ function buyFromPlayers() {
     if (buyCooldown + 2500 > Date.now()) return false;
     for (let sellers of merchants) {
         for (let s = 1; s <= 16; s++) {
-            let slot = sellers.slots['trade' + s];
+            let slotName = 'trade' + s;
+            let slot = sellers.slots[slotName];
             if (slot && !slot.b) {
                 let goodPrice = G.items[slot.name].g * 1.2;
                 if (priceDetails && priceDetails[slot.name + slot.level] && priceDetails[slot.name + slot.level].savg) goodPrice = round(priceDetails[slot.name + slot.level].savg);
-                if (slot.price > goodPrice) continue;
+                if (slot.price > goodPrice || slot.price > (bankDetails['gold'] + character.gold) * 0.015) continue;
                 // Buy from the passive list
                 for (let item of buyTargets) {
                     if (item.item !== slot.name) continue;
                     // If we have the item continue
                     if (bankDetails[item.item] >= item.amount || getInventorySlot(item.item)) continue;
+                    trade_buy(sellers, slotName); // target needs to be an actual player
                     set_message('BuyingPlayer');
                     lastBankCheck = undefined;
                     buyCooldown = Date.now();
@@ -209,7 +211,6 @@ function buyFromPlayers() {
                     game_log("Price: " + slot.price);
                     parent.d_text("BUYING!",character,{color:"#ff4130"});
                     pm(sellers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
-                    trade_buy(sellers, slot); // target needs to be an actual player
                     return true;
                 }
                 // Buy from the combine/upgrade lists when needed
@@ -220,6 +221,7 @@ function buyFromPlayers() {
                     let needed = 2;
                     if (G.items[item].compound) needed = 4;
                     if (totalInBank(item) >= needed) continue;
+                    trade_buy(sellers, slotName); // target needs to be an actual player
                     set_message('BuyingPlayer');
                     lastBankCheck = undefined;
                     buyCooldown = Date.now();
@@ -228,7 +230,6 @@ function buyFromPlayers() {
                     game_log("Price: " + slot.price);
                     parent.d_text("BUYING!",character,{color:"#ff4130"});
                     pm(sellers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
-                    trade_buy(sellers, slot); // target needs to be an actual player
                     return true;
                 }
             }
@@ -518,6 +519,20 @@ function bookKeeping() {
         localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
         parent.d_text("BOOKKEEPING!",character,{color:"#ff4130"});
         return bankDetails;
+    }
+}
+
+//Crafting
+function crafting(task, componentSlot, scrollSlot) {
+    if (currentTask === 'combine' || currentTask === 'upgrade') {
+        let upgradeMerchant = getNpc("newupgrade");
+        let distanceToMerchant = null;
+        if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
+            return true;
+        }
     }
 }
 

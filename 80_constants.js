@@ -60,7 +60,7 @@ let trashItems = [];
 let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 // Passively sell these
-let sellList = ['cupid', 'hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'firecrackers'];
+let sellList = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'firecrackers'];
 
 // Passively buy these
 let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {item: 'weaponbox', amount: 1}];
