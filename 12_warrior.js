@@ -142,85 +142,6 @@ function farm() {
     }
 }
 
-// Pull additional monsters
-function getSecondary() {
-    // Don't pull more on pvp
-    if (isPvP()) return;
-    let currentThreats = getEntitiesTargeting();
-    // If a player is targeting dont pull adds
-    if (is_character(currentThreats[0])) return false;
-    // Get total incoming attack damage
-    let totalAttack = 0;
-    currentThreats.forEach((t) => totalAttack += getMonsterDPS(t, true));
-    // If attack is greater than 25% of remaining health, return
-    let possibleAdds = findAdds();
-    if (state !== 1 ||
-        (possibleAdds.length && totalAttack + getMonsterDPS(possibleAdds[0], true) > partyHPS() * 0.9)
-        || currentThreats.length > 2) return;
-    if (possibleAdds.length) {
-        return possibleAdds[0];
-    }
-}
-
-// Refresh your target if the spawn is empty
-function refreshTarget() {
-    // No target or waiting for healer check
-    if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget] || targetSetAt + 35000 > Date.now()) return;
-    // We're only fighting low level main targets, time to rotate to let them build up
-    if (lowLevelCount && lowLevelCount >= 5) {
-        game_log('Overfarm');
-        whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        lowLevelCount = 0;
-        lowLevelTotalCount++;
-        traveling = true;
-        return;
-    }
-    // We haven't seen our actual target in awhile
-    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
-        game_log('NoSee');
-        whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-        return;
-    }
-    // If it's been a REALLY long time we probably bugged out so refresh
-    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
-        game_log('10-Mins');
-        whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-        return;
-    }
-    // It's crowded time to move on
-    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
-        game_log('TooMany');
-        whisperParty('There is too many people farming here, so I will look for a new target.');
-        stop();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
-        primary = undefined;
-        currentTarget = undefined;
-        traveling = true;
-        lowLevelCount = 0;
-
-    }
-}
-
 //Tackle a target
 function tackle(target, slowMove = true) {
     lastCombat = Date.now();
@@ -280,6 +201,65 @@ function stompControl() {
         }
         unequip('offhand');
         stompReady = true;
+    }
+}
+
+// Refresh your target if the spawn is empty
+function refreshTarget() {
+    // No target or waiting for healer check
+    if (!currentTarget || waitForHealer(325, true) || !G.monsters[currentTarget] || targetSetAt + 35000 > Date.now()) return;
+    // We're only fighting low level main targets, time to rotate to let them build up
+    if (lowLevelCount && lowLevelCount >= 5) {
+        game_log('Overfarm');
+        whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        currentTarget = undefined;
+        lowLevelCount = 0;
+        lowLevelTotalCount++;
+        traveling = true;
+        return;
+    }
+    // We haven't seen our actual target in awhile
+    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
+        game_log('NoSee');
+        whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        currentTarget = undefined;
+        traveling = true;
+        lowLevelCount = 0;
+        return;
+    }
+    // If it's been a REALLY long time we probably bugged out so refresh
+    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) {
+        game_log('10-Mins');
+        whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        currentTarget = undefined;
+        traveling = true;
+        lowLevelCount = 0;
+        return;
+    }
+    // It's crowded time to move on
+    if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) {
+        game_log('TooMany');
+        whisperParty('There is too many people farming here, so I will look for a new target.');
+        stop();
+        lastCombat = Date.now();
+        lastRealTarget = Date.now();
+        primary = undefined;
+        currentTarget = undefined;
+        traveling = true;
+        lowLevelCount = 0;
+
     }
 }
 

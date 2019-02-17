@@ -6,6 +6,7 @@ load_code(23); // Shopping
 load_code(24); // Combat
 load_code(25); // Equipment
 load_code(26); // Bank
+load_code(27); // Target stuff
 load_code(30); // Improved
 load_code(96); // Smart Move overhaul
 load_code(97); // GUI

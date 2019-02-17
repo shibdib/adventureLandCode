@@ -18,6 +18,7 @@ const allFiles = [
     "24_combat.js",
     "25_equipment.js",
     "26_bank.js",
+    "27_targeting.js",
     "30_improvedRunners.js",
     "10_priest.js",
     "11_ranger.js",
