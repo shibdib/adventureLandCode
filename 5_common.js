@@ -10,10 +10,10 @@ function stateController(state) {
     //KIA
     if (character.rip) {
         if (state !== 99) {
-            deathTime[character.name] = Date.now();
             if (isPvP()) deathTracker++;
             whisperParty('I died');
         }
+        if (!deathTime[character.name]) deathTime[character.name] = Date.now();
         if (isPvP()) grieferTracking();
         new_state = 99;
     } //STATING ITEMS
@@ -38,6 +38,7 @@ function stateController(state) {
         if (state !== 3) whisperParty('Hey I Need To Go Get More Potions ASAP!!!');
         new_state = 3;
     } else {
+        deathTime[character.name] = undefined;
         new_state = 1;
     }
     //If state changed set it and announce
