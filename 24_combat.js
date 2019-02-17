@@ -2,7 +2,7 @@
 function findLocalTargets(type, returnArray = false) {
     let potentialTargets;
     // Look for targets in range
-    potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS());
+    potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS() && !nearbyAggressor(target));
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
         let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && checkIfHostile(player) && !player.rip);
@@ -121,6 +121,12 @@ function nearbyAggressors(range = 215, highRisk) {
     }
     //Order monsters by distance.
     return sortEntitiesByDistance(aggressiveMonsters);
+}
+
+// Check if a target is too close to another hostile with rage
+function nearbyAggressor(target) {
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(target, mob) <= 75);
+    if (aggressiveMonsters.length) return true;
 }
 
 // Check if the target can be killed in ~1 hit
