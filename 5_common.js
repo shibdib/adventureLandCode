@@ -21,7 +21,7 @@ function stateController(state) {
         if (state !== 12) whisperParty('Need to re-stat this gear, 1 sec.');
         new_state = 12;
     } //BANKING
-    else if (state !== 4 && (character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
+    else if (state !== 4 && state !== 3 && (character.gold >= 100000 || openInventorySpots() <= 15 || vulnerableItemsCheck() >= 5)) {
         if (state !== 2) whisperParty('Headed to the bank to drop off some loot, BRB.');
         new_state = 2;
     } //GEAR (Chance this is skipped on startup)
@@ -109,8 +109,8 @@ function potionController(priest = false) {
 
 //Potion Check
 function potionCheck() {
-    for (let potion in buyThesePotions) {
-        if (itemCount(parent.G.items[buyThesePotions[potion]]) < targetPotionAmount * 0.1) {
+    for (let potion of buyThesePotions) {
+        if (itemCount(potion) < targetPotionAmount * 0.1) {
             return true;
         }
     }

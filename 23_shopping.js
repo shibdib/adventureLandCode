@@ -1,5 +1,3 @@
-let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied.
-
 //This function contains our logic during resupply runs
 function restockPotions(amount) {
     if (character.gold < amount * 100) {
@@ -18,13 +16,11 @@ function restockPotions(amount) {
 //Buys potions until the amount of each potion_type we defined in the start of the script is above the min_potions value.
 function buyPotions(amount) {
     if (openInventorySpots() > 0) {
-        for (let typeId in buyThesePotions) {
-            if (parent.G.items[buyThesePotions[typeId]]) {
-                let buyAmount = amount - itemCount(buyThesePotions[typeId]);
-                let cost = parent.G.items[buyThesePotions[typeId]].g * buyAmount;
-                if (character.gold >= cost && buyAmount > 0) {
-                    buy(buyThesePotions[typeId], buyAmount);
-                }
+        for (let potion of buyThesePotions) {
+            let buyAmount = amount - itemCount(potion);
+            let cost = G.items[potion].g * buyAmount;
+            if (character.gold >= cost && buyAmount > 0) {
+                buy(potion, buyAmount);
             }
         }
     }
