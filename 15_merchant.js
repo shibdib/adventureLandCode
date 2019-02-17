@@ -187,7 +187,7 @@ function sellItemsToPlayers() {
     let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
     if (currentTask === 'getItem' && !getInventorySlot(playerSale.item, false, playerSale.level)) withdrawItem(playerSale.item, playerSale.level);
     if (character.map === 'bank') return shibMove('main');
-    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
+    let merchants = Object.values(parent.entities).filter(mob => is_character(mob) && mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
     if (saleCooldown + 2500 > Date.now()) return false;
     for (let buyers of merchants) {
         for (let s = 1; s <= 16; s++) {
@@ -321,26 +321,46 @@ function passiveMerchant() {
 function buyFromPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (character.map === 'bank') return shibMove('main');
-    let merchants = Object.values(parent.entities).filter(mob => mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
+    let merchants = Object.values(parent.entities).filter(mob => is_character(mob) && mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
     if (buyCooldown + 2500 > Date.now()) return false;
-    for (let buyers of merchants) {
+    for (let sellers of merchants) {
         for (let s = 1; s <= 16; s++) {
-            let slot = buyers.slots['trade' + s];
+            let slot = sellers.slots['trade' + s];
             if (slot && !slot.b) {
                 if (G.items[slot.name].g && slot.price > G.items[slot.name].g * 1.2) continue;
+                // Buy from the passive list
                 for (let item of buyTargets) {
+                    if (item.item !== slot.name) continue;
                     // If we have the item continue
                     if (bankDetails[item.item] >= item.amount || getInventorySlot(item.item)) continue;
-                    if (item.item !== slot.name) continue;
                     set_message('BuyingPlayer');
                     lastBankCheck = undefined;
                     buyCooldown = Date.now();
-                    game_log("Item Sold: " + slot.name);
-                    game_log("To: " + buyers.name);
+                    game_log("Item Bought: " + slot.name);
+                    game_log("From: " + sellers.name);
                     game_log("Price: " + slot.price);
                     parent.d_text("BUYING!",character,{color:"#ff4130"});
-                    pm(buyers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
-                    trade_buy(buyers, slot); // target needs to be an actual player
+                    pm(sellers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
+                    trade_buy(sellers, slot); // target needs to be an actual player
+                    return true;
+                }
+                // Buy from the combine/upgrade lists when needed
+                let craftingNeeds = combineTargets.concat(upgradeTargets);
+                for (let item of craftingNeeds) {
+                    if (item !== slot.name) continue;
+                    // If we have enough of the item continue
+                    let needed = 2;
+                    if (G.items[item].compound) needed = 4;
+                    if (totalInBank(item) >= needed) continue;
+                    set_message('BuyingPlayer');
+                    lastBankCheck = undefined;
+                    buyCooldown = Date.now();
+                    game_log("Item Bought: " + slot.name);
+                    game_log("From: " + sellers.name);
+                    game_log("Price: " + slot.price);
+                    parent.d_text("BUYING!",character,{color:"#ff4130"});
+                    pm(sellers.name, 'Thanks for the ' + slot.name + ' ~This is an automated message~');
+                    trade_buy(sellers, slot); // target needs to be an actual player
                     return true;
                 }
             }
