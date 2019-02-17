@@ -85,14 +85,11 @@ function stateTasks(state) {
 //Potion Use
 function potionController(priest = false) {
     if (!priest) {
-        game_log(1)
         if (can_use('use_hp') && character.hp < character.max_hp * 0.25) {
-            game_log(2)
             use('use_hp');
         } else if (can_use('use_mp') && character.mp < character.max_mp * 0.45) {
             use('use_mp');
         } else if (can_use('use_hp') && character.hp < character.max_hp * 0.45) {
-            game_log(3)
             use('use_hp');
         }
     } else {
