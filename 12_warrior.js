@@ -399,4 +399,4 @@ setInterval(function () {
 // Update your data
 setInterval(function () {
     updateCharacterData();
-}, 5000);
+}, 1000);
