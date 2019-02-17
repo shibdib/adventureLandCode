@@ -93,10 +93,10 @@ function smartAttack(target = get_target()) {
     for (let name of parent.party_list) {
         if (name === character.name) continue;
         let entity = parent.entities[name];
-        if (entity && parent.distance(entity, character) + 0.1 < 35) {
+        if (entity && parent.distance(entity, character) + 0.1 <= 20) {
             let x, y;
-            if (character.x > entity.x) x = 5; else x = -5;
-            if (character.y > entity.y) y = 5; else y = -5;
+            if (character.x > entity.x) x = getRndInteger(3, 6); else x = getRndInteger(-6, -3);
+            if (character.y > entity.y) y = getRndInteger(3, 6); else y = getRndInteger(-6, -3);
             if (can_move_to(character.x + x, character.y + y)) {
                 return move(character.x + x, character.y + y);
             }
