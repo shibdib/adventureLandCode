@@ -113,9 +113,9 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
+        // Handle stomping things
+        stompControl();
         if (tackling || get_target_of(primary) === character || !waitForHealer()) {
-            // Handle stomping things
-            stompControl();
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
@@ -244,6 +244,7 @@ let originalWeapons = {};
 function stompControl() {
     // If you bashed you need to re-equip
     if (reEquip || (!stompReady && originalWeapons['mainHand'] && !equipped)) {
+        use('stomp');
         let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
         equip(mainSlot);
         if (originalWeapons['offHand']) {
@@ -265,8 +266,6 @@ function stompControl() {
         equipped = false;
         unequip('offhand');
         equip(basherSlot);
-        use('stomp');
-        lastStomp = Date.now();
         reEquip = true;
     } else if (basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
         originalWeapons['mainHand'] = {
@@ -279,6 +278,7 @@ function stompControl() {
                 level: character.slots['offhand'].level
             };
         }
+        unequip('offhand');
         stompReady = true;
     }
 }
