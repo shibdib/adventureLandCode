@@ -25,6 +25,7 @@ setInterval(function () {
 //MERCHANT TASKS
 function merchantTaskManager() {
     potionController();
+    if (!lastBankCheck) return bookKeeping();
     if (isPvP() && nearbyAggressors(600).length) {
         closeStand();
         set_message('Fleeing');
