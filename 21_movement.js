@@ -114,7 +114,7 @@ function moveToCoords(x, y) {
 
 // smart_move wrapper
 function shibMove(destination, onComplete = undefined, tp = undefined) {
-    smart_move(destination, onComplete, tp);
+    if (!smart.moving) smart_move(destination, onComplete, tp);
 }
 
 // Stay safe

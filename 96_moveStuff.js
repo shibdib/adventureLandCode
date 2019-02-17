@@ -1,11 +1,4 @@
-let storedDestination = {};
 function smart_move(destination, on_done) {
-    if (storedDestination[character.name] && storedDestination[character.name] !== destination) {
-        stop('move');
-    } else if (storedDestination[character.name] && storedDestination[character.name] === destination && is_moving(character)) {
-        return;
-    }
-    storedDestination[character.name] = destination;
     smart.map="";
     if(is_string(destination)) destination={to:destination};
     if(is_number(destination)) destination={x:destination,y:on_done},on_done=null;
