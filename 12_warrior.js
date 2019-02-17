@@ -79,6 +79,7 @@ function farm() {
         lastCombat = Date.now();
         lastRealTarget = Date.now();
         primary = undefined;
+        mainTarget = undefined;
         traveling = true;
         lowLevelCount = 0;
         game_log('New target is a ' + currentTarget);
