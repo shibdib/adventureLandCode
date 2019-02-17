@@ -13,7 +13,7 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 350);
+}, 750);
 
 //Other Task Loop
 setInterval(function () {

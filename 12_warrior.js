@@ -27,14 +27,20 @@ setInterval(function () {
 setInterval(function () {
     if (!state || state !== 1) return;
     farm();
-}, 350);
+}, 750);
 
 //Other Task Loop
 setInterval(function () {
+    // Initial pos set
+    if (!lastPos) return lastPos = {x: character.x, y: character.y};
     loot();
     potionController();
+    // Handle stomping things
+    stompControl();
     // Warcry
     if (can_use('warcry')) use('warcry');
+    // Hardshell when health is low
+    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Get array of mtypes
     if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
         targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
@@ -46,10 +52,20 @@ setInterval(function () {
     stateTasks(state);
 }, 3000);
 
+//Target finding loop
+let mainTarget, opportunisticTarget, secondaryTarget;
+setInterval(function () {
+    // Handle various target declarations
+    if (currentTarget) mainTarget = findLocalTargets(currentTarget);
+    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
+    opportunisticTarget = getEasyKills(false)[0];
+    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
+    secondaryTarget = getSecondary();
+    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
+}, 3000);
+
 //Primary loop
 function farm() {
-    // Initial pos set
-    if (!lastPos) return lastPos = {x: character.x, y: character.y};
     if (character.party) combat = checkPartyAggro(); else return kite();
     // Handle switching maps for an event
     if (!combat && eventMap && eventMap !== character.map) {
@@ -57,8 +73,6 @@ function farm() {
     } else if (eventMap && eventMap === character.map) {
         eventMap = undefined;
     }
-    // Hardshell when health is low
-    if (character.hp < character.max_hp * 0.5 && can_use('hardshell')) use('hardshell');
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
@@ -77,18 +91,11 @@ function farm() {
         targetArray = targetArray.filter((m) => m !== currentTarget);
         game_log(JSON.stringify(targetArray));
     }
-    // Handle various target declarations
-    let mainTarget;
-    if (currentTarget) mainTarget = findLocalTargets(currentTarget);
-    if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
-    let opportunisticTarget = getEasyKills(false)[0];
-    if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
-    let secondaryTarget = getSecondary();
-    if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
     // If we had a primary and he died clear it
     if (primary && primary.dead) primary = undefined;
     // If someone in the party has aggro set them primary
     if (party_aggro && get_target_of(party_aggro) !== character.name) {
+        if (smart.moving) stop();
         primary = party_aggro;
     }
     // If you don't have a target find one
@@ -111,9 +118,7 @@ function farm() {
     }
     // If you have a target deal with it
     if (primary) {
-        // Handle stomping things
-        stompControl();
-        if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character.name)) {
+        if (get_target_of(primary) === character.name || !waitForHealer()) {
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
@@ -121,17 +126,16 @@ function farm() {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
+            let fightText = ['KILL!', 'AGHHH!', 'BLOOD!', 'ATTACK!'];
+            if (Math.random() > 0.9) parent.d_text(random_one(fightText), character, {color: "#E83E1A"});
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (get_target_of(primary) && parent.party_list.includes(primary.target) && get_target_of(primary) !== character.name && get_target_of(primary).ctype !== 'warrior') {
+            if (get_target_of(primary) && get_target_of(primary) !== character.name && get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary))) {
                 combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
                 if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
-            } else if (!waitForHealer() || primary.target === character.name) {
-                combat = true;
-                tackle(primary);
             } else {
                 primary = undefined;
                 kite();
