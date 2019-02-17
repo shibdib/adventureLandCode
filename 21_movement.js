@@ -7,10 +7,10 @@ function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps =
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= 100) return stop();
-    // Handle different map
-    if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // If moving continue
     if (smart.moving) return;
+    // Handle different map
+    if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
@@ -30,6 +30,8 @@ function moveToLeader(min = 20, max = 25) {
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
+    // If moving continue
+    if (smart.moving) return;
     // Handle a map swap occuring
     if (mapSwap[character.name] && mapSwap[character.name] === character.map) {
         mapSwap[character.name] = undefined;
@@ -42,8 +44,6 @@ function moveToLeader(min = 20, max = 25) {
         mapSwap[character.name] = getCharacterData()[character.party].map;
         return shibMove(getCharacterData()[character.party].map);
     }
-    // If moving continue
-    if (smart.moving) return;
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);
@@ -139,12 +139,13 @@ function kite(target = undefined) {
         }
     }
     if (!nearestHostile[character.name]) nearestHostile[character.name] = nearest.id;
-    let avoidRange = 75;
+    let avoidRange = 125;
     if (is_monster(nearest) && G.monsters[nearest.mtype].range > avoidRange) avoidRange = G.monsters[nearest.mtype].range;
     if (!nearest || currentClosestAvoid >= avoidRange * 1.1) {
         character.kiting = undefined;
         return false;
     }
+    if (smart.moving) stop('move');
     let x, y;
     if (character.kiting && is_moving(character) && nearestHostile[character.name] === nearest.id) return true; else character.kiting = undefined;
     nearestHostile[character.name] = nearest.id;
@@ -154,7 +155,6 @@ function kite(target = undefined) {
     x += getRndInteger(-5, 5);
     y += getRndInteger(-5, 5);
     if (can_move_to(character.x + x, character.y + y)) {
-        if (smart.moving) stop('move');
         draw_line(character.x, character.y, character.x + x, character.y + y);
         character.kiting = true;
         moveToCoords(character.x + x, character.y + y);

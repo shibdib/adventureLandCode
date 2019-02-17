@@ -54,6 +54,10 @@ setInterval(function () {
 //Target finding loop
 let mainTarget, opportunisticTarget, secondaryTarget;
 setInterval(function () {
+    targetFinding();
+}, 1500);
+
+function targetFinding() {
     // Handle various target declarations
     if (currentTarget) mainTarget = findLocalTargets(currentTarget);
     if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
@@ -61,10 +65,11 @@ setInterval(function () {
     if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
     secondaryTarget = getSecondary();
     if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
-}, 1500);
+}
 
 //Primary loop
 function farm() {
+    updateCharacterData();
     if (character.party) combat = checkPartyAggro(); else return kite();
     // Handle switching maps for an event
     if (!combat && eventMap && eventMap !== character.map) {
@@ -75,7 +80,7 @@ function farm() {
     // Check if anyone besides you has aggro
     let party_aggro = checkPartyAggro();
     // Stay with healer on pvp
-    if (isPvP() && waitForHealer() && !combat) return;
+    if (isPvP() && waitForHealer() && !combat && !tackling) return;
     // Find a mtype to kill
     if (!currentTarget && targetArray) {
         currentTarget = random_one(targetArray);
@@ -92,7 +97,10 @@ function farm() {
         game_log(JSON.stringify(targetArray));
     }
     // If we had a primary and he died clear it
-    if (primary && primary.dead) primary = undefined;
+    if (primary && primary.dead) {
+        primary = undefined;
+        targetFinding();
+    }
     // If someone in the party has aggro set them primary
     if (party_aggro && get_target_of(party_aggro) !== character) {
         if (smart.moving) stop();
@@ -116,10 +124,10 @@ function farm() {
             if (character.hp < character.max_hp * 0.8) useHealthPotion(); else useManaPotion()
         }
     }
+    // Handle stomping things
+    stompControl();
     // If you have a target deal with it
     if (primary) {
-        // Handle stomping things
-        stompControl();
         if (tackling || get_target_of(primary) === character || !waitForHealer()) {
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
@@ -140,9 +148,8 @@ function farm() {
             }
         }
     } else {
-        if (!kite()) {
-            if (currentTarget && !get_nearest_monster({type: currentTarget})) shibMove(currentTarget); else kite();
-        }
+        if (smart.moving && get_nearest_monster({type: currentTarget})) return stop('move');
+        if (!kite()) shibMove(currentTarget);
         tackling = undefined;
     }
 }
@@ -193,7 +200,7 @@ function stompControl() {
         unequip('offhand');
         equip(basherSlot);
         reEquip = true;
-    } else if (basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
+    } else if ((tackling || nearbyAggressors().length) && basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
         originalWeapons['mainHand'] = {
             name: character.slots['mainhand'].name,
             level: character.slots['mainhand'].level
@@ -216,8 +223,8 @@ function refreshTarget() {
     // We're only fighting low level main targets, time to rotate to let them build up
     let refreshCase;
     if (lowLevelCount && lowLevelCount >= 5) refreshCase = 'overFarm';
-    if (lastRealTarget + (60000 * 1.5) < Date.now()) refreshCase = 'noSee';
-    if (lastCombat && lastCombat + (60000 * 10) < Date.now()) refreshCase = 'buggedTarget';
+    if (!smart.moving && lastRealTarget + (60000 * 1.5) < Date.now()) refreshCase = 'noSee';
+    if (lastCombat && lastCombat + (60000 * 5) < Date.now()) refreshCase = 'buggedTarget';
     if (!smart.moving && lastRealTarget + (60000 * 0.5) < Date.now() && getNearbyCharacters(200, true).length >= 3) refreshCase = 'crowded';
     if (refreshCase) {
         switch (refreshCase) {
@@ -233,7 +240,7 @@ function refreshTarget() {
             }
             case 'buggedTarget': {
                 game_log('buggedTarget');
-                whisperParty('We have not been in combat for 10 minutes, going to head to town and figure this out.');
+                whisperParty('We have not been in combat for 5 minutes, going to head to town and figure this out.');
                 break;
             }
             case 'crowded': {
@@ -344,19 +351,24 @@ setInterval(function () {
     }
 }, 60000 * 60);
 
-//CM Location Loop
-//Only sends details to people it cant see
+//CM Loop
 setInterval(function () {
     for (let key of parent.party_list) {
-        let entity = parent.entities[key];
-        if (entity) continue;
         let type = 'moving';
         if (primary) if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
         send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
+        let state = 'party';
+        switch (state) {
+            case 1: {
+                send_cm(key, {type: 'stateChange', data: {state: 'party'}});
+                break;
+            }
+            case 2:
+            case 3:
+            case 4: {
+                send_cm(key, {type: 'stateChange', data: {state: 'banking'}});
+                break;
+            }
+        }
     }
 }, 5000);
-
-// Update your data
-setInterval(function () {
-    updateCharacterData();
-}, 1000);

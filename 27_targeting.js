@@ -21,7 +21,7 @@ function findBestMonster(minXp, lastTarget, array = false) {
         // TODO: add more args to the filter to allow this to find the mini boss esque people (Green jr)
         sorted = sortEntitiesByXp(monsterTypes.filter((v, i, a) => a.indexOf(v) === i)).filter((m) => getMonsterDPS(m, true) < healsPerSecond
             && G.monsters[m].xp >= xpTarget && (!G.monsters[m].dreturn || G.monsters[m].dreturn <= 95) && !G.monsters[m].stationary && (!G.monsters[m].evasion || G.monsters[m].evasion <= 99)
-            && G.monsters[m].respawn < 60000);
+            && G.monsters[m].respawn < 120);
         if (sorted.length > 4) break;
         // Lower the XP target per loop
         xpTarget *= 0.9;
