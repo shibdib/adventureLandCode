@@ -489,7 +489,7 @@ function bookKeeping() {
     if (character.map !== 'bank') {
         shibMove('bank');
     } else {
-        depositItems();
+        depositItems(true);
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
@@ -576,7 +576,7 @@ function merchantStateTasks(state) {
 // State controller
 function merchantStateController(state) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (itemCount('mpot1') < targetPotionAmount * 2 || itemCount('hpot1') < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
+    if (bankDetails['mpot10'] < targetPotionAmount * 2 || bankDetails['hpot10'] < targetPotionAmount * 2) potionsNeeded = true; else potionsNeeded = undefined;
     if (bankDetails) {
         if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
     }

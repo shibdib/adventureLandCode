@@ -243,30 +243,13 @@ function getNaked() {
 }
 
 //Pick Up Potions
-let requestOnce;
-
 function getPotions() {
-    if (moveToMerchant()) {
-        if (parent.party_list.length > 0) {
-            let merchant = parent.entities['Shibmerch'];
-            if (merchant) {
-                let need = {};
-                for (let type_id in buyThesePotions) {
-                    let type = buyThesePotions[type_id];
-                    let item_def = parent.G.items[type];
-                    if (item_def != null) {
-                        if (itemCount(type) < targetPotionAmount) {
-                            need['type'] = 'potionRequest';
-                            need['potion'] = type;
-                            need['amount'] = targetPotionAmount - itemCount(type);
-                        }
-                    }
-                }
-                if (Object.keys(need).length && (!requestOnce || requestOnce + 10000 < Date.now())) {
-                    send_cm(merchant.name, need);
-                    pm(merchant.name, 'Send potions please!');
-                    requestOnce = Date.now();
-                }
+    for (let potionName in buyThesePotions) {
+        let type = buyThesePotions[potionName];
+        let item_def = parent.G.items[type];
+        if (item_def != null) {
+            if (itemCount(type) < targetPotionAmount) {
+                withdrawItem(type)
             }
         }
     }

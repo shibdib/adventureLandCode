@@ -2,12 +2,17 @@ let buyThesePotions = ["hpot1", "mpot1"];//The types of potions to keep supplied
 
 //This function contains our logic during resupply runs
 function restockPotions(amount) {
-    let potionMerchant = getNpc("fancypots");
-    let distanceToMerchant = null;
-    if (potionMerchant != null) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
-    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
-    if (distanceToMerchant != null && distanceToMerchant < 155) {
-        if (buyPotions(amount)) return true;
+    if (getItems('hpot1') || getItems('mpot1')) {
+        depositItems(true);
+        return true;
+    } else {
+        let potionMerchant = getNpc("fancypots");
+        let distanceToMerchant = null;
+        if (potionMerchant != null) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
+        if (distanceToMerchant != null && distanceToMerchant < 155) {
+            if (buyPotions(amount)) return false;
+        }
     }
 }
 
