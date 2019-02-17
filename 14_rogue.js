@@ -49,10 +49,8 @@ function farm() {
         if (range <= character.range) {
             // Killy rogue
             if (can_use('quickstab', target)) {
-                parent.d_text("QUICK STAB!",character,{color:"#ff4c25"});
                 use('quickstab', target);
             } else if (can_use('quickpunch', target)) {
-                parent.d_text("QUICK PUNCH!",character,{color:"#ff4130"});
                 use('quickpunch', target);
             }
             if (can_attack(target)) {
@@ -61,12 +59,10 @@ function farm() {
         } else {
             // Poison
             if (can_use('pcoat')) {
-                parent.d_text("POISON COAT!",character,{color:"#80ff3a"});
                 use('pcoat');
             }
             // Sneaky rogue
             if (can_use('invis')) {
-                parent.d_text("VANISH!",character,{color:"#6786ff"});
                 use('invis');
             }
             moveToTarget(target, character.range * 0.5, character.range * 0.99);

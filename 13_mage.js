@@ -19,7 +19,6 @@ setInterval(function () {
 setInterval(function () {
     let magiPortTarget = getMagiPortTarget();
     if (magiPortTarget && can_use('magiport')) {
-        parent.d_text("MAGIPORT FOR "+ magiPortTarget + "!",character,{color:"#ffc230"});
         if (character.mp < 900) use('use_mp'); else use('magiport', magiPortTarget);
     } else
     // Energize the party
@@ -46,7 +45,6 @@ function farm() {
         if (can_attack(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Use burst when high mana
             if (character.mp >= character.max_mp * 0.5 && can_use('burst', target)) {
-                parent.d_text("BURST!",character,{color:"#ffc230"});
                 if (can_use('cburst', target)) use('cburst', target); else use('burst', target);
             }
             // Attack
@@ -68,7 +66,6 @@ function blinkToLeader() {
             if (character.mp < 1600) {
                 use('use_mp');
             } else {
-                parent.d_text("BLINKING!",character,{color:"#ffc230"});
                 use('blink', parent.party[character.party].x, parent.party[character.party].y);
             }
             return true;

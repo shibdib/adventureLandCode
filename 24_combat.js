@@ -157,7 +157,6 @@ function smartAttack(target = get_target()) {
             if (character.x > entity.x) x = 5; else x = -5;
             if (character.y > entity.y) y = 5; else y = -5;
             if (can_move_to(character.x + x, character.y + y)) {
-                parent.d_text('SHIFTING', character, {color: "#E83E1A"});
                 return move(character.x + x, character.y + y);
             }
         }

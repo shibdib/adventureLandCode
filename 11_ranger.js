@@ -38,10 +38,8 @@ function farm() {
     if (leader) {
         let pulledMonsters = getEntitiesTargeting(leader);
         if (pulledMonsters.length >= 5 && can_use['5shot']) {
-            parent.d_text("5-SHOT!",character,{color:"#ffc230"});
             use('5shot', pulledMonsters);
         } else if (pulledMonsters.length >= 3 && can_use['3shot']) {
-            parent.d_text("3-SHOT!",character,{color:"#ffc230"});
             use('3shot', pulledMonsters);
         }
     } else {
@@ -52,12 +50,10 @@ function farm() {
         if (in_attack_range(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Long range
             if (can_use('supershot', target)) {
-                parent.d_text("SUPERSHOT!",character,{color:"#ffc230"});
                 use('supershot', target);
             }
             // Poison arrow
             if (can_use('poisonarrow', target)) {
-                parent.d_text("POISON ARROW!",character,{color:"#ffc230"});
                 use('poisonarrow', target);
             }
             // Attack
@@ -66,7 +62,6 @@ function farm() {
         } else {
             // Long range
             if ((checkIfSafeToAggro(target) || canOneShot(target) && can_use('supershot', target))) {
-                parent.d_text("SUPERSHOT!",character,{color:"#ffc230"});
                 use('supershot', target);
             }
             // If you need to kite do so, otherwise get in range

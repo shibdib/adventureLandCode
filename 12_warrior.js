@@ -120,17 +120,13 @@ function farm() {
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
             if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling) {
-                if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
-            let fightText = ['KILL!', 'AGHHH!', 'BLOOD!', 'ATTACK!'];
-            if (Math.random() > 0.9) parent.d_text(random_one(fightText), character, {color: "#E83E1A"});
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
             if (get_target_of(primary) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary))) {
                 combat = true;
-                if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
                 if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
             } else {

@@ -42,7 +42,6 @@ function farm() {
     if (target && is_character(target) && (target.ctype === 'mage' || target.ctype === 'ranger')) use('curse', target);
     // Do Damage if possible
     if (!mostHurtMember && target && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(target) || canOneShot(target))) {
-        parent.d_text("ATTACKING!",character,{color:"#E83E1A"});
         use('curse', target);
         if (can_attack(target)) attack(target);
         kite();
@@ -61,7 +60,6 @@ function farm() {
         kite();
     } else if (mostHurtMember && !mostHurtMember.rip) { //HEAL WOUNDED
         if (in_attack_range(mostHurtMember)) {
-            parent.d_text("HEALING " + mostHurtMember.name + "!",character,{color:"#36e80a"});
             // Heal
             heal(mostHurtMember);
             kite();
@@ -71,7 +69,6 @@ function farm() {
     } else if (!mostHurtMember && deadParty()) { //REVIVE DEAD
         let deadMember = deadParty();
         if (can_use('revive', deadMember)) {
-            parent.d_text("REVIVING " + deadMember.name + "!",character,{color:"#27ffeb"});
             use('revive', deadMember);
             kite();
         }
