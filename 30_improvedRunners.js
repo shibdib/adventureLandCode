@@ -54,10 +54,11 @@ function use(name, target) {
 // Improved bank_store by Shibdib
 function bank_store(inventorySlot) {
     // Shibdib update 02/16/2019 - This will now iterate thru all packs
+    // 02/17/2019 - Fixed an issue with stackable items being swapped instead of stacked
     // Old way would not look beyond the first pack that had any open slots
     if (!character.bank) return game_log("Not inside the bank");
     if (!character.items[inventorySlot]) return game_log("No item in that spot");
-    let pack;
+    let pack, stack;
     let bankSlot = -1;
     bankTabs:
         for (let key of Object.keys(character.bank)) {
@@ -68,16 +69,15 @@ function bank_store(inventorySlot) {
                 // If items are stackable do so and break
                 if (can_stack(bankPack[slot], character.items[inventorySlot])) {
                     pack = key;
-                    bankSlot = slot;
+                    stack = true;
                     break bankTabs;
                 } else if (!bankPack[slot]) {
                     pack = key;
                     bankSlot = slot;
-                    bankPack[slot] = 'holder';
-                    break bankTabs;
                 }
             }
         }
     if (!pack) return game_log("Bank is full!");
+    if (!stack) character.bank[pack][bankSlot] = 'holder';
     parent.socket.emit("bank", {operation: "swap", pack: pack, str: bankSlot, inv: inventorySlot});
 }
