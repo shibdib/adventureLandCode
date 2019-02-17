@@ -1,4 +1,7 @@
+let storedDestination = {};
 function smart_move(destination, on_done) {
+    if (storedDestination[character.name] && storedDestination[character.name] !== destination) stop('move');
+    storedDestination[character.name] = destination;
     smart.map="";
     if(is_string(destination)) destination={to:destination};
     if(is_number(destination)) destination={x:destination,y:on_done},on_done=null;
@@ -62,23 +65,18 @@ function smart_move(destination, on_done) {
 function smart_move_logic()
 {
     if(!smart.moving) return;
-    if(!smart.searching && !smart.found)
-    {
+    if(!smart.searching && !smart.found) {
         start_pathfinding();
     }
-    else if(!smart.found)
-    {
-        if(Math.random()<0.1)
-        {
+    else if(!smart.found) {
+        if(Math.random()<0.1) {
             move(character.real_x+Math.random()*0.0002-0.0001,character.real_y+Math.random()*0.0002-0.0001);
             parent.d_text(shuffle(["Hmm","...","???","Definitely left","No right!","Is it?","I can do this!","I think ...","What If","Should be","I'm Sure","Nope","Wait a min!","Oh my"])[0],character,{color:shuffle(["#68B3D1","#D06F99","#6ED5A3","#D2CF5A"])[0]});
         }
         continue_pathfinding();
     }
-    else if(!character.moving && can_walk(character) && !is_transporting(character))
-    {
-        if(!smart.plot.length)
-        {
+    else if(!character.moving && can_walk(character) && !is_transporting(character)) {
+        if(!smart.plot.length) {
             smart.moving=false;
             smart.on_done(true);
             return;
@@ -86,21 +84,17 @@ function smart_move_logic()
         var current=smart.plot[0];
         smart.plot.splice(0,1);
         // game_log(JSON.stringify(current));
-        if(current.town)
-        {
+        if(current.town) {
             use("town");
         }
-        else if(current.transport)
-        {
+        else if(current.transport) {
             parent.socket.emit("transport",{to:current.map,s:current.s});
             // use("transporter",current.map);
         }
-        else if(character.map==current.map && can_move_to(current.x,current.y))
-        {
+        else if(character.map==current.map && can_move_to(current.x,current.y)) {
             move(current.x,current.y);
         }
-        else
-        {
+        else {
             //game_log("Lost the path...","#CF5B5B");
             smart_move({map:smart.map,x:smart.x,y:smart.y},smart.on_done);
         }
@@ -118,25 +112,20 @@ function start_pathfinding() {
 function bfs() {
     var timer=new Date(),result=null,optimal=true;
 
-    while(start<queue.length)
-    {
+    while(start<queue.length) {
         var current=queue[start];
         var map=G.maps[current.map];
-        if(current.map==smart.map)
-        {
+        if(current.map==smart.map) {
             smart.flags.map=true;
-            if(abs(current.x-smart.x)+abs(current.y-smart.y)<smart.edge)
-            {
+            if(abs(current.x-smart.x)+abs(current.y-smart.y)<smart.edge) {
                 result=start;
                 break;
             }
-            else if(best===null || abs(current.x-smart.x)+abs(current.y-smart.y)<abs(queue[best].x-smart.x)+abs(queue[best].y-smart.y))
-            {
+            else if(best===null || abs(current.x-smart.x)+abs(current.y-smart.y)<abs(queue[best].x-smart.x)+abs(queue[best].y-smart.y)) {
                 best=start;
             }
         }
-        else if(current.map!=smart.map)
-        {
+        else if(current.map!=smart.map) {
             if(smart.prune.map && smart.flags.map) {start++; continue;}
             map.doors.forEach(function(door){
                 // if(simple_distance({x:map.spawns[door[6]][0],y:map.spawns[door[6]][1]},{x:current.x,y:current.y})<30)
@@ -144,10 +133,8 @@ function bfs() {
                     qpush({map:door[4],x:G.maps[door[4]].spawns[door[5]||0][0],y:G.maps[door[4]].spawns[door[5]||0][1],transport:true,s:door[5]||0});
             });
             map.npcs.forEach(function(npc){
-                if(npc.id=="transporter" && simple_distance({x:npc.position[0],y:npc.position[1]},{x:current.x,y:current.y})<75)
-                {
-                    for(var place in G.npcs.transporter.places)
-                    {
+                if(npc.id=="transporter" && simple_distance({x:npc.position[0],y:npc.position[1]},{x:current.x,y:current.y})<75) {
+                    for(var place in G.npcs.transporter.places) {
                         qpush({map:place,x:G.maps[place].spawns[G.npcs.transporter.places[place]][0],y:G.maps[place].spawns[G.npcs.transporter.places[place]][1],transport:true,s:G.npcs.transporter.places[place]});
                     }
                 }
@@ -169,14 +156,12 @@ function bfs() {
     }
 
     if(result===null) result=best,optimal=false;
-    if(result===null)
-    {
+    if(result===null) {
         //game_log("Path not found!","#CF575F");
         smart.moving=false;
         smart.on_done(false);
     }
-    else
-    {
+    else {
         plot(result);
         smart.found=true;
         if(smart.prune.smooth) smooth_path();
