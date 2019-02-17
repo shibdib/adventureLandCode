@@ -20,7 +20,12 @@ setInterval(function () {
 
 //Combat Loop
 setInterval(function () {
-    if (character.rip) state = 99;
+    if (character.rip) {
+        state = 99;
+        mainTarget = undefined;
+        primary = undefined;
+        currentTarget = undefined;
+    }
     if (state && state === 1) farm();
 }, 350);
 
