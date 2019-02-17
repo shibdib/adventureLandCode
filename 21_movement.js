@@ -158,17 +158,6 @@ function kite(target = undefined) {
         draw_line(character.x, character.y, character.x + x, character.y + y);
         character.kiting = true;
         moveToCoords(character.x + x, character.y + y);
-    } else {
-        for (let a = 0; a < 100; a++) {
-            x += getRndInteger(-25, 25);
-            y += getRndInteger(-25, 25);
-            if (can_move_to(character.x + x, character.y + y)) {
-                if (smart.moving) stop('move');
-                draw_line(character.x, character.y, character.x + x, character.y + y);
-                character.kiting = true;
-                moveToCoords(character.x + x, character.y + y);
-            }
-        }
     }
     return true;
 }
