@@ -128,10 +128,7 @@ function farm() {
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (get_target_of(primary) && get_target_of(primary) !== character = &&
-            get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary));
-        )
-            {
+            if (get_target_of(primary) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary))) {
                 combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
