@@ -163,7 +163,7 @@ function smartAttack(target = get_target()) {
             }
         }
     }
-    attack(target);
+    if (can_attack(target)) attack(target);
 }
 
 //Returns the party member with the lowest hp -> max_hp ratio.
