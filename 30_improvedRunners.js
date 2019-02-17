@@ -41,6 +41,9 @@ function can_use(name, target = undefined) {
 function use(name, target) {
     if (isNaN(name)) {
         if (!target) target = get_target();
+        // Pot check
+        if (name === 'use_hp' && character.hp === character.max_hp) return;
+        if (name === 'use_mp' && character.mp === character.max_mp) return;
         if (!can_use(name, target)) return;
         parent.use_skill(name, target);
         cooldowns[name] = Date.now();
