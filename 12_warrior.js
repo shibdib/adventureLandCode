@@ -58,7 +58,7 @@ setInterval(function () {
     if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
     secondaryTarget = getSecondary();
     if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
-}, 3000);
+}, 1500);
 
 //Primary loop
 function farm() {
@@ -185,7 +185,7 @@ function refreshTarget() {
         return;
     }
     // We haven't seen our actual target in awhile
-    if (lastRealTarget + (60000 * 3.5) < Date.now()) {
+    if (lastRealTarget + (60000 * 1.5) < Date.now()) {
         game_log('NoSee');
         whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
         stop();
