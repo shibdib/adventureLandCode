@@ -185,6 +185,7 @@ function passiveMerchant() {
 // Sell to player buy orders that are better than 60% (the npc markdown)
 function buyFromPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
+    let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
     if (character.map === 'bank') return shibMove('main');
     let merchants = Object.values(parent.entities).filter(mob => is_character(mob) && mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
     if (buyCooldown + 2500 > Date.now()) return false;
@@ -192,7 +193,9 @@ function buyFromPlayers() {
         for (let s = 1; s <= 16; s++) {
             let slot = sellers.slots['trade' + s];
             if (slot && !slot.b) {
-                if (G.items[slot.name].g && slot.price > G.items[slot.name].g * 1.2) continue;
+                let goodPrice = G.items[slot.name].g * 1.2;
+                if (priceDetails && priceDetails[slot.name + slot.level] && priceDetails[slot.name + slot.level].savg) goodPrice = round(priceDetails[slot.name + slot.level].savg);
+                if (slot.price > goodPrice) continue;
                 // Buy from the passive list
                 for (let item of buyTargets) {
                     if (item.item !== slot.name) continue;
