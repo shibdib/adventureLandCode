@@ -33,8 +33,8 @@ function findLeaderTarget() {
 // Return all monsters targeting you
 function getEntitiesTargeting(target = character) {
     if (!target) target = character;
-    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target);
-    let playerAggro = Object.values(parent.entities).filter(player => isPvP() && is_character(player) && get_target_of(player) === target && checkIfHostile(player) && !player.rip);
+    let monsterAggro = Object.values(parent.entities).filter(mob => is_monster(mob) && get_target_of(mob) === target.name);
+    let playerAggro = Object.values(parent.entities).filter(player => isPvP() && is_character(player) && get_target_of(player) === target.name && checkIfHostile(player) && !player.rip);
     if (playerAggro.length) return sortEntitiesByDistance(playerAggro); else return sortEntitiesByDistance(monsterAggro);
 }
 

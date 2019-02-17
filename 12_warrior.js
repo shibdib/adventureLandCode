@@ -88,7 +88,7 @@ function farm() {
     // If we had a primary and he died clear it
     if (primary && primary.dead) primary = undefined;
     // If someone in the party has aggro set them primary
-    if (party_aggro && get_target_of(party_aggro) !== character) {
+    if (party_aggro && get_target_of(party_aggro) !== character.name) {
         primary = party_aggro;
     }
     // If you don't have a target find one
@@ -113,18 +113,18 @@ function farm() {
     if (primary) {
         // Handle stomping things
         stompControl();
-        if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character)) {
+        if (can_attack(primary) && (!waitForHealer() || get_target_of(primary) === character.name)) {
             combat = true;
             if (primary.mtype === currentTarget) lastRealTarget = Date.now();
             // If we have adds queued and we have aggro, get them
-            if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling) {
+            if (currentTarget && secondaryTarget && get_target_of(primary) === character.name && !traveling) {
                 if (Math.random() > 0.9) parent.d_text("PULLING MORE!", character, {color: "#FF0000"});
                 primary = secondaryTarget;
             }
             tackle(primary);
         } else {
             // Pull if he's attacking someone else
-            if (get_target_of(primary) && parent.party_list.includes(primary.target) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior') {
+            if (get_target_of(primary) && parent.party_list.includes(primary.target) && get_target_of(primary) !== character.name && get_target_of(primary).ctype !== 'warrior') {
                 combat = true;
                 if (Math.random() > 0.9) parent.d_text("GETTING AGGRO!", character, {color: "#E83E1A"});
                 tackle(primary);
