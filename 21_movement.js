@@ -5,8 +5,6 @@ function moveToTarget(target, min = 0, max = character.range * 0.9) {
         let range = distanceToPoint(target.real_x, target.real_y) + 0.1;
         // If range is good stay
         if (range <= max * 0.7 && range >= min) return stop();
-        // If smart moving past them stop
-        if (smart.moving && range <= 500) return stop();
         // Move to coords
         shibMove({x: target.x, y: target.y, range: (min + max) / 2});
     } else {
