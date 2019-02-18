@@ -24,7 +24,7 @@ setInterval(function () {
         mainTarget = undefined;
         primary = undefined;
         currentTarget = undefined;
-        return stateController(state);
+        return state = stateController(state);
     }
     if (state && state === 1) farm();
 }, 350);
@@ -47,7 +47,6 @@ setInterval(function () {
     // Handle target refreshing
     refreshTarget();
     // State tasks
-    if (!state || combat) return;
     stateTasks(state);
 }, 3000);
 
