@@ -98,11 +98,8 @@ function equipCupid() {
 }
 
 function equipBow() {
-    originalWeapons['mainHand'] = {
-        name: character.slots['mainhand'].name,
-        level: character.slots['mainhand'].level
-    };
     let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
+    if (!mainSlot) return state = 4;
     equip(mainSlot);
     return true;
 }
