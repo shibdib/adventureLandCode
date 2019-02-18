@@ -4,9 +4,9 @@ function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps =
     let range;
     if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
     // If range is good stay
-    if (range && (range <= max && range >= min)) return stop();
+    if (range && (range <= max * 0.7 && range >= min)) return stop();
     // If smart moving past them stop
-    if (range && smart.moving && range <= 100) return stop();
+    if (range && smart.moving && range <= 500) return stop();
     // Handle different map
     if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
     // If moving continue
@@ -27,9 +27,9 @@ function moveToLeader(min = 20, max = 25) {
     let range;
     if (leader) range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
     // If range is good stay
-    if (range && (range <= max && range >= min)) return stop();
+    if (range && (range <= max * 0.7 && range >= min)) return stop();
     // If smart moving past them stop
-    if (range && smart.moving && range <= character.range) return stop();
+    if (range && smart.moving && range <= 500) return stop();
     // Handle a map swap occuring
     if (mapSwap[character.name] && mapSwap[character.name] === character.map) {
         mapSwap[character.name] = undefined;
@@ -113,8 +113,14 @@ function moveToCoords(x, y) {
 }
 
 // smart_move wrapper
-function shibMove(destination, onComplete = undefined, tp = undefined) {
-    if (!smart.moving) smart_move(destination, onComplete, tp);
+function shibMove(destination, onComplete = undefined) {
+    // If moving to a map and it doesn't match your destination reset
+    if (G.maps[destination] && smart.moving && smart.map !== destination) stop('move');
+    // If moving to coords and they don't match reset
+    if (destination.x && smart.moving && (smart.x !== destination.x || smart.y !== destination.y)) stop('move');
+    // If moving to a map/npc turn on smart_town
+    if (!destination.x) smart.use_town = true;
+    if (!smart.moving) smart_move(destination, onComplete);
 }
 
 // Stay safe
