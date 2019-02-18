@@ -483,7 +483,7 @@ function bookKeeping() {
     if (character.map !== 'bank') {
         shibMove('bank');
     } else {
-        depositItems(true);
+        depositItems();
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
