@@ -11,7 +11,7 @@ let pveCharacters = [
 let buyThesePotions = ["hpot1", "mpot1"];
 
 // Avoid attacking these
-let avoidMtypes = ['scorpion', 'phoenix', 'booboo', 'dknight2', 'boar'];
+let avoidMtypes = ['booboo', 'dknight2', 'boar'];
 // Avoid going here
 let avoidMaps = ["tunnel"];
 // Event targets
