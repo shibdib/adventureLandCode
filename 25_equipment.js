@@ -213,12 +213,12 @@ function countEmptyGear() {
 }
 
 //Looks for item in inventory
-function getInventorySlot(search, multiple = false, level = 0) {
+function getInventorySlot(search, multiple = false, level = undefined) {
     if (!multiple) {
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (item.name === search && item_properties(item).level === level) {
+            if (item.name === search && (!level || item_properties(item).level === level)) {
                 if (character.items[key].name === search) return key;
             }
         }
@@ -227,7 +227,7 @@ function getInventorySlot(search, multiple = false, level = 0) {
         for (let key in character.items) {
             let item = character.items[key];
             if (!item) continue;
-            if (item.name === search && item_properties(item).level === level) {
+            if (item.name === search && (!level || item_properties(item).level === level)) {
                 if (character.items[key].name === search) slots.push(key);
             }
         }

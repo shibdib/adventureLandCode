@@ -45,8 +45,14 @@ function farm() {
     } else {
         return moveToLeader(character.range * 0.5, character.range * 0.7);
     }
+    let healerTime = lowHealth(0.4);
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
-    if (target) {
+    if (healerTime && hasCupid()) {
+        if (character.slots['mainhand'].name !== 'cupid') return equipCupid();
+        if (in_attack_range(healerTime)) heal(healerTime);
+        moveToTarget(healerTime, character.range * 0.5, character.range * 0.7);
+    } else if (target) {
+        if (character.slots['mainhand'].name === 'cupid') return equipBow();
         if (in_attack_range(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Long range
             if (can_use('supershot', target)) {
@@ -70,4 +76,33 @@ function farm() {
     } else {
         if (!kite()) moveToLeader(character.range * 0.1, character.range * 0.15);
     }
+}
+
+// handle healing with cupid
+let originalWeapons = {};
+
+function hasCupid() {
+    return getInventorySlot('cupid') || character.slots['mainhand'].name === 'cupid';
+}
+
+function equipCupid() {
+    let cupid = getInventorySlot('cupid');
+    if (cupid) {
+        originalWeapons['mainHand'] = {
+            name: character.slots['mainhand'].name,
+            level: character.slots['mainhand'].level
+        };
+        equip(cupid);
+        return true;
+    }
+}
+
+function equipBow() {
+    originalWeapons['mainHand'] = {
+        name: character.slots['mainhand'].name,
+        level: character.slots['mainhand'].level
+    };
+    let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
+    equip(mainSlot);
+    return true;
 }
