@@ -50,9 +50,9 @@ function getEasyKills(oneShot = true) {
 }
 
 // Check for monsters nearby who will aggro
-function nearbyAggressors(range = 215, highRisk) {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
-        G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(character, mob) <= range);
+function nearbyAggressors(range = 215, from = character) {
+    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob !== from && mob.type === "monster" && G.monsters[mob.mtype] &&
+        G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(from, mob) <= range);
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
         let nearbyPlayers = getNearbyCharacters(400, true).filter(player => !parent.friends.includes(player.owner) && checkIfHostile(player) && !player.rip);
@@ -62,10 +62,10 @@ function nearbyAggressors(range = 215, highRisk) {
     return sortEntitiesByDistance(aggressiveMonsters);
 }
 
-// Check if a target is too close to another hostile with rage
-function nearbyAggressor(target) {
-    let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && mob.id !== target.id && G.monsters[mob.mtype].aggro && (getMonsterDPS(mob) >= partyHPS() || (G.monsters[mob.mtype].rage && getMonsterDPS(mob) * 1.5 >= partyHPS())) && parent.distance(target, mob) <= 75);
-    if (aggressiveMonsters.length) return true;
+// Check if a target is too close to another hostile with rage also check if an aggressor is between you and the target
+function targetFriends(target) {
+    let tooClose = nearbyAggressors(100, target);
+    if (tooClose.length) return true;
 }
 
 // Check if the target can be killed in ~1 hit

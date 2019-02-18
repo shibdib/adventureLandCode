@@ -160,7 +160,7 @@ function farm() {
 function tackle(target, slowMove = true) {
     lastCombat = Date.now();
     tackling = true;
-    if (!kite(target) && !nearbyAggressor(target)) {
+    if (!kite(target) && !targetFriends(target)) {
         if (target.target !== character.name) use('taunt', target);
         if (parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
         if (slowMove) moveToTarget(target);

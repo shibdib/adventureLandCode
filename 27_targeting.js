@@ -41,7 +41,7 @@ function findBestMonster(minXp, lastTarget, array = false) {
 function findLocalTargets(type, returnArray = false) {
     let potentialTargets;
     // Look for targets in range
-    potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS() && !nearbyAggressor(mob));
+    potentialTargets = Object.values(parent.entities).filter(mob => mob.mtype === type && getMonsterDPS(mob, true) < partyHPS() && !targetFriends(mob));
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
         let nearbyPlayers = getNearbyCharacters(400, true).filter(player => getCharacterDPS(player) * 2.85 <= partyHPS() && checkIfHostile(player) && !player.rip);
