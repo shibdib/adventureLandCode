@@ -20,11 +20,11 @@ setInterval(function () {
 
 //Combat Loop
 setInterval(function () {
-    if (character.rip) {
-        state = 99;
+    if (state !== 99 && character.rip) {
         mainTarget = undefined;
         primary = undefined;
         currentTarget = undefined;
+        return stateController(state);
     }
     if (state && state === 1) farm();
 }, 350);
