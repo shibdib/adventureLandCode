@@ -355,8 +355,8 @@ setInterval(function () {
 setInterval(function () {
     for (let key of parent.party_list) {
         let type = 'moving';
-        if (primary) if (is_monster(primary)) type = primary.mtype; else if (is_character(primary)) type = 'player';
-        send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}})
+        if (primary || combat || tackling) if (is_monster(get_target_of(character))) type = get_target_of(character).mtype; else if (is_character(get_target_of(character))) type = 'player';
+        send_cm(key, {type: 'combatLocation', data: {x: character.x, y: character.y, map: character.map, mtype: type}});
         let state = 'party';
         switch (state) {
             case 1: {
