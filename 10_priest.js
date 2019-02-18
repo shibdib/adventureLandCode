@@ -44,16 +44,14 @@ function farm() {
     if (!mostHurtMember && target && character.mp > character.max_mp * 0.5 && (checkIfSafeToAggro(target) || canOneShot(target))) {
         use('curse', target);
         if (can_attack(target)) attack(target);
-        kite();
+        if (!kite()) moveToTarget(target, character.range * 0.425, character.range * 0.7);
     }
     if (mostHurtMember && mostHurtMember.hp < mostHurtMember.max_hp * 0.20 && can_use('revive', mostHurtMember)) { //Max heal with revive
         if (in_attack_range(mostHurtMember)) {
             // Use revive as a mega heal
             use('revive', mostHurtMember);
-            kite();
-        } else {
-            if (!kite()) moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.7);
         }
+        if (!kite()) moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.7);
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
         use('partyheal');
@@ -62,10 +60,8 @@ function farm() {
         if (in_attack_range(mostHurtMember)) {
             // Heal
             heal(mostHurtMember);
-            kite();
-        } else {
-            if (!kite()) moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.7);
         }
+        if (!kite()) moveToTarget(mostHurtMember, character.range * 0.425, character.range * 0.7);
     } else if (!mostHurtMember && deadParty()) { //REVIVE DEAD
         let deadMember = deadParty();
         if (can_use('revive', deadMember)) {
