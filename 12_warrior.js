@@ -105,7 +105,6 @@ function farm() {
     }
     // If someone in the party has aggro set them primary
     if (party_aggro && get_target_of(party_aggro) !== character) {
-        if (smart.moving) stop();
         primary = party_aggro;
     }
     // If you don't have a target find one
@@ -115,7 +114,6 @@ function farm() {
         if (getEntitiesTargeting()[0]) {
             primary = getEntitiesTargeting()[0];
         } else if (readyToPull && mainTarget) {
-            stop('move');
             primary = mainTarget;
             traveling = false;
             // Is main target level 1-2??
@@ -150,7 +148,7 @@ function farm() {
             }
         }
     } else {
-        if (smart.moving && get_nearest_monster({type: currentTarget})) return stop('move');
+        if (!tackling && !combat && smart.moving && get_nearest_monster({type: currentTarget})) return stop('move');
         if (!kite()) shibMove(currentTarget);
         tackling = undefined;
     }
