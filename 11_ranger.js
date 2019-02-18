@@ -49,7 +49,7 @@ function farm() {
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (healerTime && hasCupid()) {
         if (character.slots['mainhand'].name !== 'cupid') return equipCupid();
-        if (in_attack_range(healerTime)) attack(healerTime);
+        if (in_attack_range(healerTime)) heal(healerTime);
         moveToTarget(healerTime, character.range * 0.5, character.range * 0.7);
     } else if (target) {
         if (character.slots['mainhand'].name === 'cupid') return equipBow();
