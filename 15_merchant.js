@@ -418,9 +418,9 @@ function combineItems() {
             let componentSlot = getInventorySlot(craftingItem, true, craftingLevel);
             let grade = item_grade(character.items[componentSlot[0]]);
             if (currentTask === 'combine') {
-                if (grade === 0 && craftingLevel < 4) scroll = 'cscroll0'; else if (grade === 0 && craftingLevel >= 4) scroll = 'cscroll1'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
+                if (grade === 0 && craftingLevel < 7) scroll = 'cscroll0'; else if (grade === 0 && craftingLevel >= 7) scroll = 'cscroll1'; else if (grade === 1) scroll = 'cscroll1'; else if (grade === 2) scroll = 'cscroll2';
             } else {
-                if (grade === 0 && craftingLevel < 4) scroll = 'scroll0'; else if (grade === 0 && craftingLevel >= 4) scroll = 'scroll1'; else if (grade === 1) scroll = 'scroll1'; else if (grade === 2) scroll = 'scroll2';
+                if (grade === 0 && craftingLevel < 7) scroll = 'scroll0'; else if (grade === 0 && craftingLevel >= 7) scroll = 'scroll1'; else if (grade === 1) scroll = 'scroll1'; else if (grade === 2) scroll = 'scroll2';
             }
             if (itemCount(scroll)) {
                 let scrollSlot = getInventorySlot(scroll);
