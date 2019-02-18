@@ -52,7 +52,7 @@ function getEasyKills(oneShot = true) {
 // Check for monsters nearby who will aggro
 function nearbyAggressors(range = 215) {
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
-        G.monsters[mob.mtype].aggro && && getMonsterDPS(mob) >= partyHPS() && G.monsters[mob.mtype].rage && parent.distance(character, mob) <= range);
+        G.monsters[mob.mtype].aggro && getMonsterDPS(mob) >= partyHPS() && G.monsters[mob.mtype].rage && parent.distance(character, mob) <= range);
     if (isPvP()) {
         // Check nearby players and target them if they are not friends and if their dps * 2.85 is less than our heal power.
         let nearbyPlayers = getNearbyCharacters(400, true).filter(player => !parent.friends.includes(player.owner) && checkIfHostile(player) && !player.rip);
