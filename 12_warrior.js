@@ -7,6 +7,8 @@ let lowLevelTotalCount = 0;
 let state;
 let lastCombat = Date.now();
 let lastRealTarget = Date.now();
+let levelTracker = {};
+let respawnTracker = {};
 
 //State Controller
 setInterval(function () {
@@ -42,6 +44,7 @@ setInterval(function () {
     // Get array of mtypes
     if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
         targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
+        targetArray.filter((m) => (!levelTracker[m] || levelTracker[m] <= Date.now()) && (!respawnTracker[m] || respawnTracker[m] <= Date.now()));
         whisperParty('NEW MTYPE ARRAY: ' + JSON.stringify(targetArray));
     }
     // Handle target refreshing
@@ -229,12 +232,20 @@ function refreshTarget() {
         switch (refreshCase) {
             case 'overFarm': {
                 game_log('Overfarm');
+                levelTracker[currentTarget] = Date.now() + (60000 * 5);
                 whisperParty('These ' + G.monsters[currentTarget].name + "'s have been over farmed and need to level up, time to rotate to something new.");
                 break;
             }
             case 'noSee': {
                 game_log('NoSee');
                 whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
+                // Handle longer respawns
+                if (G.monsters[currentTarget].respawn > 90) {
+                    respawnTracker[currentTarget] = Date.now() + ((G.monsters[currentTarget].respawn - 90) * 1000) * 0.9;
+                    whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, they have a respawn of " + G.monsters[currentTarget].respawn + " seconds so going to wait a bit before we come back here.");
+                } else {
+                    whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
+                }
                 break;
             }
             case 'buggedTarget': {
