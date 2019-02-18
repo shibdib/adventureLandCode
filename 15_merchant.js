@@ -357,7 +357,7 @@ function combineItems() {
     if (!craftingItem) {
         // Chance we skip this time
         if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
-        for (let l = 0; l <= normalLevelTarget; l++) {
+        for (let l = normalLevelTarget; l > 0; l--) {
             for (let item of combineTargets) {
                 if (item_grade({
                     name: item,
