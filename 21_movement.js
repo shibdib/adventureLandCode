@@ -7,10 +7,10 @@ function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps =
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= 100) return stop();
-    // If moving continue
-    if (smart.moving) return;
     // Handle different map
     if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
+    // If moving continue
+    if (smart.moving) return;
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
@@ -30,8 +30,6 @@ function moveToLeader(min = 20, max = 25) {
     if (range && (range <= max && range >= min)) return stop();
     // If smart moving past them stop
     if (range && smart.moving && range <= character.range) return stop();
-    // If moving continue
-    if (smart.moving) return;
     // Handle a map swap occuring
     if (mapSwap[character.name] && mapSwap[character.name] === character.map) {
         mapSwap[character.name] = undefined;
@@ -44,6 +42,8 @@ function moveToLeader(min = 20, max = 25) {
         mapSwap[character.name] = getCharacterData()[character.party].map;
         return shibMove(getCharacterData()[character.party].map);
     }
+    // If moving continue
+    if (smart.moving) return;
     // Handle same map but far away
     if (!range || !parent.entities[character.party] || range >= character.range * 4) {
         if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);
