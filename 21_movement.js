@@ -105,9 +105,7 @@ function moveToCoords(x, y) {
     if (can_move_to(x, y)) {
         if (smart.moving) stop();
         move(x, y);
-    } else if (is_moving(character)) {
-
-    } else {
+    } else if (!is_moving(character)) {
         shibMove({x: x, y: y});
     }
 }
