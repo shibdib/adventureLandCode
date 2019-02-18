@@ -89,7 +89,7 @@ function waitForHealer(range = 300, silent = false) {
         healerNotify = true;
         if (isPvP() && findStoredHealer()) {
             let healer = findStoredHealer();
-            moveToCoords(healer.x, healer.y);
+            shibMove({x: healer.x, y: healer.y});
             return true;
         } else {
             return true;

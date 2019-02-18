@@ -1,124 +1,73 @@
 // Handle moving to a target
 // TODO: send_cm/on_cm stuff for map change
-function moveToTarget(target, min = 0, max = character.range * 0.9, changeMaps = true) {
-    let range;
-    if (target) range = distanceToPoint(target.real_x, target.real_y) + 0.1;
-    // If range is good stay
-    if (range && (range <= max * 0.7 && range >= min)) return stop();
-    // If smart moving past them stop
-    if (range && smart.moving && range <= 500) return stop();
-    // Handle different map
-    if (changeMaps && getCharacterData()[character.party].map !== character.map) return shibMove(getCharacterData()[character.party].map);
-    // If moving continue
-    if (smart.moving) return;
-    // Handle same map but far away
-    if (!range || !parent.entities[character.party] || range >= character.range * 4) {
-        if (target) moveToCoords(target.real_x, target.real_y); else return shibMove(target);
+function moveToTarget(target, min = 0, max = character.range * 0.9) {
+    if (target) {
+        let range = distanceToPoint(target.real_x, target.real_y) + 0.1;
+        // If range is good stay
+        if (range <= max * 0.7 && range >= min) return stop();
+        // If smart moving past them stop
+        if (smart.moving && range <= 500) return stop();
+        // Move to coords
+        shibMove({x: target.x, y: target.y, range: (min + max) / 2});
+    } else {
+        shibMove({x: target.x, y: target.y, range: (min + max) / 2});
     }
-    // Handle close
-    if (target && (range > max || range < min || !range)) moveToCoords(target.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), target.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
 }
 
 // Handle moving to party leader
-// TODO: send_cm/on_cm stuff for map change
 let mapSwap = {};
 function moveToLeader(min = 20, max = 25) {
-    let leader = get_player(character.party);
-    let range;
-    if (leader) range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
-    // If range is good stay
-    if (range && (range <= max * 0.7 && range >= min)) return stop();
-    // If smart moving past them stop
-    if (range && smart.moving && range <= 500) return stop();
     // Handle a map swap occuring
     if (mapSwap[character.name] && mapSwap[character.name] === character.map) {
         mapSwap[character.name] = undefined;
         return stop();
     }
-    // Handle bank
-    if (getCharacterData()[character.party].map === 'bank') return shibMove('main');
-    // Handle different map
-    if (getCharacterData()[character.party].map !== character.map) {
-        mapSwap[character.name] = getCharacterData()[character.party].map;
-        return shibMove(getCharacterData()[character.party].map);
-    }
-    // If moving continue
-    if (smart.moving) return;
-    // Handle same map but far away
-    if (!range || !parent.entities[character.party] || range >= character.range * 4) {
-        if (leader) moveToCoords(leader.x, leader.y); else return shibMove(parent.party[character.party].x, parent.party[character.party].y);
-    }
-    // Handle close
-    if (leader && (range > max || range < min || !range)) moveToCoords(leader.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), leader.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2))); else if (!leader) shibMove(parent.party[character.party].x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), parent.party[character.party].y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
-}
-
-// Handle moving to merchant
-function moveToMerchant(min = 1, max = 125) {
-    let merchant = parent.entities['Shibmerch'];
-    if (!merchant) {
-        shibMove('main', undefined, true);
-        return false;
-    }
-    let range = distanceToPoint(merchant.real_x, merchant.real_y) + 0.1;
-    // If range is good stay
-    if (range && (range <= max && range >= min)) {
-        stop();
-        return true;
-    }
-    // If smart moving past them stop
-    if (range && smart.moving && range <= character.range) {
-        stop();
-        return false;
-    }
-    // If moving continue
-    if (is_moving(character)) return false;
-    // Handle close
-    if (range > max || range < min || !range) {
-        moveToCoords(merchant.real_x + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)), merchant.real_y + getRndInteger(((min + max) / 2) * -1, ((min + max) / 2)));
-        return false;
-    }
-}
-
-// Travel to an NPC
-function travelToNPC(name) {
-    let targetNPC = getNpc(name);
-    let distance;
-    if (targetNPC) distance = distanceToPoint(targetNPC.position[0], targetNPC.position[1]);
-    if (!smart.moving && (!distance || !distance > 250)) {
-        smart_move(name);
-        return;
-    }
-    if (distance && distance < 150) {
-        stop();
-        return true;
-    }
-}
-
-// Move to coords wrapper
-function moveToPosition(position) {
-    if (!position) return;
-    moveToCoords(position.x, position.y)
-}
-
-// Checks if you can move via move then moves via smart_move if not
-function moveToCoords(x, y) {
-    if (can_move_to(x, y)) {
-        if (smart.moving) stop();
-        move(x, y);
-    } else if (!is_moving(character)) {
-        shibMove({x: x, y: y});
+    let leader = get_player(character.party);
+    let locationData = getCharacterData()[character.party] || parent.party[character.party];
+    if (leader) {
+        let range = distanceToPoint(leader.real_x, leader.real_y) + 0.1;
+        // If range is good stay
+        if (range <= max * 0.7 && range > min) return stop();
+        shibMove({x: locationData.x, y: locationData.y, range: (min + max) / 2});
+    } else {
+        // Handle different map
+        if (locationData.map !== character.map) {
+            // Handle bank
+            if (locationData.map === 'bank') return shibMove('main');
+            mapSwap[character.name] = locationData.map;
+            return shibMove(locationData.map);
+        } else {
+            shibMove({x: locationData.x, y: locationData.y, range: (min + max) / 2});
+        }
     }
 }
 
 // smart_move wrapper
 function shibMove(destination, onComplete = undefined) {
-    // If moving to a map and it doesn't match your destination reset
-    if (G.maps[destination] && smart.moving && smart.map !== destination) stop('move');
-    // If moving to coords and they don't match reset
-    if (destination.x && smart.moving && (smart.x !== destination.x || smart.y !== destination.y)) stop('move');
-    // If moving to a map/npc turn on smart_town
-    if (!destination.x) smart.use_town = true;
-    if (!smart.moving) smart_move(destination, onComplete);
+    if (!destination) return;
+    // Handle coordinates
+    if (destination.x && destination.y) {
+        if (destination.range) {
+            if (character.x > destination.x) destination.x += destination.range; else destination.x += -destination.range;
+            if (character.y > destination.y) destination.y += destination.range; else destination.y += -destination.range;
+        }
+        if (can_move_to(destination.x, destination.y)) {
+            return move(destination.x, destination.y);
+        } else {
+            // If moving to coords and they don't match reset
+            if (smart.moving && destination.x && smart.moving && (!smart.x || !smart.y || smart.x !== destination.x || smart.y !== destination.y)) stop('move');
+            if (!smart.moving) smart_move(destination, onComplete);
+        }
+    } else {
+        if (smart.moving) {
+            // If moving to a map and it doesn't match your destination reset
+            if (G.maps[destination] && smart.moving && smart.map !== destination) stop('move');
+            // If moving to coords and they don't match reset
+            if (destination.x && smart.moving && (!smart.x || !smart.y || smart.x !== destination.x || smart.y !== destination.y)) stop('move');
+        } else {
+            smart_move(destination, onComplete);
+        }
+    }
 }
 
 // Stay safe
@@ -161,7 +110,7 @@ function kite(target = undefined) {
     if (can_move_to(character.x + x, character.y + y)) {
         draw_line(character.x, character.y, character.x + x, character.y + y);
         character.kiting = true;
-        moveToCoords(character.x + x, character.y + y);
+        shibMove({x: character.x + x, y: character.y + y});
     }
     return true;
 }
