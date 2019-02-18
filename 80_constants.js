@@ -23,7 +23,7 @@ let lootTargets = ['tortoise', 'poisio'];
 let classInventory = {
     'warrior': ['basher'],
     'rogue': ['poison'],
-    'ranger': ['poison'],
+    'ranger': ['poison', 'cupid'],
     'priest': [],
     'mage': [],
     'merchant': []
