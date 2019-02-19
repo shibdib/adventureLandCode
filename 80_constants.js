@@ -17,7 +17,7 @@ let avoidMaps = ["tunnel"];
 // Event targets
 let eventMobs = ['snowman', 'goblin', 'pinkgoo'];
 // Loot targets (These will always be in the array of possibles as they drop something worthwhile.
-let lootTargets = ['tortoise', 'poisio'];
+let lootTargets = ['tortoise', 'poisio', 'armadillo'];
 
 // Items to have in the inventories of each class
 let classInventory = {
