@@ -60,7 +60,9 @@ function withdrawItem(target, level = undefined) {
         let details = getItemBankSlot(target, level);
         if (details) {
             bankItemWithdraw(details.slot, details.pack);
+            return true;
         }
+        return null;
     }
 }
 
