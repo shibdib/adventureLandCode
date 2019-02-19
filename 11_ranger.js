@@ -46,7 +46,7 @@ function farm() {
         return moveToLeader(character.range * 0.5, character.range * 0.7);
     }
     let healerTime = lowHealth(0.4);
-    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
+    let target = getEntitiesTargeting(leader, true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (healerTime && hasCupid()) {
         if (character.slots['mainhand'].name !== 'cupid') return equipCupid();
         if (in_attack_range(healerTime)) heal(healerTime);

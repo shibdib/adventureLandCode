@@ -195,6 +195,16 @@ function sortEntitiesByDistance(array) {
     return array;
 }
 
+// Sort array of entities by hp low to high
+function sortEntitiesByHealth(array) {
+    array.sort(function (current, next) {
+        let hpCurrent = current.hp / current.max_hp;
+        let hpNext = next.hp / next.max_hp;
+        if (hpCurrent < hpNext) return -1; else if (hpCurrent > hpNext) return 1; else return 0;
+    });
+    return array;
+}
+
 // Sort array of coord by distance
 function sortCoordsByDistance(array) {
     array.sort(function (current, next) {

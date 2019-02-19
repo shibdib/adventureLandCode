@@ -6,7 +6,7 @@ let state;
 //State Controller
 setInterval(function () {
     if (character.rip && state !== 99) state = 99;
-    if (combat) state = 1; else state = stateController(state);
+    if (combat || partyHurtCount(0.95)) state = 1; else state = stateController(state);
 }, 5000);
 
 //Combat Loop
@@ -35,7 +35,7 @@ function farm() {
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
     let mostHurtMember = lowHealth(0.75);
-    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
+    let target = getEntitiesTargeting(leader, true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
     // If tank target is a kitey player CURSE THEM!!!!

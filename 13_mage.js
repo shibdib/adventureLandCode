@@ -40,7 +40,7 @@ function farm() {
     let leader = get_player(character.party);
     // Fleet if tank is gone
     if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
+    let target = getEntitiesTargeting(leader, true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (target) {
         if (can_attack(target) && (checkIfSafeToAggro(target) || canOneShot(target))) {
             // Use burst when high mana
