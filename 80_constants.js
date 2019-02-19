@@ -90,6 +90,7 @@ let attributeWeights = {
         "rpiercing": 7,
         "apiercing": 0,
         "lifesteal": 1,
+        "dreturn": 1,
         "stat": 5,
         "hp": 3,
         "mp": 6
@@ -109,6 +110,7 @@ let attributeWeights = {
         "rpiercing": 8,
         "apiercing": 0,
         "lifesteal": 1,
+        "dreturn": 1,
         "stat": 5,
         "hp": 3,
         "mp": 6
@@ -128,6 +130,7 @@ let attributeWeights = {
         "rpiercing": 0,
         "apiercing": 5,
         "lifesteal": 1,
+        "dreturn": 1,
         "stat": 5,
         "hp": 3,
         "mp": 1
@@ -147,6 +150,7 @@ let attributeWeights = {
         "rpiercing": 0,
         "apiercing": 5,
         "lifesteal": 7,
+        "dreturn": 6,
         "stat": 5,
         "hp": 6,
         "mp": 1
@@ -166,6 +170,7 @@ let attributeWeights = {
         "rpiercing": 0,
         "apiercing": 5,
         "lifesteal": 3,
+        "dreturn": 1,
         "stat": 5,
         "hp": 3,
         "mp": 1
@@ -185,6 +190,7 @@ let attributeWeights = {
         "rpiercing": 5,
         "apiercing": 5,
         "lifesteal": 5,
+        "dreturn": 5,
         "stat": 5,
         "hp": 5,
         "mp": 5
