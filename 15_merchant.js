@@ -1,5 +1,5 @@
 game_log("---Merchant Script Start---");
-load_code(2);
+if (get_active_characters()[character.name] === 'self') load_code(2);
 let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, craftingItem, currentTask, craftingLevel,
     exchangeTarget,
     exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock, buyCooldown, deathCooldown;
