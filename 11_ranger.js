@@ -1,5 +1,5 @@
 game_log("---Ranger Script Start---");
-load_code(2);
+if (get_active_characters()[character.name] === 'self') load_code(2);
 let combat;
 let state;
 
