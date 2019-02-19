@@ -53,7 +53,7 @@ function shibMove(destination, onComplete = undefined) {
             return move(destination.x, destination.y);
         } else {
             // If moving to coords and they don't match reset
-            if (smart.moving && destination.x && smart.moving && (!smart.x || !smart.y || !smart.x.between(destination.x - 40, destination.x + 40) || !smart.y.between(destination.y - 40, destination.y + 40))) stop('move');
+            if (smart.moving && destination.x && smart.moving && (!smart.x || !smart.y || !smart.x.between(destination.x - 250, destination.x + 250) || !smart.y.between(destination.y - 250, destination.y + 250))) stop('move');
             if (!smart.moving) smart_move(destination, onComplete);
         }
     } else {
