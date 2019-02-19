@@ -567,7 +567,7 @@ function merchantStateTasks(state) {
 let walletTarget;
 function merchantStateController(state) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (bankDetails && bankDetails['gold'] < spendingAmount) walletTarget = bankDetails['gold'];
+    if (bankDetails && bankDetails['gold'] < spendingAmount) walletTarget = bankDetails['gold'] / 2;
     let new_state = 9;
     //KIA
     if (character.rip) {
