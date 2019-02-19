@@ -31,14 +31,15 @@ setInterval(function () {
 function farm() {
     // Mark in combat if anyone in the party is being targeted
     if (character.party) combat = checkPartyAggro(); else return kite();
-    let leader = get_player(character.party);
-    // Fleet if tank is gone
-    if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
-    let mostHurtMember = lowHealth(0.75);
-    let target = getEntitiesTargeting(leader, true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
+    // Heal yourself
+    if (character.hp < character.max_hp * 0.45) heal(character);
+    // Find attack target
+    let target = getEntitiesTargeting(get_player(character.party), true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
+    // Find heal target
+    let mostHurtMember = lowHealth(0.7);
     // Alert when OOM
     if (character.mp === 0) whisperParty('I just went OOM!');
-    // If tank target is a kitey player CURSE THEM!!!!
+    // If tank target is a player CURSE THEM!!!!
     if (target && is_character(target)) use('curse', target);
     // Always stay with leader
     if (!combat) moveToLeader(15, 20); else if (!kite()) moveToLeader(character.range * 0.25, character.range * 0.45);
@@ -55,7 +56,6 @@ function farm() {
     } else if (partyHurtCount(0.75) > 1 && can_use('partyheal')) { //MASS HEAL WHEN NEEDED
         whisperParty('Mass heal for everyone!');
         use('partyheal');
-        kite();
     } else if (mostHurtMember && !mostHurtMember.rip) { //HEAL WOUNDED
         if (in_attack_range(mostHurtMember)) {
             // Heal
@@ -65,11 +65,8 @@ function farm() {
         let deadMember = deadParty();
         if (can_use('revive', deadMember)) {
             use('revive', deadMember);
-            kite();
         }
     } else {
-        if (lowHealth(1) && in_attack_range(lowHealth(1))) {
-            heal(lowHealth(1));
-        }
+        if (lowHealth(1) && in_attack_range(lowHealth(1))) heal(lowHealth(1));
     }
 }
