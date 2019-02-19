@@ -3,6 +3,8 @@ let pveCharacters = [
     {'name': 'Shibdib', 'class': 'mage', 'slot': 13, 'role': 'dps'},
     {'name': 'Shibheal', 'class': 'priest', 'slot': 10, 'role': 'healer'},
     {'name': 'Shibgank', 'class': 'rogue', 'slot': 14, 'role': 'dps'},
+    {'name': 'Shibdank', 'class': 'rogue', 'slot': 14, 'role': 'dps'},
+    {'name': 'Shibfrank', 'class': 'rogue', 'slot': 14, 'role': 'dps'},
     {'name': 'Shibtard', 'class': 'ranger', 'slot': 11, 'role': 'dps'},
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
