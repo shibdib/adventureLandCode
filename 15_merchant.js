@@ -1,6 +1,7 @@
 game_log("---Merchant Script Start---");
 load_code(2);
-let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, craftingItem, currentTask, craftingLevel, exchangeTarget,
+let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, craftingItem, currentTask, craftingLevel,
+    exchangeTarget,
     exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock, buyCooldown, deathCooldown;
 let deathTracker = 0;
 let deathTime = {};
@@ -11,7 +12,7 @@ let sellItems = [];
 //State Controller
 setInterval(function () {
     state = merchantStateController(state);
-}, 1500);
+}, 7500);
 
 //Primary Loop
 setInterval(function () {
@@ -33,7 +34,7 @@ function merchantTaskManager() {
     }
     if (standCheck()) return;
     if (exchangeStuff()) return;
-    if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 5) < Date.now()) {
+    if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 15) < Date.now()) {
         combineItems();
     } else {
         if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
@@ -332,7 +333,7 @@ function sellExcessToNPC() {
             let cleanName = key.slice(0, -1);
             try {
                 if (item_grade({name: cleanName, level: level})) continue;
-            } catch(e) {
+            } catch (e) {
                 continue;
             }
             let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
@@ -355,10 +356,8 @@ function sellExcessToNPC() {
 function combineItems() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!craftingItem) {
-        // Chance we skip this time
-        if (Math.random() > 0.85) return lastAttemptedCrafting = Date.now();
-        for (let l = normalLevelTarget; l > 0; l--) {
-            for (let item of combineTargets) {
+        for (let item of combineTargets) {
+            for (let l = normalLevelTarget; l >= 0; l--) {
                 if (item_grade({
                     name: item,
                     level: l
@@ -382,7 +381,9 @@ function combineItems() {
                     return;
                 }
             }
-            for (let item of upgradeTargets) {
+        }
+        for (let item of upgradeTargets) {
+            for (let l = normalLevelTarget; l >= 0; l--) {
                 if (item_grade({
                     name: item,
                     level: l
@@ -446,7 +447,7 @@ function combineItems() {
                 currentTask = undefined;
                 craftingLevel = undefined;
                 lastBankCheck = undefined;
-                if (Math.random() > 0.85) lastAttemptedCrafting = Date.now(); else lastAttemptedCrafting = undefined;
+                lastAttemptedCrafting = undefined;
             } else if (withdraw) {
                 let append = 0;
                 if (craftingLevel) append = craftingLevel;
@@ -563,11 +564,10 @@ function merchantStateTasks(state) {
 }
 
 // State controller
+let walletTarget;
 function merchantStateController(state) {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
-    if (bankDetails) {
-        if (bankDetails['gold'] < spendingAmount) spendingAmount = bankDetails['gold'];
-    }
+    if (bankDetails && bankDetails['gold'] < spendingAmount) walletTarget = bankDetails['gold'];
     let new_state = 9;
     //KIA
     if (character.rip) {
@@ -581,7 +581,7 @@ function merchantStateController(state) {
     else if (!bankDetails || !lastBankCheck || lastBankCheck + 900000 < Date.now()) {
         new_state = 11;
     } //NO POORS
-    else if (character.gold < spendingAmount * 0.25) {
+    else if (character.gold < walletTarget * 0.25) {
         new_state = 12;
     } // Deposits
     else if (character.gold >= spendingAmount * 2) {
