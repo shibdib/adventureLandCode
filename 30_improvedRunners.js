@@ -60,23 +60,24 @@ function bank_store(inventorySlot) {
     if (!character.items[inventorySlot]) return game_log("No item in that spot");
     let pack, stack;
     let bankSlot = -1;
-    bankTabs:
-        for (let key of Object.keys(character.bank)) {
-            let bankPack = character.bank[key];
-            // Skip the gold tab
-            if (!Array.isArray(bankPack)) continue;
-            for (let slot in bankPack) {
-                // If items are stackable do so and break
-                if (can_stack(bankPack[slot], character.items[inventorySlot])) {
-                    pack = key;
-                    stack = true;
-                    break bankTabs;
-                } else if (!bankPack[slot]) {
-                    pack = key;
-                    bankSlot = slot;
-                }
+    // If item is stackable look for the slot
+    if (G.items[character.items[inventorySlot].name] && G.items[character.items[inventorySlot].name].s) {
+        let stackSlot = getItemBankSlot(character.items[inventorySlot].name);
+        if (stackSlot) {
+            parent.socket.emit("bank", {operation: "swap", pack: stackSlot.pack, str: -1, inv: inventorySlot});
+        }
+    }
+    for (let key of Object.keys(character.bank)) {
+        let bankPack = character.bank[key];
+        // Skip the gold tab
+        if (!Array.isArray(bankPack)) continue;
+        for (let slot in bankPack) {
+            if (!bankPack[slot]) {
+                pack = key;
+                bankSlot = slot;
             }
         }
+    }
     if (!pack) return game_log("Bank is full!");
     if (!stack) character.bank[pack][bankSlot] = 'holder';
     parent.socket.emit("bank", {operation: "swap", pack: pack, str: bankSlot, inv: inventorySlot});

@@ -57,6 +57,19 @@ function withdrawItem(target, level = undefined) {
         shibMove('bank');
         return false;
     } else {
+        let details = getItemBankSlot(target, level);
+        if (details) {
+            bankItemWithdraw(details.slot, details.pack);
+        }
+    }
+}
+
+// Get item pack/slot
+function getItemBankSlot(target, level = undefined) {
+    if (character.map !== 'bank') {
+        shibMove('bank');
+        return false;
+    } else {
         for (let key in Object.values(character.user)) {
             let slot = Object.values(character.user)[key];
             if (!slot || !slot.length) continue;
@@ -65,8 +78,7 @@ function withdrawItem(target, level = undefined) {
                 if (!item || item === null || item.name !== target) continue;
                 let iLevel = item_properties(item).level;
                 if (level === undefined || iLevel === parseInt(level)) {
-                    bankItemWithdraw(packKey, Object.keys(character.user)[key]);
-                    return true;
+                    return {pack: key, slot: packKey};
                 }
             }
         }
