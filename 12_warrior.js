@@ -13,11 +13,6 @@ let respawnTracker = {};
 //State Controller
 setInterval(function () {
     if (!character.rip && combat) state = 1; else state = stateController(state);
-    if (lowLevelTotalCount >= 10) {
-        whisperParty('We encountered too many low level mobs, going to rotate realms');
-        lowLevelTotalCount = 0;
-        return realmSwap();
-    }
 }, 5000);
 
 //Combat Loop
@@ -74,20 +69,23 @@ function targetFinding() {
 //Primary loop
 function farm() {
     updateCharacterData();
-    if (character.party) combat = checkPartyAggro(); else return kite();
-    // Handle switching maps for an event
-    if (!combat && eventMap && eventMap !== character.map) {
+    if (character.party) combat = checkPartyAggro(); else kite();
+    // Handle moving to an event
+    if (eventMap && eventMap !== character.map) {
         return shibMove(eventMap);
     } else if (eventMap && eventMap === character.map) {
         eventMap = undefined;
     }
-    // Check if anyone besides you has aggro
-    let party_aggro = checkPartyAggro();
+    if (!mainTarget && eventCoords) {
+        let map = eventMap || character.map;
+        return shibMove({x: eventCoords.x, y: eventCoords.y, map: map});
+    }
     // Stay with healer on pvp
     if (isPvP() && waitForHealer() && !combat && !tackling) return;
     // Find a mtype to kill
-    if (!currentTarget && targetArray) {
-        currentTarget = random_one(targetArray);
+    if (!currentTarget && targetArray.length) {
+        currentTarget = targetArray[0];
+        targetArray.shift();
         targetSetAt = Date.now();
         lastCombat = Date.now();
         lastRealTarget = Date.now();
@@ -97,24 +95,17 @@ function farm() {
         lowLevelCount = 0;
         game_log('New target is a ' + currentTarget);
         whisperParty('Lets go kill ' + G.monsters[currentTarget].name + "'s.");
-        targetArray = targetArray.filter((m) => m !== currentTarget);
         game_log(JSON.stringify(targetArray));
     }
     // If we had a primary and he died clear it
-    if (primary && primary.dead) {
-        primary = undefined;
-        targetFinding();
-    }
+    if (primary && primary.dead) primary = undefined;
     // If someone in the party has aggro set them primary
-    if (party_aggro && get_target_of(party_aggro) !== character) {
-        primary = party_aggro;
-    }
+    if (checkPartyAggro() && get_target_of(checkPartyAggro()) !== character) primary = checkPartyAggro();
     // If you don't have a target find one
     if (!primary) {
-        tackling = undefined;
-        let readyToPull = character.hp >= character.max_hp * 0.8 && character.mp >= character.max_mp * 0.8;
+        let readyToPull = character.hp >= character.max_hp * 0.7 && character.mp >= character.max_mp * 0.7;
         if (getEntitiesTargeting()[0]) {
-            primary = getEntitiesTargeting()[0];
+            primary = getEntitiesTargeting(character, true)[0];
         } else if (readyToPull && mainTarget) {
             primary = mainTarget;
             traveling = false;
@@ -126,59 +117,52 @@ function farm() {
             if (character.hp < character.max_hp * 0.8) useHealthPotion(); else useManaPotion()
         }
     }
-    // Handle stomping things
-    stompControl();
     // If you have a target deal with it
     if (primary) {
-        if (tackling || get_target_of(primary) === character || !waitForHealer()) {
-            combat = true;
-            if (primary.mtype === currentTarget) lastRealTarget = Date.now();
-            // If we have adds queued and we have aggro, get them
-            if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling) {
-                primary = secondaryTarget;
-            }
-            tackle(primary);
-        } else {
-            // Pull if he's attacking someone else
-            if (get_target_of(primary) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary))) {
-                combat = true;
-                tackle(primary);
-                if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
+        // Handle PVP
+        if (is_character(target)) {
+            potionController();
+            use('warcry');
+            use('hardshell');
+            use('charge');
+            use('taunt', target);
+            // In Range
+            if (can_attack(target)) {
+                smartAttack(target);
             } else {
-                primary = undefined;
-                kite();
+                moveToTarget(target, 0, 1);
+            }
+        } else {
+            if (tackling || get_target_of(primary) === character || !waitForHealer()) {
+                if (primary.mtype === currentTarget) lastRealTarget = Date.now();
+                // If we have adds queued and we have aggro, get them
+                if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling && get_target_of(secondaryTarget) !== character) primary = secondaryTarget;
+                if (can_use('stomp')) stompControl();
+                tackle(primary);
+            } else {
+                // Pull if he's attacking someone else
+                if (get_target_of(primary) && get_target_of(primary) !== character && get_target_of(primary).ctype !== 'warrior' && parent.party_list.includes(get_target_of(primary))) {
+                    combat = true;
+                    tackle(primary);
+                    if (!secondaryTarget && !kite(primary)) moveToTarget(primary)
+                } else {
+                    primary = undefined;
+                    kite();
+                }
             }
         }
     } else {
-        if (!tackling && !combat && smart.moving && get_nearest_monster({type: currentTarget})) return stop('move');
+        if (!tackling && get_nearest_monster({type: currentTarget})) return stop('move');
         if (!kite()) shibMove(currentTarget);
         tackling = undefined;
     }
 }
 
-//Tackle a target
-function tackle(target, slowMove = true) {
-    lastCombat = Date.now();
-    tackling = true;
-    if (!kite(target) && !targetFriends(target)) {
-        if (target.target !== character.name) use('taunt', target);
-        if (parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
-        if (slowMove) moveToTarget(target);
-        if (can_attack(target)) smartAttack(target);
-    } else {
-        kite(target);
-        if (target.target !== character.name) use('taunt', target);
-        if (can_attack(target)) attack(target);
-    }
-}
-
 // handle basher swap and stomp
-let lastStomp, stompReady, reEquip, equipped;
 let originalWeapons = {};
 
 function stompControl() {
-    // If you bashed you need to re-equip
-    if (reEquip || (!stompReady && originalWeapons['mainHand'] && !equipped)) {
+    if (character.slots['mainhand'].name === 'basher') {
         use('stomp');
         let mainSlot = getInventorySlot(originalWeapons['mainHand'].name, false, originalWeapons['mainHand'].level);
         equip(mainSlot);
@@ -186,35 +170,23 @@ function stompControl() {
             let offSlot = getInventorySlot(originalWeapons['offHand'].name, false, originalWeapons['offHand'].level);
             equip(offSlot);
         }
-        equipped = true;
-        lastStomp = Date.now();
-        reEquip = undefined;
-        stompReady = undefined;
-        return;
-    }
-    // Don't bash without a target
-    if (!primary) return;
-    // Don't bash when not needed
-    if (!stompReady && getEntitiesTargeting().length < 2 && primary.hp < primary.max_hp * 0.15) return;
-    let basherSlot = getInventorySlot('basher');
-    if (stompReady) {
-        equipped = false;
-        unequip('offhand');
-        equip(basherSlot);
-        reEquip = true;
-    } else if ((tackling || nearbyAggressors().length) && basherSlot && (!lastStomp || lastStomp + 25000 < Date.now())) {
-        originalWeapons['mainHand'] = {
-            name: character.slots['mainhand'].name,
-            level: character.slots['mainhand'].level
-        };
-        if (character.slots['offhand']) {
-            originalWeapons['offHand'] = {
-                name: character.slots['offhand'].name,
-                level: character.slots['offhand'].level
+    } else if (getInventorySlot('basher')) {
+        if (!originalWeapons['mainHand']) {
+            originalWeapons['mainHand'] = {
+                name: character.slots['mainhand'].name,
+                level: character.slots['mainhand'].level
             };
         }
+        if (!originalWeapons['offhand']) {
+            if (character.slots['offhand']) {
+                originalWeapons['offHand'] = {
+                    name: character.slots['offhand'].name,
+                    level: character.slots['offhand'].level
+                };
+            }
+        }
         unequip('offhand');
-        stompReady = true;
+        equip(getInventorySlot('basher'));
     }
 }
 
@@ -238,7 +210,6 @@ function refreshTarget() {
             }
             case 'noSee': {
                 game_log('NoSee');
-                whisperParty('Have not seen a ' + G.monsters[currentTarget].name + "'s for a couple minutes, moving onto something new.");
                 // Handle longer respawns
                 if (G.monsters[currentTarget].respawn > 90) {
                     respawnTracker[currentTarget] = Date.now() + ((G.monsters[currentTarget].respawn - 90) * 1000) * 0.9;
@@ -275,12 +246,8 @@ function on_game_event(event) {
         let eventTarget = get_nearest_monster({type: event.name});
         if (eventTarget) {
             whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
-            lastCombat = Date.now();
-            lastRealTarget = Date.now();
-            lowLevelCount = 0;
             currentTarget = event.name;
             primary = eventTarget;
-            traveling = true;
             stop();
         } else if (event.map) {
             lastCombat = Date.now();
@@ -381,4 +348,4 @@ setInterval(function () {
             }
         }
     }
-}, 5000);
+}, 2500);

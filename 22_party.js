@@ -1,54 +1,3 @@
-// Handle waiting for party members
-let waitNotify, waitMoveNotify, merchant, waitTime;
-function waitForParty(range = 400) {
-    if (character.map === 'bank') return false;
-    if (parent.party_list.length > 0) {
-        for (let key in parent.party_list) {
-            let member = parent.party_list[key];
-            let entity = parent.entities[member];
-            // Don't wait for merchant or yourself
-            if (merchant === member || member === character.name) continue;
-            if ((entity && entity.ctype === 'merchant') || member.includes('merchantTaskManager')) {
-                merchant = member;
-                continue;
-            }
-            // Handle death
-            if ((entity && entity.rip) || member.rip) {
-                if (!waitNotify) {
-                    game_log(member + ' is dead, waiting on them.');
-                    whisperParty('Waiting for ' + member + ' to revive.')
-                }
-                waitNotify = true;
-                return true;
-            }
-            // Handle distance
-            if (!entity || distanceToPoint(entity.real_x, entity.real_y) >= range) {
-                if (!waitNotify) {
-                    game_log(member + ' is too far away, waiting on them.');
-                    whisperParty('Waiting for ' + member + ' to catch up.')
-                }
-                waitNotify = true;
-                if (!waitTime) waitTime = Date.now();
-                // If waiting for 25 seconds then go to the problem child (3 minutes if map change occurred)
-                let waitLength = 25000;
-                if (parent.party[member].map !== character.map) waitLength = 180000;
-                if (waitTime + waitLength < Date.now() && entity && entity.ctype !== 'priest') {
-                    if (!waitMoveNotify) {
-                        game_log(member + ' wait timed out.');
-                        whisperParty(member + ' we are going on without you, catchup when you can!!');
-                    }
-                    waitMoveNotify = true;
-                    return false;
-                }
-                return true;
-            }
-        }
-        waitMoveNotify = undefined;
-        waitTime = undefined;
-        waitNotify = undefined;
-    }
-}
-
 // Handle waiting for a healer
 let healerNotify;
 function waitForHealer(range = 300, silent = false) {
@@ -56,15 +5,13 @@ function waitForHealer(range = 300, silent = false) {
     if (character.map === 'bank') return false;
     if (parent.party_list.length > 0) {
         for (let key in parent.party_list) {
-            let member = parent.party_list[key];
-            let entity = parent.entities[member];
+            let entity = parent.entities[parent.party_list[key]];
             if (member === character.name) continue;
             if (!entity || entity.ctype !== 'priest') continue;
             healerFound = true;
             if (entity && entity.mp < entity.max_mp * 0.03) {// Priest is low MP
                 if (!healerNotify) {
-                    if (!silent) game_log('Healer is OOM.');
-                    if (!silent) whisperParty('Waiting for ' + member + ' to get their mp up.')
+                    game_log('Healer is OOM.');
                 }
                 healerNotify = true;
                 return true;
@@ -72,9 +19,8 @@ function waitForHealer(range = 300, silent = false) {
             // Handle distance
             if (distanceToPoint(entity.real_x, entity.real_y) >= entity.range * 1.5) {
                 if (!healerNotify) {
-                    if (!silent) game_log('Healer Range.');
-                    if (!silent) whisperParty('Waiting on our healer ' + member + '.');
-                    if (isPvP()) moveToTarget(entity, 0, 0, false);
+                    game_log('Healer Range.');
+                    if (!silent) whisperParty('Waiting on a healer.');
                 }
                 healerNotify = true;
                 return true;
@@ -83,17 +29,10 @@ function waitForHealer(range = 300, silent = false) {
     }
     if (!healerFound) {
         if (!healerNotify) {
-            if (!silent) game_log('No healer??');
-            if (!silent) whisperParty('Where did the healer go??');
+            game_log('No healer??');
         }
         healerNotify = true;
-        if (isPvP() && findStoredHealer()) {
-            let healer = findStoredHealer();
-            shibMove({x: healer.x, y: healer.y});
-            return true;
-        } else {
-            return true;
-        }
+        return true;
     }
     healerNotify = undefined;
 }
@@ -102,7 +41,7 @@ function waitForHealer(range = 300, silent = false) {
 let messageQueue = [];
 let lastSent;
 function whisperParty(message, sendPublic = false) {
-    if (lastSent && lastSent + 5000 > Date.now()) {
+    if (lastSent && lastSent + 1100 > Date.now()) {
         messageQueue.push(message);
         return;
     }
@@ -116,14 +55,14 @@ function whisperParty(message, sendPublic = false) {
 }
 // Queued message loop
 setInterval(function () {
-    if (messageQueue.length && lastSent + 1000 <= Date.now()) {
+    if (messageQueue.length && lastSent + 1200 <= Date.now()) {
         if (parent.party_list.length > 0) {
             lastSent = Date.now();
             say('/p ' + messageQueue[0]);
             messageQueue.shift();
         }
     }
-}, 2500);
+}, 500);
 
 let partyTracker = {};
 // Restarts lost party members

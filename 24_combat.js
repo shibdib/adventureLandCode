@@ -154,6 +154,22 @@ function deadParty() {
     }
 }
 
+//Tackle a target
+function tackle(target, slowMove = true) {
+    lastCombat = Date.now();
+    tackling = true;
+    if (!kite(target) && !targetFriends(target)) {
+        if (target.target !== character.name) use('taunt', target);
+        if (parent.distance(character, target) > 120 && parent.distance(character, target) < 250) use('charge');
+        if (slowMove) moveToTarget(target);
+        if (can_attack(target)) smartAttack(target);
+    } else {
+        kite(target);
+        if (target.target !== character.name) use('taunt', target);
+        if (can_attack(target)) attack(target);
+    }
+}
+
 // Store PVP info
 function storeHostilePlayer(hostile, act = 'target') {
     let hostilePlayers = JSON.parse(localStorage.getItem('hostilePlayers')) || {};
