@@ -159,6 +159,7 @@ function passiveMerchant() {
                 }
             }
             for (let item of buyTargets) {
+                if (bankDetails['gold'] + character.gold < 5000000) break;
                 let append = item.level;
                 if (!item.level) append = '';
                 let price = G.items[item.item].g;
@@ -184,6 +185,7 @@ function passiveMerchant() {
 function buyFromPlayers() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
+    if (bankDetails['gold'] + character.gold < 5000000) return;
     if (character.map === 'bank') return shibMove('main');
     let merchants = Object.values(parent.entities).filter(mob => is_character(mob) && mob.ctype === "merchant" && mob.name !== character.name && mob.stand);
     if (buyCooldown + 2500 > Date.now()) return false;
