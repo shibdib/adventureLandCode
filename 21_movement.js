@@ -46,8 +46,7 @@ let onPatrol = {};
 function patrolMap(mapName = undefined) {
     let patrolData = onPatrol[character.name] || {};
     if (!patrolData.map) patrolData.map = mapName || random_one(Object.keys(patrolRoutes));
-    if (!patrolData.route) patrolData.route = patrolRoutes[patrolData.map];
-    if (!searchRoute) searchRoute = patrolRoutes[eventMap];
+    if (!patrolData.route || !patrolData.route.length) patrolData.route = patrolRoutes[patrolData.map];
     if (!is_moving(character)) {
         if (!patrolData.route.length) {
             if (!mapName) patrolData.map = undefined;

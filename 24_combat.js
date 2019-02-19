@@ -60,6 +60,7 @@ function getGankTargets() {
         players = players.filter((p) => p.level < character.level + 5 && !p.rip);
         if (players.length) return sortEntitiesByDistance(players);
     }
+    return [];
 }
 
 // Check for monsters nearby who will aggro
@@ -165,6 +166,7 @@ function deadParty() {
 
 //Tackle a target
 function tackle(target, slowMove = true) {
+    if (!target || target.dead) return;
     lastCombat = Date.now();
     tackling = true;
     if (!kite(target) && !targetFriends(target)) {
