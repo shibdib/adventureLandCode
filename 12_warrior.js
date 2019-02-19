@@ -157,12 +157,7 @@ function farm() {
                 let map = eventMap || character.map;
                 if (!kite()) shibMove({x: eventCoords.x, y: eventCoords.y, map: map});
             } else if (!mainTarget && eventSearch) {
-                if (!searchRoute) searchRoute = patrolRoutes[eventMap];
-                if (!is_moving(character)) {
-                    if (!searchRoute.length) return currentTarget = undefined;
-                    if (!kite()) shibMove({x: searchRoute[0].x, y: searchRoute[0].y, map: eventMap});
-                    searchRoute.shift();
-                }
+                patrolMap(eventMap);
             }
         } else {
             if (!tackling && get_nearest_monster({type: currentTarget})) return stop('move');
