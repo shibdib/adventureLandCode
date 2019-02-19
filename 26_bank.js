@@ -78,7 +78,7 @@ function getItemBankSlot(target, level = undefined) {
                 if (!item || item === null || item.name !== target) continue;
                 let iLevel = item_properties(item).level;
                 if (level === undefined || iLevel === parseInt(level)) {
-                    return {pack: key, slot: packKey};
+                    return {pack: Object.keys(character.user)[key], slot: packKey};
                 }
             }
         }
