@@ -88,7 +88,7 @@ function potionController(priest = false) {
             useHealthPotion();
         } else if (character.mp < character.max_mp * 0.45) {
             useManaPotion();
-        } else if (character.hp < character.max_hp * 0.45) {
+        } else if (character.hp < character.max_hp * 0.99) {
             useHealthPotion();
         }
     } else {
@@ -99,7 +99,7 @@ function potionController(priest = false) {
             useManaPotion();
         } else if (character.hp < character.max_hp * 0.75) {
             heal(character);
-        } else if (character.hp < character.max_hp * 0.45) {
+        } else if (character.hp < character.max_hp * 0.99) {
             useHealthPotion();
             heal(character);
         }
