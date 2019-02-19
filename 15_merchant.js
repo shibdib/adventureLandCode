@@ -33,7 +33,7 @@ function merchantTaskManager() {
     }
     if (standCheck()) return;
     if (exchangeStuff()) return;
-    if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 10) < Date.now()) {
+    if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 5) < Date.now()) {
         combineItems();
     } else {
         if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
@@ -446,7 +446,7 @@ function combineItems() {
                 currentTask = undefined;
                 craftingLevel = undefined;
                 lastBankCheck = undefined;
-                if (Math.random() > 0.5) lastAttemptedCrafting = Date.now(); else lastAttemptedCrafting = undefined;
+                if (Math.random() > 0.85) lastAttemptedCrafting = Date.now(); else lastAttemptedCrafting = undefined;
             } else if (withdraw) {
                 let append = 0;
                 if (craftingLevel) append = craftingLevel;
