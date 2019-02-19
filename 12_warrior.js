@@ -1,7 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
 let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, targetSetAt, targetArray,
-    eventMap, eventCoords, eventSearch, searchRoute;
+    eventMap, eventCoords, eventMonster, eventSearch, searchRoute;
 let lowLevelCount = 0;
 let lowLevelTotalCount = 0;
 let state;
@@ -70,23 +70,6 @@ function targetFinding() {
 function farm() {
     updateCharacterData();
     if (character.party) combat = checkPartyAggro(); else kite();
-    // Handle moving to an event
-    if (eventMap && eventMap !== character.map) {
-        return shibMove(eventMap);
-    } else if (eventMap && eventMap === character.map) {
-        eventMap = undefined;
-    }
-    if (!mainTarget && eventCoords) {
-        let map = eventMap || character.map;
-        return shibMove({x: eventCoords.x, y: eventCoords.y, map: map});
-    } else if (!mainTarget && eventSearch) {
-        if (!searchRoute) searchRoute = patrolRoutes[eventMap];
-        if (!is_moving(character)) {
-            if (!searchRoute.length) return currentTarget = undefined;
-            shibMove({x: searchRoute[0].x, y: searchRoute[0].y, map: eventMap});
-            searchRoute.shift();
-        }
-    }
     // Stay with healer on pvp
     if (isPvP() && waitForHealer() && !combat && !tackling) return;
     // Find a mtype to kill
@@ -96,6 +79,7 @@ function farm() {
         targetSetAt = Date.now();
         primary = undefined;
         mainTarget = undefined;
+        eventMonster = undefined;
         traveling = true;
         lowLevelCount = 0;
         game_log('New target is a ' + currentTarget);
@@ -160,9 +144,30 @@ function farm() {
             }
         }
     } else {
-        if (!tackling && get_nearest_monster({type: currentTarget})) return stop('move');
-        if (!kite()) shibMove(currentTarget);
         tackling = undefined;
+        // Handle moving to an event
+        if (eventMonster) {
+            if (!tackling && get_nearest_monster({type: eventMonster})) return stop('move');
+            if (eventMap && eventMap !== character.map) {
+                if (!kite()) return shibMove(eventMap);
+            } else if (eventMap && eventMap === character.map) {
+                eventMap = undefined;
+            }
+            if (!mainTarget && eventCoords) {
+                let map = eventMap || character.map;
+                if (!kite()) shibMove({x: eventCoords.x, y: eventCoords.y, map: map});
+            } else if (!mainTarget && eventSearch) {
+                if (!searchRoute) searchRoute = patrolRoutes[eventMap];
+                if (!is_moving(character)) {
+                    if (!searchRoute.length) return currentTarget = undefined;
+                    if (!kite()) shibMove({x: searchRoute[0].x, y: searchRoute[0].y, map: eventMap});
+                    searchRoute.shift();
+                }
+            }
+        } else {
+            if (!tackling && get_nearest_monster({type: currentTarget})) return stop('move');
+            if (!kite()) shibMove(currentTarget);
+        }
     }
 }
 
@@ -257,6 +262,7 @@ function on_game_event(event) {
         targetSetAt = Date.now() - 60000;
         lowLevelCount = 0;
         currentTarget = event.name;
+        eventMonster = event.name;
         eventMap = event.map;
         eventCoords = {x: event.x, y: event.y};
         if (eventTarget) {
