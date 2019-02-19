@@ -61,11 +61,13 @@ setInterval(function () {
 
 function targetFinding() {
     // Handle various target declarations
-    if (currentTarget) mainTarget = findLocalTargets(currentTarget);
+    if (currentTarget) {
+        mainTarget = findLocalTargets(currentTarget);
+        if (G.monsters[currentTarget].respawn !== -1 && G.monsters[currentTarget].respawn < 120) secondaryTarget = getSecondary();
+    }
     if (mainTarget) draw_circle(mainTarget.x, mainTarget.y, 30, 3, 0xFFBF00);
     opportunisticTarget = getEasyKills(false)[0];
     if (opportunisticTarget) draw_circle(opportunisticTarget.x, opportunisticTarget.y, 30, 3, 0x00FFFF);
-    secondaryTarget = getSecondary();
     if (secondaryTarget) draw_circle(secondaryTarget.x, secondaryTarget.y, 30, 3, 0x00E639);
 }
 
