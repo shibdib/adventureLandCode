@@ -46,7 +46,7 @@ function farm() {
     let target = getEntitiesTargeting(leader)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (target && (checkIfSafeToAggro(target) || canOneShot(target))) {
         let range = distanceToPoint(target.real_x, target.real_y);
-        if (range <= character.range) {
+        if (range <= character.range * 0.9) {
             // Killy rogue
             if (can_use('quickstab', target)) {
                 use('quickstab', target);
@@ -65,7 +65,7 @@ function farm() {
             if (can_use('invis')) {
                 use('invis');
             }
-            moveToTarget(target, character.range * 0.5, character.range * 0.99);
+            moveToTarget(target, character.range * 0.5, character.range * 0.7);
         }
     } else {
         // Only invis if near baddies

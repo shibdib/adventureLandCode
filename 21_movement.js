@@ -1,6 +1,6 @@
 // Handle moving to a target
 // TODO: send_cm/on_cm stuff for map change
-function moveToTarget(target, min = 0, max = character.range * 0.9) {
+function moveToTarget(target, min = 0, max = character.range * 0.7) {
     if (target) {
         let range = distanceToPoint(target.real_x, target.real_y) + 0.1;
         // If range is good stay
@@ -53,7 +53,7 @@ function shibMove(destination, onComplete = undefined) {
             return move(destination.x, destination.y);
         } else {
             // If moving to coords and they don't match reset
-            if (smart.moving && destination.x && smart.moving && (!smart.x || !smart.y || smart.x !== destination.x || smart.y !== destination.y)) stop('move');
+            if (smart.moving && destination.x && smart.moving && (!smart.x || !smart.y || !smart.x.between(destination.x - 40, destination.x + 40) || !smart.y.between(destination.y - 40, destination.y + 40))) stop('move');
             if (!smart.moving) smart_move(destination, onComplete);
         }
     } else {
