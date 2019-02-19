@@ -1,7 +1,7 @@
 game_log("---Warrior Script Start---");
 load_code(2);
-let currentTarget, target, combat, pendingReboot, tackling,
-    primary, lastPos, traveling, targetSetAt, targetArray, eventMap, eventCoords;
+let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, targetSetAt, targetArray,
+    eventMap, eventCoords, eventSearch, searchRoute;
 let lowLevelCount = 0;
 let lowLevelTotalCount = 0;
 let state;
@@ -79,16 +79,21 @@ function farm() {
     if (!mainTarget && eventCoords) {
         let map = eventMap || character.map;
         return shibMove({x: eventCoords.x, y: eventCoords.y, map: map});
+    } else if (!mainTarget && eventSearch) {
+        if (!searchRoute) searchRoute = patrolRoutes[eventMap];
+        if (!is_moving(character)) {
+            if (!searchRoute.length) return currentTarget = undefined;
+            shibMove({x: searchRoute[0].x, y: searchRoute[0].y, map: eventMap});
+            searchRoute.shift();
+        }
     }
     // Stay with healer on pvp
     if (isPvP() && waitForHealer() && !combat && !tackling) return;
     // Find a mtype to kill
-    if (!currentTarget && targetArray.length) {
+    if (!currentTarget && targetArray && targetArray.length) {
         currentTarget = targetArray[0];
         targetArray.shift();
         targetSetAt = Date.now();
-        lastCombat = Date.now();
-        lastRealTarget = Date.now();
         primary = undefined;
         mainTarget = undefined;
         traveling = true;
@@ -126,6 +131,8 @@ function farm() {
             use('hardshell');
             use('charge');
             use('taunt', target);
+            lastCombat = Date.now();
+            lastRealTarget = Date.now();
             // In Range
             if (can_attack(target)) {
                 smartAttack(target);
@@ -135,6 +142,7 @@ function farm() {
         } else {
             if (tackling || get_target_of(primary) === character || !waitForHealer()) {
                 if (primary.mtype === currentTarget) lastRealTarget = Date.now();
+                lastCombat = Date.now();
                 // If we have adds queued and we have aggro, get them
                 if (currentTarget && secondaryTarget && get_target_of(primary) === character && !traveling && get_target_of(secondaryTarget) !== character) primary = secondaryTarget;
                 if (can_use('stomp')) stompControl();
@@ -244,27 +252,39 @@ function refreshTarget() {
 function on_game_event(event) {
     if (eventMobs.includes(event.name)) {
         let eventTarget = get_nearest_monster({type: event.name});
+        lastCombat = Date.now() - 60000;
+        lastRealTarget = Date.now() - 60000;
+        targetSetAt = Date.now() - 60000;
+        lowLevelCount = 0;
+        currentTarget = event.name;
+        eventMap = event.map;
+        eventCoords = {x: event.x, y: event.y};
         if (eventTarget) {
             whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
-            currentTarget = event.name;
             primary = eventTarget;
             stop();
         } else if (event.map) {
-            lastCombat = Date.now();
-            lastRealTarget = Date.now();
-            lowLevelCount = 0;
-            currentTarget = event.name;
             primary = undefined;
             traveling = true;
-            eventMap = event.map;
-            eventCoords = {x: event.x, y: event.y};
             stop();
             if (character.map === event.map) {
                 whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
-                return shibMove({x: eventCoords.x, y: eventCoords.y, map: event.map});
             } else if (eventCoords.x && eventCoords.y) {
-                whisperParty('An event mob spawned on a different map, lets go kill a ' + G.monsters[event.name].name);
-                return shibMove({x: eventCoords.x, y: eventCoords.y, map: event.map});
+                if (character.map === event.map) {
+                    whisperParty('An event mob spawned, lets go kill a ' + G.monsters[event.name].name);
+                    return shibMove({x: eventCoords.x, y: eventCoords.y, map: event.map});
+                } else {
+                    whisperParty('An event mob spawned on a different map, lets go kill a ' + G.monsters[event.name].name);
+                    return shibMove(event.map);
+                }
+            } else if (event.map) {
+                eventSearch = true;
+                if (character.map === event.map) {
+                    whisperParty('An event mob spawned, we need to find a ' + G.monsters[event.name].name);
+                } else {
+                    whisperParty('An event mob spawned on a different map, lets go find a ' + G.monsters[event.name].name);
+                    return shibMove(event.map);
+                }
             }
         }
     }

@@ -39,32 +39,31 @@ function farm() {
     // If you get aggro from a monster try to invis flash to lose it
     if (getEntitiesTargeting()[0] && is_monster(getEntitiesTargeting()[0])) use('invis');
     // Mark in combat if anyone in the party is being targeted
-    if (character.party) combat = checkPartyAggro(); else return kite();
+    if (character.party) combat = checkPartyAggro(); else {
+        use('invis');
+        kite();
+    }
     let leader = get_player(character.party);
     // Fleet if tank is gone
-    if (!leader) return moveToLeader(character.range * 0.5, character.range * 0.7);
+    if (!leader) {
+        use('invis');
+        moveToLeader(character.range * 0.5, character.range * 0.7);
+    }
     let target = getEntitiesTargeting(leader, true)[0] || findLeaderTarget() || checkPartyAggro() || getEntitiesTargeting()[0];
     if (target && (checkIfSafeToAggro(target) || canOneShot(target))) {
         let range = distanceToPoint(target.real_x, target.real_y);
         if (range <= character.range * 0.9) {
             // Killy rogue
-            if (can_use('quickstab', target)) {
-                use('quickstab', target);
-            } else if (can_use('quickpunch', target)) {
-                use('quickpunch', target);
-            }
+            use('quickstab', target);
+            use('quickpunch', target);
             if (can_attack(target)) {
                 smartAttack(target);
             }
         } else {
             // Poison
-            if (can_use('pcoat')) {
-                use('pcoat');
-            }
+            use('pcoat');
             // Sneaky rogue
-            if (can_use('invis')) {
-                use('invis');
-            }
+            use('invis');
             moveToTarget(target, character.range * 0.5, character.range * 0.7);
         }
     } else {
@@ -77,6 +76,6 @@ function farm() {
 function speedParty() {
     for (let key in parent.party_list) {
         let member = parent.entities[parent.party_list[key]];
-        if (member && can_use('rspeed')) return member;
+        if (member && can_use('rspeed', member)) return member;
     }
 }
