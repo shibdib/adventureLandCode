@@ -2,6 +2,7 @@ game_log("---Rogue Script Start---");
 if (get_active_characters()[character.name] === 'self') load_code(2);
 let combat;
 let state;
+let gankMode;
 
 //State Controller
 setInterval(function () {
@@ -12,7 +13,7 @@ setInterval(function () {
 //Combat Loop
 setInterval(function () {
     if (!state || state !== 1) return;
-    farm();
+    if (!gankMode) farm(); else gank();
 }, 350);
 
 //Other Task Loop
@@ -70,6 +71,33 @@ function farm() {
         // Only invis if near baddies
         if (nearbyAggressors(100, true).length) use('invis'); else stop('invis');
         moveToLeader();
+    }
+}
+
+function gank() {
+    // If you get aggro from a monster try to invis flash to lose it
+    if (getEntitiesTargeting()[0] && is_monster(getEntitiesTargeting()[0])) use('invis');
+    let target = getEntitiesTargeting()[0] || getGankTargets()[0];
+    if (target) {
+        let range = distanceToPoint(target.real_x, target.real_y);
+        if (range <= character.range * 0.9) {
+            // Killy rogue
+            use('quickstab', target);
+            use('quickpunch', target);
+            if (can_attack(target)) {
+                smartAttack(target);
+            }
+        } else {
+            // Poison
+            use('pcoat');
+            // Sneaky rogue
+            use('invis');
+            moveToTarget(target, character.range * 0.5, character.range * 0.7);
+        }
+    } else {
+        // Be invisible if moving
+        use('invis');
+        patrolMap();
     }
 }
 

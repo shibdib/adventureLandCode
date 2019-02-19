@@ -53,6 +53,15 @@ function getEasyKills(oneShot = true) {
     return sortEntitiesByDistance(easyKill).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
 }
 
+// Find PVP targets
+function getGankTargets() {
+    let players = getNearbyCharacters(9999, true);
+    if (players.length) {
+        players = players.filter((p) => p.level < character.level + 5 && !p.rip);
+        if (players.length) return sortEntitiesByDistance(players);
+    }
+}
+
 // Check for monsters nearby who will aggro
 function nearbyAggressors(range = 215) {
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&

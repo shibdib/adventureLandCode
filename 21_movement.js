@@ -40,6 +40,24 @@ function moveToLeader(min = 20, max = 25) {
     }
 }
 
+// Patrol a map
+let onPatrol = {};
+
+function patrolMap(mapName = undefined) {
+    let patrolData = onPatrol[character.name] || {};
+    if (!patrolData.map) patrolData.map = mapName || random_one(Object.keys(patrolRoutes));
+    if (!patrolData.route) patrolData.route = patrolRoutes[patrolData.map];
+    if (!searchRoute) searchRoute = patrolRoutes[eventMap];
+    if (!is_moving(character)) {
+        if (!patrolData.route.length) {
+            if (!mapName) patrolData.map = undefined;
+            return patrolData.route = undefined;
+        }
+        if (!kite()) shibMove({x: patrolData.route[0].x, y: patrolData.route[0].y, map: patrolData.map});
+        patrolData.route.shift();
+    }
+}
+
 // smart_move wrapper
 function shibMove(destination, onComplete = undefined) {
     if (!destination) return;
