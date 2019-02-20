@@ -56,8 +56,8 @@ function getEasyKills(oneShot = true) {
 // Find PVP targets
 function getGankTargets() {
     let players = getNearbyCharacters(9999, true);
-    if (players.length) {
-        players = players.filter((p) => p.level < character.level + 5 && !p.rip);
+    if (players.length && character.map !== 'bank') {
+        players = players.filter((p) => (p.level < character.level || p.hp < character.hp) && !p.rip);
         if (players.length) return sortEntitiesByDistance(players);
     }
     return [];

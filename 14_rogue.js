@@ -28,6 +28,7 @@ setInterval(function () {
         if (slowParty) use('rspeed', slowParty);
     }
     if (!state) return;
+    if (isPvP()) use('invis');
     stateTasks(state);
 }, 3000);
 

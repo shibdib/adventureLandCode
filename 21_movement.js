@@ -45,6 +45,7 @@ let onPatrol = {};
 
 function patrolMap(mapName = undefined) {
     let patrolData = onPatrol[character.name] || {};
+    game_log(JSON.stringify(patrolData))
     if (!patrolData.map) patrolData.map = mapName || random_one(Object.keys(patrolRoutes));
     if (!patrolData.route || !patrolData.route.length) patrolData.route = patrolRoutes[patrolData.map];
     if (!is_moving(character)) {
@@ -55,6 +56,7 @@ function patrolMap(mapName = undefined) {
         if (!kite()) shibMove({x: patrolData.route[0].x, y: patrolData.route[0].y, map: patrolData.map});
         patrolData.route.shift();
     }
+    onPatrol[character.name] = patrolData;
 }
 
 // smart_move wrapper
