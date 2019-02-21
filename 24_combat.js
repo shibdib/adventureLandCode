@@ -43,26 +43,6 @@ function checkPartyAggro() {
     }
 }
 
-// Attack easy to kill things
-function getEasyKills(oneShot = true) {
-    let easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && in_attack_range(mob) && mob.hp <= character.attack * 0.8 && G.monsters[mob.mtype].xp);
-    if (!oneShot) easyKill = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] && !mob.target && mob.xp > 0 && mob.attack < character.hp * 0.1
-        && !G.monsters[mob.mtype].dreturn && !G.monsters[mob.mtype].rage && !G.monsters[mob.mtype].stationary && (!G.monsters[mob.mtype].evasion || G.monsters[mob.mtype].evasion <= 80)
-        && parent.distance(character, mob) <= 175);
-    //Order monsters by distance.
-    return sortEntitiesByDistance(easyKill).sort((a, b) => (b.xp - parent.distance(character, b)) - (a.xp - parent.distance(character, a)));
-}
-
-// Find PVP targets
-function getGankTargets() {
-    let players = getNearbyCharacters(9999, true);
-    if (players.length && character.map !== 'bank') {
-        players = players.filter((p) => (p.level < character.level || p.hp < character.hp) && !p.rip);
-        if (players.length) return sortEntitiesByDistance(players);
-    }
-    return [];
-}
-
 // Check for monsters nearby who will aggro
 function nearbyAggressors(range = 215) {
     let aggressiveMonsters = Object.values(parent.entities).filter(mob => mob.type === "monster" && G.monsters[mob.mtype] &&
