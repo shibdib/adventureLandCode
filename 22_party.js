@@ -65,10 +65,9 @@ setInterval(function () {
 
 let partyTracker = {};
 // Restarts lost party members
-function refreshCharacters(force = false) {
-    let count = Object.keys(get_active_characters()).length;
+function refreshCharacters(pvp, force = false) {
     // If we're missing people refresh
-    if (count < 3 || force) {
+    if (force) {
         stop();
         whisperParty('Going to refresh the party, one second...');
         //Stops all
@@ -76,25 +75,26 @@ function refreshCharacters(force = false) {
             if (char.name === character.name) continue;
             stop_character(char.name);
         }
-        //Healer
-        let healer = shuffle(pveCharacters.filter((c) => c.role === 'healer'))[0];
-        if (!Object.keys(get_active_characters()).includes(healer.name)) start_character(healer.name, healer.slot); else load_code(healer.slot);
-        //DPS
-        let dps = shuffle(pveCharacters.filter((c) => c.role === 'dps'))[0];
-        if (!Object.keys(get_active_characters()).includes(dps.name)) start_character(dps.name, dps.slot); else load_code(dps.slot);
-        //Tank
-        let tank = shuffle(pveCharacters.filter((c) => c.role === 'tank'))[0];
-        if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot); else load_code(tank.slot);
-        //Merchant
-        /** MERCHANT NOW RUNS SEPARATE ON US1
-        let merchant = shuffle(pveCharacters.filter((c) => c.role === 'merchant'))[0];
-        if (!Object.keys(get_active_characters()).includes(merchant.name)) start_character(merchant.name, merchant.slot); else load_code(merchant.slot);
-         **/
+        if (!pvp) {
+            //Healer
+            let healer = shuffle(pveCharacters.filter((c) => c.role === 'healer'))[0];
+            if (!Object.keys(get_active_characters()).includes(healer.name)) start_character(healer.name, healer.slot); else load_code(healer.slot);
+            //DPS
+            let dps = shuffle(pveCharacters.filter((c) => c.role === 'dps'))[0];
+            if (!Object.keys(get_active_characters()).includes(dps.name)) start_character(dps.name, dps.slot); else load_code(dps.slot);
+            //Tank
+            let tank = shuffle(pveCharacters.filter((c) => c.role === 'tank'))[0];
+            if (!Object.keys(get_active_characters()).includes(tank.name)) start_character(tank.name, tank.slot); else load_code(tank.slot);
+        } else {
+            let rogues = pveCharacters.filter((c) => c.class === 'rogue');
+            for (let rogue of rogues) {
+                if (!Object.keys(get_active_characters()).includes(rogue.name)) start_character(rogue.name, rogue.slot); else load_code(rogue.slot);
+            }
+        }
     } else {
         // Handle cases where party members go AWOL
         if (parent.party_list.length > 0) {
-            for (let key in parent.party_list) {
-                let member = parent.party_list[key];
+            for (let member of parent.party_list) {
                 let acceptedStates = ["starting","loading","code"];
                 if (!acceptedStates.includes(get_active_characters()[member])) continue;
                 if (!partyTracker[member]) {

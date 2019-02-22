@@ -1,5 +1,4 @@
 game_log("---Warrior Script Start---");
-load_code(2);
 let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, targetSetAt, targetArray,
     eventMap, eventCoords, eventMonster, eventSearch, searchRoute;
 let lowLevelCount = 0;
@@ -35,7 +34,7 @@ setInterval(function () {
     // Warcry
     use('warcry');
     // Hardshell when health is low
-    if (character.hp < character.max_hp * 0.5) use('hardshell');
+    if (character.hp < character.max_hp * 0.25) use('hardshell');
     // Get array of mtypes
     if ((!targetArray || !targetArray.length) && character.party && partyHPS() > 100) {
         targetArray = findBestMonster(75 * (character.level / 2), undefined, true);
@@ -292,7 +291,6 @@ function on_game_event(event) {
 }
 
 // Party Move Speed Management
-
 let combatSet;
 setInterval(function () {
     let speed = character.speed;
@@ -301,7 +299,7 @@ setInterval(function () {
             let member = parent.party_list[id];
             let entity = parent.entities[member];
             if (!entity || member === character.name || entity.ctype === 'merchant') continue;
-            if (entity.speed < speed) speed = entity.speed - 6;
+            if (entity.speed < speed) speed = entity.speed - 3;
         }
     }
     if (!combatSet && (combat || primary)) {
@@ -312,42 +310,6 @@ setInterval(function () {
         cruise(speed);
     }
 }, 500);
-
-///
-///
-/// OTHER LOOPS
-///
-///
-
-//Party Management (30s)
-setInterval(function () {
-    // If reboot is pending do it when out of combat
-    if (!combat && pendingReboot) {
-        updateCode();
-        load_code(12);
-        refreshCharacters(true);
-        pendingReboot = undefined;
-    }
-    // Handle restarting/starting other characters when needed
-    refreshCharacters();
-    // Handles sending invites
-    for (let char of pveCharacters) {
-        if (char.name === character.name || (character.party && parent.party_list.includes(char.name)) || char.class === 'merchant') continue;
-        send_party_invite(char.name);
-    }
-}, 5000);
-
-//Force reboot of character (1h)
-setInterval(function () {
-    // Update and reboot
-    if (!combat) {
-        updateCode();
-        load_code(12);
-        refreshCharacters(true);
-    } else {
-        pendingReboot = true;
-    }
-}, 60000 * 60);
 
 //CM Loop
 setInterval(function () {

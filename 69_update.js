@@ -6,6 +6,7 @@
 const baseURL = "https://raw.githubusercontent.com/shibdib/adventureLandCode/master/";
 
 const allFiles = [
+    "1_main.js",
     "2_requires.js",
     "5_common.js",
     "80_constants.js",
