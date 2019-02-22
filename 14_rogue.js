@@ -1,5 +1,4 @@
 game_log("---Rogue Script Start---");
-if (get_active_characters()[character.name] === 'self') load_code(2);
 let combat;
 let state;
 
@@ -12,7 +11,7 @@ setInterval(function () {
 //Combat Loop
 setInterval(function () {
     if (!state || state !== 1) return;
-    if (!pvp) farm(); else gank();
+    if (!pvpMode) farm(); else gank();
 }, 350);
 
 //Other Task Loop

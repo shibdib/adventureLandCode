@@ -9,6 +9,8 @@ let pveCharacters = [
     {'name': 'Shibmerch', 'class': 'merchant', 'slot': 15, 'role': 'merchant'}
 ];
 
+let pvpMode = false;
+
 //The types of potions to keep supplied.
 let buyThesePotions = ["hpot1", "mpot1"];
 

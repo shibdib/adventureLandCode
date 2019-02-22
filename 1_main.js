@@ -1,4 +1,3 @@
-let pvp = false;
 load_code(2);
 
 // Handle PVE
@@ -15,18 +14,6 @@ if (!pvp) {
         if (!combat) refreshCharacters(pvp, true);
     }, 60000 * 60);
 } else {
-    // Rogue check
-    if (character.ctype !== 'rogue') {
-        // noinspection JSAnnotator
-        return game_log('Character must be rogue for PVP');
-    }
-
-    // PVP Realm Check
-    if (!isPvP()) {
-        // noinspection JSAnnotator
-        return game_log('This is not a PVP realm.');
-    }
-
     //Start Up Code
     setTimeout(function () {
         // Handle restarting/starting other characters when needed
