@@ -45,14 +45,10 @@ let onPatrol = {};
 
 function patrolMap(mapName = undefined) {
     let patrolData = onPatrol[character.name] || {};
-    game_log(JSON.stringify(patrolData))
     if (!patrolData.map) patrolData.map = mapName || random_one(Object.keys(patrolRoutes));
-    if (!patrolData.route || !patrolData.route.length) patrolData.route = patrolRoutes[patrolData.map];
+    if (!patrolData.route) patrolData.route = patrolRoutes[patrolData.map];
     if (!is_moving(character)) {
-        if (!patrolData.route.length) {
-            if (!mapName) patrolData.map = undefined;
-            return patrolData.route = undefined;
-        }
+        if (!patrolData.route.length) return onPatrol[character.name] = undefined;
         if (!kite()) shibMove({x: patrolData.route[0].x, y: patrolData.route[0].y, map: patrolData.map});
         patrolData.route.shift();
     }
@@ -90,6 +86,8 @@ function shibMove(destination, onComplete = undefined) {
 // Stay safe
 let nearestHostile = {};
 function kite(target = undefined) {
+    // No kiting when invis
+    if (checkEntityForBuff(character, 'invis')) return false;
     let nearbyHostiles = nearbyAggressors(200, true).filter((a) => !a.target && !a.rip);
     if (!nearbyHostiles.length) return false;
     if (target) {
