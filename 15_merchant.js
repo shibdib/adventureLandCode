@@ -259,13 +259,6 @@ function exchangeStuff() {
             if (withdraw === null) {
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
-            } else if (withdraw) {
-                if (bankDetails[exchangeTarget] - 1 === 0) {
-                    bankDetails[exchangeTarget] = undefined;
-                } else {
-                    bankDetails[exchangeTarget] -= 1;
-                }
-                localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
             }
         } else {
             exchangeTarget = undefined;
@@ -441,16 +434,7 @@ function combineItems() {
                 craftingLevel = undefined;
                 lastBankCheck = undefined;
                 lastAttemptedCrafting = undefined;
-            } else if (withdraw) {
-                let append = 0;
-                if (craftingLevel) append = craftingLevel;
-                if (bankDetails[craftingItem + append] - 1 === 0) {
-                    bankDetails[craftingItem + append] = undefined;
-                } else {
-                    bankDetails[craftingItem + append] -= 1;
-                }
             }
-            localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
         }
     }
 }
