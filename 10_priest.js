@@ -6,7 +6,7 @@ let state;
 //State Controller
 setInterval(function () {
     if (character.rip && state !== 99) state = 99;
-    if (combat || partyHurtCount(0.95)) state = 1; else state = stateController(state);
+    if (combat || partyHurtCount(0.75)) state = 1; else state = stateController(state);
 }, 5000);
 
 //Combat Loop
@@ -15,7 +15,7 @@ setInterval(function () {
     farm();
 }, 350);
 
-//Other Task Loop
+//Other Task Loop1
 setInterval(function () {
     loot();
     potionController(true);
