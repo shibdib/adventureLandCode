@@ -61,8 +61,9 @@ function withdrawItem(target, level = undefined) {
         if (details) {
             bankItemWithdraw(details.slot, details.pack);
             return true;
+        } else if (details === null) {
+            return null;
         }
-        return null;
     }
 }
 
