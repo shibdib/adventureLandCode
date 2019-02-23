@@ -72,7 +72,6 @@ function sellItemsToPlayers() {
                 if (getInventorySlot(slot.name, false, slot.level)) {
                     currentTask = undefined;
                     playerSale = undefined;
-                    lastBankCheck = undefined;
                     saleCooldown = Date.now();
                     game_log("Item Sold: " + slot.name);
                     game_log("To: " + buyers.name);
@@ -127,7 +126,6 @@ function passiveMerchant() {
             whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
             passiveSale = {};
             currentTask = undefined;
-            lastBankCheck = undefined;
         } else if (emptySlots.length) {
             for (let item of sellList) {
                 // Skip if we're already selling one
@@ -204,7 +202,6 @@ function buyFromPlayers() {
                     if (bankDetails[item.item] >= item.amount || getInventorySlot(item.item)) continue;
                     trade_buy(sellers, slotName); // target needs to be an actual player
                     set_message('BuyingPlayer');
-                    lastBankCheck = undefined;
                     buyCooldown = Date.now();
                     game_log("Item Bought: " + slot.name);
                     game_log("From: " + sellers.name);
@@ -222,7 +219,6 @@ function buyFromPlayers() {
                     if (totalInBank(item) >= needed) continue;
                     trade_buy(sellers, slotName); // target needs to be an actual player
                     set_message('BuyingPlayer');
-                    lastBankCheck = undefined;
                     buyCooldown = Date.now();
                     game_log("Item Bought: " + slot.name);
                     game_log("From: " + sellers.name);
@@ -263,7 +259,6 @@ function exchangeStuff() {
             if (withdraw === null) {
                 exchangeTarget = undefined;
                 exchangeNpc = undefined;
-                lastBankCheck = undefined;
             } else if (withdraw) {
                 if (bankDetails[exchangeTarget] - 1 === 0) {
                     bankDetails[exchangeTarget] = undefined;
@@ -273,7 +268,6 @@ function exchangeStuff() {
                 localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
             }
         } else {
-            lastBankCheck = undefined;
             exchangeTarget = undefined;
             exchangeNpc = undefined;
         }
@@ -294,7 +288,6 @@ function buyBaseItems() {
             buy(item, 1);
         }
     }
-    if (bought) lastBankCheck = undefined;
     lastRestock = Date.now();
 }
 
@@ -312,7 +305,6 @@ function sellExcessToNPC() {
         let slot = getInventorySlot(sellItems[0].name, false, sellItems[0].level);
         if (slot) sell(slot, 1);
         sellItems.shift();
-        lastBankCheck = undefined;
         return true;
     } else if (getItems.length) {
         closeStand();
@@ -431,7 +423,6 @@ function combineItems() {
                     craftingItem = undefined;
                     currentTask = undefined;
                     craftingLevel = undefined;
-                    lastBankCheck = undefined;
                     lastAttemptedCrafting = undefined;
                 }
             } else {

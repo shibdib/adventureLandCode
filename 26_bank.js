@@ -6,6 +6,7 @@ function depositGold(amount = character.gold - 5000) {
         return false;
     } else {
         bank_deposit(amount);
+        bankTracking();
         return true;
     }
 }
@@ -18,6 +19,7 @@ function withdrawGold(amount) {
     } else {
         if (amount > character.user['gold']) amount = character.user['gold'];
         bank_withdraw(amount);
+        bankTracking();
     }
 }
 
@@ -36,6 +38,7 @@ function depositItems(potions = false) {
             if (itemInfo.type === 'stand') continue;
             bank_store(key);
         }
+        bankTracking();
         return true;
     }
 }
@@ -47,6 +50,7 @@ function depositItem(slot) {
         return false;
     } else {
         bank_store(slot);
+        bankTracking();
         return true;
     }
 }
@@ -93,6 +97,7 @@ function getItemBankSlot(target, level = undefined) {
 function bankItemWithdraw(key, pack) {
     character.bank[pack][key] = undefined;
     parent.socket.emit("bank",{operation:"swap",str:key,inv:-1,pack:pack});
+    bankTracking();
 }
 
 //Get the highest level of a certain item in the bank
@@ -121,4 +126,30 @@ function totalInBank(name) {
         if (bankDetails[name + l]) count += bankDetails[name + l];
     }
     return count;
+}
+
+//Get bank information
+function bankTracking() {
+    if (character.map !== 'bank') return;
+    let bankDetails = {};
+    for (let key in Object.values(character.user)) {
+        let slot = Object.values(character.user)[key];
+        if (!slot || !slot.length) continue;
+        for (let packKey in slot) {
+            let banker = slot[packKey];
+            if (!banker) continue;
+            if (!item_properties(banker)) continue;
+            let level = item_properties(banker).level;
+            if (!level) level = 0;
+            let quantity = banker.q || 1;
+            if (bankDetails[banker.name + level]) {
+                bankDetails[banker.name + level] += quantity;
+            } else {
+                bankDetails[banker.name + level] = quantity;
+            }
+        }
+    }
+    bankDetails['gold'] = character.user['gold'];
+    localStorage.removeItem('bankDetails');
+    localStorage.setItem('bankDetails', JSON.stringify(bankDetails));
 }
