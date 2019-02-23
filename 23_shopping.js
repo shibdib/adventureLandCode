@@ -32,8 +32,8 @@ function buyScroll(type, amount = 1) {
     let scrollsMerchant = getNpc("scrolls");
     let distanceToMerchant = null;
     if (scrollsMerchant != null) distanceToMerchant = distanceToPoint(scrollsMerchant.position[0], scrollsMerchant.position[1]);
-    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "scrolls"});
-    if (distanceToMerchant != null && distanceToMerchant < 155) {
+    if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 350 || character.map !== 'main')) return smart_move({to: "scrolls"});
+    if (distanceToMerchant != null && distanceToMerchant < 355) {
         buy(type, amount);
     }
 }
