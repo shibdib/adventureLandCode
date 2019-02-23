@@ -1,4 +1,5 @@
 game_log("---Rogue Script Start---");
+if (get_active_characters()[character.name] === 'self') load_code(2);
 let combat;
 let state;
 

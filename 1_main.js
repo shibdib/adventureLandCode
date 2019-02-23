@@ -1,7 +1,7 @@
 load_code(2);
 
 // Handle PVE
-if (!pvp) {
+if (!pvpMode) {
     //Start Up Code
     setTimeout(function () {
         // Handle restarting/starting other characters when needed

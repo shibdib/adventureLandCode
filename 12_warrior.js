@@ -1,6 +1,6 @@
 game_log("---Warrior Script Start---");
-let currentTarget, target, combat, pendingReboot, tackling, primary, lastPos, traveling, targetSetAt, targetArray,
-    eventMap, eventCoords, eventMonster, eventSearch, searchRoute;
+let currentTarget, target, combat, tackling, primary, lastPos, traveling, targetSetAt, targetArray,
+    eventMap, eventCoords, eventMonster, eventSearch;
 let lowLevelCount = 0;
 let lowLevelTotalCount = 0;
 let state;
