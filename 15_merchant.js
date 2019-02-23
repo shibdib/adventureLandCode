@@ -610,18 +610,18 @@ function cachePriceInfo() {
                             bseen: 1
                         }
                     } else {
-                        let seen = priceDetails[slot.name + level].bseen + 1;
-                        let avg = (priceDetails[slot.name + level].bavg + slot.price) / 2;
-                        let high = priceDetails[slot.name + level].bhigh;
+                        let details = priceDetails[slot.name + level];
+                        let seen = details.bseen + 1;
+                        let avg = (details.bavg + slot.price) / 2;
+                        let high = details.bhigh;
                         if (high < slot.price) high = slot.price;
-                        let low = priceDetails[slot.name + level].blow;
+                        let low = details.blow;
                         if (low > slot.price) low = slot.price;
-                        priceDetails[slot.name + level] = {
-                            bhigh: high,
-                            bavg: avg,
-                            blow: low,
-                            bseen: seen
-                        }
+                        details.bhigh = high;
+                        details.bavg = avg;
+                        details.blow = low;
+                        details.bseen = seen;
+                        priceDetails[slot.name + level] = details;
                     }
                 } else {
                     if (!priceDetails[slot.name + level]) {
@@ -632,18 +632,18 @@ function cachePriceInfo() {
                             sseen: 1
                         }
                     } else {
-                        let seen = priceDetails[slot.name + level].sseen + 1;
-                        let avg = (priceDetails[slot.name + level].savg + slot.price) / 2;
-                        let high = priceDetails[slot.name + level].shigh;
+                        let details = priceDetails[slot.name + level];
+                        let seen = details.sseen + 1;
+                        let avg = (details.savg + slot.price) / 2;
+                        let high = details.shigh;
                         if (high < slot.price) high = slot.price;
-                        let low = priceDetails[slot.name + level].slow;
+                        let low = details.slow;
                         if (low > slot.price) low = slot.price;
-                        priceDetails[slot.name + level] = {
-                            shigh: high,
-                            savg: avg,
-                            slow: low,
-                            sseen: seen
-                        }
+                        details.shigh = high;
+                        details.savg = avg;
+                        details.slow = low;
+                        details.sseen = seen;
+                        priceDetails[slot.name + level] = details;
                     }
                 }
             }
