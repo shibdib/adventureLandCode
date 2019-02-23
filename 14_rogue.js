@@ -71,7 +71,7 @@ function farm() {
         }
     } else {
         // Only invis if near baddies
-        if (nearbyAggressors(100, true).length) use('invis'); else stop('invis');
+        if (nearbyAggressors(100, true).length) use('invis'); else if (!target) stop('invis');
         moveToLeader();
     }
 }
