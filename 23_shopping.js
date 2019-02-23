@@ -6,7 +6,7 @@ function restockPotions(amount) {
         let potionMerchant = getNpc("fancypots");
         let distanceToMerchant = null;
         if (potionMerchant != null) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
-        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "main"});
         if (distanceToMerchant != null && distanceToMerchant < 155) {
             if (buyPotions(amount)) return false;
         }

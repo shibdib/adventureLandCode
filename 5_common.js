@@ -56,28 +56,35 @@ function stateController(state) {
 
 //State tasks
 function stateTasks(state) {
-    if (state === 99) {
-        let tod = deathTime[character.name];
-        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
-        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
-        return true;
-    } // DEAD
-    if (state === 2) { // GOLD RICH
-        depositGold();
-        depositItems();
-        return true;
-    }
-    if (state === 3) { // POTION PICKUP
-        restockPotions(targetPotionAmount);
-        return true;
-    }
-    if (state === 4) { // GEAR
-        if (gearIssue()) lastBankGearCheck = Date.now();
-        return true;
-    }
-    if (state === 12) { // GEAR
-        if (statItems()) lastBankGearCheck = Date.now();
-        return true;
+    switch (state) {
+        // DEAD
+        case 99: {
+            let tod = deathTime[character.name];
+            if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
+            if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
+            return true;
+        }
+        // BANK
+        case 2: {
+            depositGold();
+            depositItems();
+            return true;
+        }
+        // POTIONS
+        case 3: {
+            restockPotions(targetPotionAmount);
+            return true;
+        }
+        // GEAR
+        case 4: {
+            if (gearIssue()) lastBankGearCheck = Date.now();
+            return true;
+        }
+        // STAT
+        case 12: {
+            if (statItems()) lastBankGearCheck = Date.now();
+            return true;
+        }
     }
 }
 
