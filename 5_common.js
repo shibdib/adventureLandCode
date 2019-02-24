@@ -130,9 +130,10 @@ function grieferTracking() {
 }
 //Realm switching
 function realmSwap(pvp = false) {
-    let serverRegions = ['EU', 'US'];
-    let names = ['I', 'II'];
+    let serverRegion = random_one(['EU', 'US']);
+    let names = ['I', 'II', 'III'];
+    if (serverRegion = 'EU') names = ['I', 'II'];
     let pvpNames = ['PVP'];
     if (pvp) names = names.concat(pvpNames);
-    change_server(random_one(serverRegions), random_one(names));
+    change_server(serverRegion, random_one(names));
 }

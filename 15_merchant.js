@@ -657,3 +657,16 @@ function cachePriceInfo() {
 setInterval(function () {
     updateCharacterData();
 }, 5000);
+
+let realms = [{region: 'EU', name: 'I'}, {region: 'EU', name: 'II'}, {region: 'EU', name: 'PVP'},
+    {region: 'US', name: 'I'}, {region: 'US', name: 'II'}, {region: 'US', name: 'III'}, {region: 'US', name: 'PVP'}];
+let currentRealm = parseInt(localStorage.getItem('realmSwapCount')) || 0;
+
+//Realm switching
+function realmRotation() {
+    if (currentRealm > realms.length - 1) currentRealm = 0;
+    let destination = realms[currentRealm];
+    currentRealm++;
+    localStorage.setItem('realmSwapCount', JSON.stringify(currentRealm));
+    change_server(destination.region, destination.name);
+}
