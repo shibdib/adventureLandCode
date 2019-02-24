@@ -65,7 +65,7 @@ function targetFriends(target) {
 
 // Check if the target can be killed in ~1 hit
 function canOneShot(target) {
-    return target.hp <= character.attack * 1.1 || G.monsters[target.mtype].max_hp <= character.attack * 1.1;
+    return target.hp <= character.attack * 0.95;
 }
 
 // WIP

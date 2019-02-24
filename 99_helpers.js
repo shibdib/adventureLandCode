@@ -4,28 +4,28 @@
 function on_cm(name,data) {
     // Ignore CM's from yourself
     if (name === character.name) return;
-    // Merchant Stuff
-    if (data.type === 'potionRequest' && character.ctype === 'merchant') {
-        let slot = getInventorySlot(data['potion']);
-        if (slot) send_item(parent.entities[name], slot, data['amount']);
-        pm(name, data['amount'] + ' ' + data['potion'] + ' sent.')
+    switch (data.type) {
+        case 'potionRequest': {
+            let slot = getInventorySlot(data['potion']);
+            if (slot) send_item(parent.entities[name], slot, data['amount']);
+            pm(name, data['amount'] + ' ' + data['potion'] + ' sent.');
+            break;
+        }
+        case 'combatLocation': {
+            if (!parent.combatLocation) parent.combatLocation = {};
+            parent.combatLocation[name] = data;
+            break;
+        }
+        case 'mapChange': {
+            stop('move');
+            if (character.map !== data.map) return shibMove(map);
+            break;
+        }
+        case 'requestMap': {
+            localStorage.setItem('leaderMap', character.map);
+            break;
+        }
     }
-    // Party CM Standard
-    if (data.type === 'combatLocation') {
-        if (!parent.combatLocation) parent.combatLocation = {};
-        parent.combatLocation[name] = data;
-    }
-    // Map changes
-    if (data.type === 'mapChange') {
-        stop('move');
-        if (character.map !== data.map) return shibMove(map);
-    }
-    // Map changes
-    if (data.type === 'requestMap') {
-        localStorage.setItem('leaderMap', character.map);
-    }
-    //game_log("Received a code message from: "+name);
-    //game_log(JSON.stringify(data));
 }
 
 // Send CM to party
@@ -86,20 +86,6 @@ function getMonsterDPS(input, mitigate = false) {
                 return ((G.monsters[input].attack + (level * (G.monsters[input].attack * 0.2))) * G.monsters[input].frequency * damage_multiplier(remainingPiercing) + ((G.monsters[input].reflection || 0) * getCharacterDPS())) * 1.1;
             }
         }
-    }
-}
-
-// Get defense rating
-function getDefenseRating(input) {
-    (damage_multiplier(armor) + Evasion + damage_multiplier(resistance) + Reflection) / 2;
-    // Handle entity
-    if (input.level) {
-        if (!mitigate) return input.attack * G.monsters[input.mtype].frequency * damage_multiplier(-G.monsters[input.mtype].rpiercing || 0) * 0.95;
-
-    } // Handle mtype
-    else if (G.monsters[input]) {
-        if (!mitigate) return G.monsters[input].attack * G.monsters[input].frequency * damage_multiplier(-G.monsters[input].rpiercing || 0) * 0.95;
-
     }
 }
 
