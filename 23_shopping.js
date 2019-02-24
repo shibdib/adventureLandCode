@@ -3,10 +3,10 @@ function restockPotions(amount) {
     if (character.gold < amount * 100) {
         withdrawGold((amount * 200) - character.gold)
     } else {
-        let potionMerchant = getNpc("fancypots");
+        let potionMerchant = getNpc("fancypots") || getNpc("wbartender") || getNpc("pots");
         let distanceToMerchant = null;
-        if (potionMerchant != null) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
-        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "main"});
+        if (potionMerchant) distanceToMerchant = distanceToPoint(potionMerchant.position[0], potionMerchant.position[1]);
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "potions"});
         if (distanceToMerchant != null && distanceToMerchant < 155) {
             if (buyPotions(amount)) return false;
         }
