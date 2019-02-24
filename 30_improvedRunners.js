@@ -39,11 +39,11 @@ function can_use(name, target = undefined) {
 }
 
 //Improved Use
-function use(name, target) {
+function use(name, target, force = false) {
     if (isNaN(name)) {
         if (!target) target = get_target();
         // Pot check
-        if (!can_use(name, target)) return;
+        if (!force && !can_use(name, target)) return;
         parent.use_skill(name, target);
         cooldowns[name] = Date.now();
     } else {
