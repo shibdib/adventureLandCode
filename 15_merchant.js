@@ -16,6 +16,7 @@ setInterval(function () {
 
 //Primary Loop
 setInterval(function () {
+    if (is_moving(character)) closeStand(); else placeStand();
     // Update your data
     updateCharacterData();
     if (character.rip) state = 99;
@@ -28,7 +29,6 @@ function merchantTaskManager() {
     potionController();
     if (!lastBankCheck) return bookKeeping();
     if (isPvP() && nearbyAggressors(600).length) {
-        closeStand();
         set_message('Fleeing');
         return shibMove('bank')
     }
@@ -39,7 +39,6 @@ function merchantTaskManager() {
     } else {
         if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
         if (!sellItemsToPlayers() && !buyFromPlayers()) {
-            placeStand();
             buyBaseItems();
             passiveMerchant();
         }
@@ -79,7 +78,6 @@ function sellItemsToPlayers() {
                     pm(buyers.name, 'Enjoy the ' + slot.name + ' ~This is an automated message~');
                     parent.socket.emit("trade_sell", {slot: 'trade' + s, id: buyers.id, rid: slot.rid, q: 1});
                 } else {
-                    closeStand();
                     game_log("Grabbing to sell - " + slot.name);
                     playerSale = {item: slot.name, level: slot.level, rid: slot.rid};
                     currentTask = 'getItem';
@@ -100,81 +98,76 @@ function passiveMerchant() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     let priceDetails = JSON.parse(localStorage.getItem('priceDetails'));
     if (currentTask === 'getPassiveItem' && !getInventorySlot(passiveSale.item, false, passiveSale.level)) {
-        closeStand();
         withdrawItem(passiveSale.item, passiveSale.level);
     }
     if (character.map === 'bank') return shibMove('main');
-    if (!character.stand) {
-        if (distanceToPoint(69, 12) > 5) return shibMove(69, 12); else placeStand();
-    } else {
-        let listedItems = [];
-        let emptySlots = [];
-        for (let s = 1; s <= 16; s++) {
-            let slot = character.slots['trade' + s];
-            if (slot && slot.name) listedItems.push(slot.name); else if (!slot) emptySlots.push('trade' + s);
-        }
-        if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
-            let append = passiveSale.level;
-            if (!passiveSale.level) append = '';
-            let scrollCost = passiveSale.level * 70000;
-            if (G.items[passiveSale.item].compound) scrollCost = passiveSale.level * 600000;
-            let rawPrice = G.items[passiveSale.item].g + scrollCost;
-            let historicalPrice, price;
-            if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) historicalPrice = round(priceDetails[passiveSale.item + append].savg);
-            if (!historicalPrice || historicalPrice < rawPrice) price = rawPrice; else price = historicalPrice;
-            trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
-            whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
-            passiveSale = {};
-            currentTask = undefined;
-        } else if (emptySlots.length) {
-            for (let item of sellList) {
-                // Skip if we're already selling one
-                if (listedItems.includes(item)) continue;
-                for (let l = 0; l < 10; l++) {
-                    if (bankDetails[item + l]) {
-                        passiveSale.item = item;
-                        passiveSale.level = l;
-                        currentTask = 'getPassiveItem';
-                        return;
-                    }
-                }
-            }
-            // Sell high level items in excess
-            for (let key of Object.keys(bankDetails)) {
-                let level = parseInt(key[key.length - 1]);
-                let cleanName = key.slice(0, -1);
-                if (!G.items[cleanName]) continue;
-                if (listedItems.includes(cleanName)) continue;
-                if (level < normalLevelTarget - 1) continue;
-                let amount = bankDetails[key];
-                let minimum = 1;
-                if (G.items[cleanName] && G.items[cleanName].compound) minimum = 3;
-                if (amount > minimum) {
-                    passiveSale.item = cleanName;
-                    passiveSale.level = level;
+    let listedItems = [];
+    let emptySlots = [];
+    for (let s = 1; s <= 16; s++) {
+        let slot = character.slots['trade' + s];
+        if (slot && slot.name) listedItems.push(slot.name); else if (!slot) emptySlots.push('trade' + s);
+    }
+    if (passiveSale.item && getInventorySlot(passiveSale.item, false, passiveSale.level)) {
+        let append = passiveSale.level;
+        if (!passiveSale.level) append = '';
+        let scrollCost = passiveSale.level * 70000;
+        if (G.items[passiveSale.item].compound) scrollCost = passiveSale.level * 600000;
+        let rawPrice = G.items[passiveSale.item].g + scrollCost;
+        let historicalPrice, price;
+        if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) historicalPrice = round(priceDetails[passiveSale.item + append].savg);
+        if (!historicalPrice || historicalPrice < rawPrice) price = rawPrice; else price = historicalPrice;
+        trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
+        whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
+        passiveSale = {};
+        currentTask = undefined;
+    } else if (emptySlots.length) {
+        for (let item of sellList) {
+            // Skip if we're already selling one
+            if (listedItems.includes(item)) continue;
+            for (let l = 0; l < 10; l++) {
+                if (bankDetails[item + l]) {
+                    passiveSale.item = item;
+                    passiveSale.level = l;
                     currentTask = 'getPassiveItem';
                     return;
                 }
             }
-            for (let item of buyTargets) {
-                if (bankDetails['gold'] + character.gold < 5000000) break;
-                let append = item.level;
-                if (!item.level) append = '';
-                let price = G.items[item.item].g;
-                if (priceDetails && priceDetails[item.item + append] && priceDetails[item.item + append].savg) price = round(priceDetails[item.item + append].bavg);
-                // Skip if we have enough
-                if (bankDetails[item.item + 0] >= item.amount) continue;
-                // Skip if we're already buying one
-                if (listedItems.includes(item.item)) continue;
-                parent.socket.emit("trade_wishlist", {
-                    q: item.amount,
-                    slot: emptySlots[0],
-                    price: price,
-                    level: item.level || 0,
-                    name: item.item
-                });
-                whisperParty(G.items[item.item].name + ' wishlisted for ' + G.items[item.item].g);
+        }
+        // Sell high level items in excess
+        for (let key of Object.keys(bankDetails)) {
+            let level = parseInt(key[key.length - 1]);
+            let cleanName = key.slice(0, -1);
+            if (!G.items[cleanName]) continue;
+            if (listedItems.includes(cleanName)) continue;
+            if (level < normalLevelTarget - 1) continue;
+            let amount = bankDetails[key];
+            let minimum = 1;
+            if (G.items[cleanName] && G.items[cleanName].compound) minimum = 3;
+            if (amount > minimum) {
+                passiveSale.item = cleanName;
+                passiveSale.level = level;
+                currentTask = 'getPassiveItem';
+                return;
             }
+        }
+        for (let item of buyTargets) {
+            if (bankDetails['gold'] + character.gold < 5000000) break;
+            let append = item.level;
+            if (!item.level) append = '';
+            let price = G.items[item.item].g;
+            if (priceDetails && priceDetails[item.item + append] && priceDetails[item.item + append].savg) price = round(priceDetails[item.item + append].bavg);
+            // Skip if we have enough
+            if (bankDetails[item.item + 0] >= item.amount) continue;
+            // Skip if we're already buying one
+            if (listedItems.includes(item.item)) continue;
+            parent.socket.emit("trade_wishlist", {
+                q: item.amount,
+                slot: emptySlots[0],
+                price: price,
+                level: item.level || 0,
+                name: item.item
+            });
+            whisperParty(G.items[item.item].name + ' wishlisted for ' + G.items[item.item].g);
         }
     }
 }
@@ -249,7 +242,6 @@ function exchangeStuff() {
             }
         }
     } else {
-        closeStand();
         set_message('Exchanging');
         if (!exchangeAmount) exchangeAmount = 1;
         if (itemCount(exchangeTarget) >= exchangeAmount) {
@@ -270,7 +262,7 @@ function exchangeStuff() {
 
 // Buy items for crafting
 function buyBaseItems() {
-    if (lastRestock + 60000 * 20 > Date.now()) return;
+    if (lastRestock + 60000 * 60 > Date.now()) return;
     let baseItems = ['bow', 'helmet', 'shoes', 'gloves', 'pants', 'coat', 'blade', 'claw', 'staff', 'wshield'];
     let bought;
     for (let item of baseItems) {
@@ -300,7 +292,6 @@ function sellExcessToNPC() {
         sellItems.shift();
         return true;
     } else if (getItems.length) {
-        closeStand();
         switch (withdrawItem(getItems[0].name, getItems[0].level)) {
             case true:
                 sellItems.push({name: getItems[0].name, level: getItems[0].level});
@@ -397,7 +388,6 @@ function combineItems() {
         }
         lastAttemptedCrafting = Date.now();
     } else {
-        closeStand();
         set_message('Crafting');
         let needed = 1;
         if (currentTask === 'combine') needed = 3;
@@ -456,7 +446,6 @@ function standCheck() {
 //Get bank information
 function bookKeeping() {
     set_message('Bookkeeping');
-    closeStand();
     let bankDetails = {};
     if (character.map !== 'bank') {
         shibMove('bank');
@@ -499,8 +488,8 @@ function crafting(task, componentSlot, scrollSlot) {
         let upgradeMerchant = getNpc("newupgrade");
         let distanceToMerchant = null;
         if (upgradeMerchant != null) distanceToMerchant = distanceToPoint(upgradeMerchant.position[0], upgradeMerchant.position[1]);
-        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 150 || character.map !== 'main')) return smart_move({to: "upgrade"});
-        if (distanceToMerchant != null && distanceToMerchant < 155) {
+        if (!smart.moving && (distanceToMerchant == null || distanceToMerchant > 350 || character.map !== 'main')) return smart_move({to: "upgrade"});
+        if (distanceToMerchant != null && distanceToMerchant < 355) {
             if (currentTask === 'combine') compound(componentSlot[0], componentSlot[1], componentSlot[2], scrollSlot); else upgrade(componentSlot[0], scrollSlot);
             return true;
         }
@@ -510,32 +499,38 @@ function crafting(task, componentSlot, scrollSlot) {
 ////MERCHANT TASK MANAGER
 //State tasks
 function merchantStateTasks(state) {
-    if (state !== 9) closeStand();
-    if (state === 99) {
-        let tod = deathTime[character.name];
-        if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
-        if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
-        return true;
-    } // DEAD
-    if (state === 12) { // WALLET REFILL
-        withdrawGold(spendingAmount - character.gold);
-        return true;
-    }
-    if (state === 2) { // Deposits
-        depositGold();
-        depositItems();
-        return true;
-    }
-    if (state === 9) { // MERCHANT SALES
-        sell();
-        return;
-    }
-    if (state === 11) { // ACCOUNTING
-        bookKeeping();
-        if (localStorage.getItem('bankDetails') && lastBankCheck) {
-            lastBankCheck = Date.now();
-        } else {
+    switch (state) {
+        // Death
+        case 99: {
+            let tod = deathTime[character.name];
+            if (isPvP() && !deathCooldown) deathCooldown = getRndInteger(15000, 35000); else deathCooldown = 15000;
+            if (tod + deathCooldown < Date.now() || Math.random() > 0.9) respawn();
             return true;
+        }
+        // Wallet refill
+        case 12: {
+            withdrawGold(spendingAmount - character.gold);
+            return true;
+        }
+        // Deposit
+        case 2: {
+            depositGold();
+            depositItems();
+            return true;
+        }
+        // Sales
+        case 9: {
+            sell();
+            return;
+        }
+        // Accounting
+        case 11: {
+            bookKeeping();
+            if (localStorage.getItem('bankDetails') && lastBankCheck) {
+                lastBankCheck = Date.now();
+            } else {
+                return true;
+            }
         }
     }
 }
