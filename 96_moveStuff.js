@@ -41,6 +41,7 @@ function smart_move(destination, on_done) {
         else if (destination.to == "scrolls") smart.map = "main", smart.x = -465, smart.y = -71;
         else if (destination.to == "stands") smart.map = "main", smart.x = -186, smart.y = 691; // Added
         else if (destination.to == "shells") smart.map = "main", smart.x = -1499, smart.y = 629; // Added
+        else if (destination.to == "leathers") smart.map = "winterland", smart.x = 99.3, smart.y = -40.8; // Added
     }
     if (!smart.map) {
         //game_log("Unrecognized","#CF5B5B");

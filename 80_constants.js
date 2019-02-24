@@ -58,7 +58,11 @@ let upgradeTargets = ['quiver', 'shield', 'bow', 'helmet', 'shoes', 'gloves', 'p
 // The merchant will attempt to exchange these
 let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop', npc: 'exchange', amount: 10},
     {item: 'armorbox', npc: 'exchange'}, {item: 'weaponbox', npc: 'exchange'}, {item: 'gem0', npc: 'exchange'},
-    {item: 'seashell', npc: 'fisherman', amount: 20}, {item: 'candycane', npc: 'exchange'}];
+    {item: 'seashell', npc: 'fisherman', amount: 20}, {item: 'candycane', npc: 'exchange'}, {
+        item: 'candycane',
+        npc: 'leathermerchant',
+        amount: 40
+    }];
 
 // The merchant will attempt to destroy these
 let trashItems = [];
