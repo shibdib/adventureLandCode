@@ -580,7 +580,7 @@ setInterval(function () {
     if (Math.random() > 0.75) return;
     let entity = parent.entities[random_one(Object.keys(parent.entities))];
     if (is_character(entity)) {
-        use('mluck', entity);
+        use('mluck', entity, true);
         game_log('LUCKED - ' + entity.name);
     }
 }, 2500);
