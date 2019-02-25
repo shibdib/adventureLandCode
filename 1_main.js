@@ -11,7 +11,7 @@ if (!pvpMode) {
     //Force reboot of character (1h)
     setInterval(function () {
         // Update and reboot
-        if (!combat) refreshCharacters(pvp, true);
+        if (!combat) refreshCharacters(pvpMode, true);
     }, 60000 * 60);
 } else {
     //Start Up Code

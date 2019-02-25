@@ -116,8 +116,10 @@ function passiveMerchant() {
         let historicalPrice, price;
         if (priceDetails && priceDetails[passiveSale.item + append] && priceDetails[passiveSale.item + append].savg) historicalPrice = round(priceDetails[passiveSale.item + append].savg);
         if (!historicalPrice || historicalPrice < rawPrice) price = rawPrice; else price = historicalPrice;
+        character.slots[emptySlots[0]] = 'holder';
         trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
         whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
+        game_log(G.items[passiveSale.item].name + ' listed for ' + price);
         passiveSale = {};
         currentTask = undefined;
     } else if (emptySlots.length) {
@@ -168,6 +170,7 @@ function passiveMerchant() {
                 name: item.item
             });
             whisperParty(G.items[item.item].name + ' wishlisted for ' + G.items[item.item].g);
+            game_log(G.items[item.item].name + ' wishlisted for ' + G.items[item.item].g);
         }
     }
 }
