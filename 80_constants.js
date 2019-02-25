@@ -47,7 +47,7 @@ let highLevelTarget = 8;
 let epicLevelTarget = 5;
 
 // The merchant will attempt to combine these to the target level
-let combineTargets = ['hpbelt', 'hpamulet', 'intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
+let combineTargets = ['intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt', 'warmscarf', 'darktristone',
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
