@@ -47,7 +47,7 @@ let highLevelTarget = 8;
 let epicLevelTarget = 5;
 
 // The merchant will attempt to combine these to the target level
-let combineTargets = ['intearring', 'dexearring', 'vitearring', 'strearring', 'molesteeth', 'strring', 'vitring',
+let combineTargets = ['intearring', 'dexearring', 'strearring', 'molesteeth', 'strring', 'vitring',
     'dexring', 'intring', 'ringsj', 'suckerpunch', 't2intamulet', 't2dexamulet', 't2stramulet', 'intamulet', 'santasbelt', 'warmscarf', 'darktristone',
     'solitaire', 'dexamulet', 'amuletofm', 'tristone', 'xptome', 'stramulet', 'lostearring', 'wbook1', 'wbook0', 'strbelt', 'dexbelt', 'intbelt'];
 
@@ -65,13 +65,13 @@ let exchangeItems = [{item: 'redenvelopev2', npc: 'exchange'}, {item: 'candypop'
     }];
 
 // The merchant will attempt to sell these to NPC
-let trashItems = ['hpbelt', 'hpamulet', 'vitscroll'];
+let trashItems = ['hpbelt', 'hpamulet', 'vitscroll', 'vitearring'];
 
 // Don't sell these
 let noSell = ['stand0', 'stand1', 'cdragon', 'poison'];
 
 // Passively sell these
-let sellList = ['intearring', 'dexearring', 'vitearring', 'firecrackers'];
+let sellList = ['intearring', 'dexearring', 'strearring', 'intamulet', 'dexamulet', 'intamulet', 'firecrackers'];
 
 // Passively buy these
 let buyTargets = [{item: 'poison', amount: 20}, {item: 'armorbox', amount: 1}, {item: 'weaponbox', amount: 1}];

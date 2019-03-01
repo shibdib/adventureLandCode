@@ -120,6 +120,7 @@ function passiveMerchant() {
         trade(getInventorySlot(passiveSale.item, false, passiveSale.level), emptySlots[0], price, 1);
         whisperParty(G.items[passiveSale.item].name + ' listed for ' + price);
         game_log(G.items[passiveSale.item].name + ' listed for ' + price);
+        listedItems.push(passiveSale.item);
         passiveSale = {};
         currentTask = undefined;
     } else if (emptySlots.length) {
