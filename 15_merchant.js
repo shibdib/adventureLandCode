@@ -2,11 +2,10 @@ game_log("---Merchant Script Start---");
 if (get_active_characters()[character.name] === 'self') load_code(2);
 let lastBankCheck, potionsNeeded, state, lastAttemptedCrafting, craftingItem, currentTask, craftingLevel,
     exchangeTarget,
-    exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock, buyCooldown, deathCooldown;
+    exchangeNpc, exchangeAmount, playerSale, saleCooldown, lastRestock, buyCooldown, deathCooldown, getItem, sellItem;
 let deathTracker = 0;
 let deathTime = {};
 let passiveSale = {};
-let getItems = [];
 let sellItems = [];
 
 //State Controller
@@ -34,10 +33,11 @@ function merchantTaskManager() {
     }
     if (standCheck()) return;
     if (exchangeStuff()) return;
+    if (sellExcessToNPC()) return;
     if (craftingItem || !lastAttemptedCrafting || lastAttemptedCrafting + (60000 * 15) < Date.now()) {
         combineItems();
     } else {
-        if (!getItems.length && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
+        if (!getItem && !craftingItem && !exchangeTarget && !currentTask) if (character.map === 'bank') return shibMove('main'); else if (!distanceToPoint(69, 12) || distanceToPoint(69, 12) > 15) return shibMove(69, 12);
         if (!sellItemsToPlayers() && !buyFromPlayers()) {
             buyBaseItems();
             passiveMerchant();
@@ -284,52 +284,36 @@ function sellExcessToNPC() {
     let bankDetails = JSON.parse(localStorage.getItem('bankDetails'));
     if (!bankDetails) return;
     // Set bank items for sale if overstocked
-    if (sellItems.length) {
+    if (sellItem) {
         if (character.map !== 'main') {
             shibMove('main');
             return true;
         }
         set_message('SellingNPC');
-        let slot = getInventorySlot(sellItems[0].name, false, sellItems[0].level);
+        let slot = getInventorySlot(sellItem);
         if (slot) sell(slot, 1);
-        sellItems.shift();
+        sellItem = undefined;
         return true;
-    } else if (getItems.length) {
-        switch (withdrawItem(getItems[0].name, getItems[0].level)) {
+    } else if (getItem) {
+        switch (withdrawItem(getItem)) {
             case true:
-                sellItems.push({name: getItems[0].name, level: getItems[0].level});
-                getItems.shift();
+                sellItem = getItem;
+                getItem = undefined;
                 break;
             case false:
                 break;
             case null:
-                getItems.shift();
+                getItem = undefined;
                 break;
         }
         return true;
     } else {
-        for (let key of Object.keys(bankDetails)) {
-            if (key === 'gold') continue;
-            let level = parseInt(key[key.length - 1]);
-            let cleanName = key.slice(0, -1);
-            try {
-                if (item_grade({name: cleanName, level: level})) continue;
-            } catch (e) {
-                continue;
-            }
-            let ignoreTypes = ['quest', 'gem', 'uscroll', 'pscroll', 'cscroll'];
-            let exchange = [];
-            Object.values(exchangeItems).forEach((i) => exchange.push(i.item));
-            let limit = 2;
-            if (G.items[cleanName].compound || level >= normalLevelTarget) limit = 4;
-            if (G.items[cleanName] && bankDetails[key] > limit && !ignoreTypes.includes(G.items[cleanName].type) && !noSell.includes(cleanName) && !exchange.includes(cleanName)) {
-                if (!getItems.includes(cleanName) && !sellItems.includes(cleanName)) getItems.push({
-                    name: cleanName,
-                    level: level
-                });
-            }
+        for (let item of trashItems) {
+            if (!totalInBank(item)) continue;
+            getItem = item;
+            return true;
         }
-        if (!getItems.length) return false;
+        if (!getItem) return false;
     }
 }
 
@@ -460,12 +444,6 @@ function bookKeeping() {
             for (let packKey in slot) {
                 let banker = slot[packKey];
                 if (!banker) continue;
-                if (trashItems.includes(banker.name)) {
-                    withdrawItem(banker.name);
-                    getInventorySlot(banker.name);
-                    //destroy_item();
-                    continue;
-                }
                 if (!item_properties(banker)) continue;
                 let level = item_properties(banker).level;
                 if (!level) level = 0;
