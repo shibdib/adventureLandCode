@@ -115,6 +115,8 @@ function potionController(priest = false) {
 //Potion Check
 function potionCheck() {
     for (let potion of buyThesePotions) {
+        // Only mages and priests get mana pots
+        if (potion === 'mpot1' && character.ctype !== 'priest' && character.ctype !== 'mage') continue;
         if (itemCount(potion) < targetPotionAmount * 0.1) {
             return true;
         }

@@ -335,16 +335,24 @@ let potionCooldowns = {};
 
 function useHealthPotion() {
     let slot = getInventorySlot('hpot1');
-    if (!slot || (potionCooldowns['hpot1'] && potionCooldowns['hpot1'] + 2000 > Date.now())) return false;
-    use(slot);
-    potionCooldowns['hpot1'] = Date.now();
-    return true;
+    if (!slot || (potionCooldowns[character.name]['hpot1'] && potionCooldowns[character.name]['hpot1'] + 2000 > Date.now())) {
+        use('use_hp');
+        return true;
+    } else {
+        use(slot);
+        potionCooldowns[character.name]['hpot1'] = Date.now();
+        return true;
+    }
 }
 
 function useManaPotion() {
     let slot = getInventorySlot('mpot1');
-    if (!slot || (potionCooldowns['mpot1'] && potionCooldowns['mpot1'] + 2000 > Date.now())) return false;
-    use(slot);
-    potionCooldowns['mpot1'] = Date.now();
-    return true;
+    if (!slot || (potionCooldowns[character.name]['mpot1'] && potionCooldowns[character.name]['mpot1'] + 2000 > Date.now())) {
+        use('use_mp');
+        return true;
+    } else {
+        use(slot);
+        potionCooldowns[character.name]['mpot1'] = Date.now();
+        return true;
+    }
 }

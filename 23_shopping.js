@@ -17,6 +17,7 @@ function restockPotions(amount) {
 function buyPotions(amount) {
     if (openInventorySpots() > 0) {
         for (let potion of buyThesePotions) {
+            if (potion === 'mpot1' && character.ctype !== 'priest' && character.ctype !== 'mage') continue;
             let buyAmount = amount - itemCount(potion);
             let cost = G.items[potion].g * buyAmount;
             if (character.gold >= cost && buyAmount > 0) {
