@@ -334,25 +334,29 @@ function getGearScore(ctype, item) {
 let potionCooldowns = {};
 
 function useHealthPotion() {
+    let cooldown = potionCooldowns[character.name] || {};
     let slot = getInventorySlot('hpot1');
-    if (!slot || (potionCooldowns[character.name]['hpot1'] && potionCooldowns[character.name]['hpot1'] + 2000 > Date.now())) {
+    if (!slot) {
         use('use_hp');
         return true;
-    } else {
+    } else if (!cooldown['hpot1'] || cooldown['hpot1'] + 2000 < Date.now()) {
         use(slot);
-        potionCooldowns[character.name]['hpot1'] = Date.now();
+        cooldown['mpot1'] = Date.now();
+        potionCooldowns[character.name] = cooldown;
         return true;
     }
 }
 
 function useManaPotion() {
+    let cooldown = potionCooldowns[character.name] || {};
     let slot = getInventorySlot('mpot1');
-    if (!slot || (potionCooldowns[character.name]['mpot1'] && potionCooldowns[character.name]['mpot1'] + 2000 > Date.now())) {
+    if (!slot) {
         use('use_mp');
         return true;
-    } else {
+    } else if (!cooldown['mpot1'] || cooldown['mpot1'] + 2000 < Date.now()) {
         use(slot);
-        potionCooldowns[character.name]['mpot1'] = Date.now();
+        cooldown['mpot1'] = Date.now();
+        potionCooldowns[character.name] = cooldown;
         return true;
     }
 }
