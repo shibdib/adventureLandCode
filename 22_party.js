@@ -4,8 +4,8 @@ function waitForHealer(range = 300, silent = false) {
     let healerFound = false;
     if (character.map === 'bank') return false;
     if (parent.party_list.length > 0) {
-        for (let key in parent.party_list) {
-            let entity = parent.entities[parent.party_list[key]];
+        for (let character of parent.party_list) {
+            let entity = parent.entities[character];
             if (!entity || entity.ctype !== 'priest') continue;
             healerFound = true;
             if (entity && entity.mp < entity.max_mp * 0.03) {// Priest is low MP

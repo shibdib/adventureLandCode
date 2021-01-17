@@ -1,5 +1,4 @@
 load_code(2);
-let pvpMode = false;
 // Handle PVE
 if (!pvpMode) {
     //Start Up Code
