@@ -1,11 +1,11 @@
 load_code(2);
-
+let pvpMode = false;
 // Handle PVE
 if (!pvpMode) {
     //Start Up Code
     setTimeout(function () {
         // Handle restarting/starting other characters when needed
-        refreshCharacters(false, true);
+        refreshCharacters(pvpMode, true);
     }, 10000);
 
     //Force reboot of character (1h)
@@ -17,7 +17,7 @@ if (!pvpMode) {
     //Start Up Code
     setTimeout(function () {
         // Handle restarting/starting other characters when needed
-        refreshCharacters(true, true);
+        refreshCharacters(pvpMode, true);
     }, 10000);
 }
 
